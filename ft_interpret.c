@@ -34,7 +34,10 @@ void	ft_interpret(char *line)
 			}
 		}
 	}
-	waitpid(pid, NULL, 0);
+	else if (pid < 0)
+		perror("minishell");
+	else
+		waitpid(pid, NULL, 0);
 	ft_freecharmatrix(args);
 }
 
@@ -73,5 +76,5 @@ int	ft_error(char *name, char *desc)
 	ft_putstr_fd(": ", 1);
 	ft_putstr_fd(desc, 1);
 	ft_putstr_fd("\n", 1);
-	return (1);
+	exit(1);
 }
