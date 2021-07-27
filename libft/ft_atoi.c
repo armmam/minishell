@@ -33,7 +33,5 @@ int	ft_atoi(const char *str)
 		result += (*str) - '0';
 		str++;
 	}
-	if (result < -2147483648 || result > 2147483647)
-		ft_exit("Error");
 	return (result * minus);
 }

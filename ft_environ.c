@@ -4,7 +4,7 @@ void	ft_inheritenviron(char **environ)
 {
 	int	i;
 
-	g_data.env = malloc((ft_charmatrixlen(environ) + 1) * sizeof(char *));
+	g_data.env = malloc((ft_matrixlen(environ) + 1) * sizeof(char *));
 	i = 0;
 	while (environ[i])
 	{

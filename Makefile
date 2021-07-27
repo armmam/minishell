@@ -9,8 +9,13 @@ RM			= rm -rf
 # ATTENTION! These flags are machine-specific. Edit them so that they point
 # to the location of your `readline` library. Right now, it is assumed that
 # your homebrew is installed at /iSCSI.
-LDFLAGS		= -L/iSCSI/.brew/opt/readline/lib
-CPPFLAGS	= -I/iSCSI/.brew/opt/readline/include
+ifeq ($$(whoami), aisraely)
+	LDFLAGS		= -L/iSCSI/.brew/opt/readline/lib
+	CPPFLAGS	= -I/iSCSI/.brew/opt/readline/include
+else
+	LDFLAGS		= 
+	CPPFLAGS	= 
+endif
 
 all: $(NAME)
 
@@ -28,6 +33,9 @@ clean:
 fclean: clean
 	@${RM} ${NAME}
 
+norme:
+	@norminette -R CheckForbiddenSourceHeader *.c *.h libft/*.c libft/*.h
+	
 bonus: all
 
 re: fclean all

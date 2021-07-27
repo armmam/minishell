@@ -30,7 +30,6 @@ typedef struct s_list
 }				t_list;
 
 int				ft_strlen(char *str);
-void			ft_exit(char *error);
 int				ft_isdigitstr(char *str);
 int				ft_isspace(char c);
 int				ft_isdigit(int c);
@@ -75,7 +74,7 @@ t_list			*ft_lstlast(t_list *lst);
 void			ft_lstiter(t_list *lst, void (*f)(void *));
 t_list			*ft_lstmap(t_list *lst, void *(*f)(void *),
 					void (*del)(void *));
-int				ft_charmatrixlen(char **matrix);
-void			ft_freecharmatrix(char **matrix);
+int				ft_matrixlen(char **matrix);
+void			ft_freematrix(char **matrix);
 
 #endif

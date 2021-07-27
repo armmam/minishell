@@ -12,7 +12,6 @@ void	ft_interpret(char *line)
 	pid = fork();
 	if (pid == 0)
 	{
-		// IF an absolute path is specified
 		if (args[0][0] == '/')
 		{
 			if (execve(args[0], args, g_data.env) == -1)
@@ -38,14 +37,47 @@ void	ft_interpret(char *line)
 		perror("minishell");
 	else
 		waitpid(pid, NULL, 0);
-	ft_freecharmatrix(args);
+	ft_freematrix(args);
 }
 
-// RAW
+int	ft_convertbuiltin(char *builtin)
+{
+	if (ft_strlen(builtin) == 4 && !ft_strncmp(builtin, "echo", 4))
+		return (__echo);
+	else if (ft_strlen(builtin) == 2 && !ft_strncmp(builtin, "cd", 2))
+		return (__cd);
+	else if (ft_strlen(builtin) == 3 && !ft_strncmp(builtin, "pwd", 3))
+		return (__pwd);
+	else if (ft_strlen(builtin) == 6 && !ft_strncmp(builtin, "export", 6))
+		return (__export);
+	else if (ft_strlen(builtin) == 5 && !ft_strncmp(builtin, "unset", 5))
+		return (__unset);
+	else if (ft_strlen(builtin) == 3 && !ft_strncmp(builtin, "env", 3))
+		return (__env);
+	else if (ft_strlen(builtin) == 4 && !ft_strncmp(builtin, "exit", 4))
+		return (__exit);
+	return (-1);
+}
+
 int	ft_execbuiltin(char **args)
 {
-	(void)args;
-	// some code...
+	int	cmd;
+
+	cmd = ft_convertbuiltin(args[0]);
+	if (cmd == __echo)
+		return (ft_echo(args));
+	else if (cmd == __cd)
+		return (ft_cd(args));
+	else if (cmd == __pwd)
+		return (ft_pwd(args));
+	else if (cmd == __export)
+		return (ft_export(args));
+	else if (cmd == __unset)
+		return (ft_unset(args));
+	else if (cmd == __env)
+		return (ft_env(args));
+	else if (cmd == __exit)
+		return (ft_exit(args));
 	return (0);
 }
 
@@ -65,7 +97,7 @@ void	ft_exec(char **args, char **paths)
 		free(temp);
 		i++;
 	}
-	ft_freecharmatrix(paths);
+	ft_freematrix(paths);
 	ft_error(args[0], "no such command found");
 }
 

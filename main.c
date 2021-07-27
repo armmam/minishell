@@ -12,6 +12,7 @@ int	main(int argc, char **argv, char **environ)
 	{
 		line = readline("minishell$ ");
 		ft_interpret(line);
+		add_history(line);
 		free(line);
 	}
 	// ft_terminate();
