@@ -1,1 +1,7 @@
 # minishell
+School 42's project "minishell" implementation.
+## Changelog
+07/26/21:
+Alexander
+1) created a global structure holding the data
+2) implemented basic command execution and the shell loop
