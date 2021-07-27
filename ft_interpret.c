@@ -1,43 +1,127 @@
 #include "minishell.h"
+int	ft_pipecount(char **tokens)
+{
+	int	i;
+	int	count;
+
+	count = 0;
+	i = 0;
+	while (tokens[i])
+	{
+		if (tokens[i][0] == '|' && tokens[i][1] == '\0')
+			count++;
+		i++;
+	}
+	return (count);
+}
+
+void	ft_extractinfiles(t_cmd *cmd, char **tokens)
+{
+	(void)cmd;
+	(void)tokens;
+	//
+}
+
+void	ft_extractoutfiles(t_cmd *cmd, char **tokens)
+{
+	(void)cmd;
+	(void)tokens;
+	//
+}
+
+t_cmd	*ft_parsecommands(char **tokens)
+{
+	int		i;
+	t_cmd	*commands;
+	int		pipefd[2];
+
+	//
+	(void)pipefd;
+	//
+	commands = malloc(sizeof(t_cmd) * (g_data.family_size + 1));
+	i = 0;
+	while (i < g_data.family_size)
+	{
+		ft_extractinfiles(&commands[i], tokens);
+		ft_extractoutfiles(&commands[i], tokens); 
+		i++;
+	}
+	return (commands);
+}
 
 void	ft_interpret(char *line)
 {
-	char	**args;
-	char	**paths;
-	char	*path;
-	pid_t	pid;
+	int		i;
+	char	**tokens;
+	// char	**paths;
+	// char	*path;
+	t_cmd	*commands;
 
 	// ! treatment of special characters is needed !
-	args = ft_split(line, ' ');
-	pid = fork();
-	if (pid == 0)
+	tokens = ft_split(line, ' ');
+	g_data.family_size = ft_pipecount(tokens) + 1;
+	g_data.family = malloc(sizeof(pid_t) * g_data.family_size);
+	commands = ft_parsecommands(tokens);
+	i = 0;
+	while (i < g_data.family_size)
 	{
-		if (args[0][0] == '/')
+		g_data.family[i] = fork();
+		if (g_data.family[i] == 0)
 		{
-			if (execve(args[0], args, g_data.env) == -1)
-				ft_error(args[0], "No such file or directory");
+			//
+			// ft_exec(commands[i]);
+			exit(0);
+			//
 		}
-		else
+		else if (g_data.family[i] < 0)
 		{
-			if (!ft_execbuiltin(args))
-			{
-				if (ft_getenv("PATH"))
-				{
-					path = ft_getenv("PATH");
-					path += 5;
-					paths = ft_split(path, ':');
-					ft_exec(args, paths);
-				}
-				else
-					ft_error(args[0], "No such file or directory");
-			}
+			perror("minishell");
+			while (--i >= 0)
+				kill(g_data.family[i], SIGINT);
+			break ;
 		}
 	}
-	else if (pid < 0)
-		perror("minishell");
-	else
-		waitpid(pid, NULL, 0);
-	ft_freematrix(args);
+	i = 0;
+	while (i < g_data.family_size)
+		waitpid(g_data.family[i], NULL, 0);
+	
+	
+	// pid = fork();
+	// if (pid == 0)
+	// {
+	// 	if (args[0][0] == '/')
+	// 	{
+	// 		if (execve(args[0], args, g_data.env) == -1)
+	// 			ft_error(args[0], "No such file or directory");
+	// 	}
+	// 	else
+	// 	{
+	// 		if (!ft_execbuiltin(args))
+	// 		{
+	// 			if (ft_getenv("PATH"))
+	// 			{
+	// 				path = ft_getenv("PATH");
+	// 				paths = ft_split(path, ':');
+	// 				ft_exec(args, paths);
+	// 			}
+	// 			else
+	// 				ft_error(args[0], "No such file or directory");
+	// 		}
+	// 	}
+	// }
+	// else if (pid < 0)
+	// 	perror("minishell");
+	// else
+	// 	waitpid(pid, NULL, 0);
+	
+	// ft_freecomands(commands);
+	if (g_data.family)
+	{
+		free(g_data.family);
+		g_data.family = NULL;
+	}
+	if (tokens)
+		ft_freematrix(tokens);
 }
 
 int	ft_convertbuiltin(char *builtin)

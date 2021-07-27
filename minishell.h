@@ -36,10 +36,25 @@ enum	e_builtins
 	__exit	
 };
 
+
+typedef struct s_cmd
+{
+	char	**args;
+	// pids of the children
+	pid_t	*family;
+	// stdins, stdouts, stderrs for a command
+	int		in;
+	int		out;
+	int		err;
+}				t_cmd;
+
 typedef struct s_env
 {
+	int		family_size;
+	pid_t	*family;
 	char	**env;
 	int		status;
+	t_cmd	cmd;
 }				t_env;
 
 t_env	g_data;
@@ -58,5 +73,7 @@ int		ft_export(char **args);
 int		ft_unset(char **args);
 int		ft_env(char **args);
 int		ft_exit(char **args);
+void	ft_extractinfiles(t_cmd *cmd, char **tokens);
+void	ft_extractoutfiles(t_cmd *cmd, char **tokens);
 
 #endif

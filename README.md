@@ -5,6 +5,7 @@ School 42's project "minishell" implementation.
 Alexander
 1) created a global structure holding the data
 2) implemented basic command execution and the shell loop
+
 07/27/21:
 Alexander
 1) shell history is now working
