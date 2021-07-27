@@ -12,6 +12,9 @@ RM			= rm -rf
 ifeq ($$(whoami), aisraely)
 	LDFLAGS		= -L/iSCSI/.brew/opt/readline/lib
 	CPPFLAGS	= -I/iSCSI/.brew/opt/readline/include
+else ifeq ($$(whoami), arman)
+	LDFLAGS		= -L~/.brew/opt/readline/lib
+	CPPFLAGS	= -I~/.brew/opt/readline/include
 else
 	LDFLAGS		= 
 	CPPFLAGS	= 
