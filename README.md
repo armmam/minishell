@@ -10,3 +10,7 @@ Alexander
 Alexander
 1) shell history is now working
 2) created an enum for dereferencing builtins
+
+07/28/21:
+Alexander
+1) a rough draft of piping and executing was implemented

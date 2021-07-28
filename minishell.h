@@ -36,16 +36,26 @@ enum	e_builtins
 	__exit	
 };
 
+enum	e_operators
+{
+	and,
+	or
+};
 
 typedef struct s_cmd
 {
+	// index (to wait and abort properly)
+	int		i;
+	// args for execve
 	char	**args;
 	// pids of the children
 	pid_t	*family;
 	// stdins, stdouts, stderrs for a command
-	int		in;
-	int		out;
-	int		err;
+	int		*in;
+	int		*out;
+	int		*err;
+	// preceding operator
+	int		cond;
 }				t_cmd;
 
 typedef struct s_env
@@ -63,7 +73,7 @@ void	ft_inheritenviron(char **environ);
 void	ft_interpret(char *line);
 char	*ft_getenv(const char *name);
 int		ft_error(char *name, char *desc);
-void	ft_exec(char **args, char **paths);
+void	ft_exec(t_cmd *cmd);
 int		ft_execbuiltin(char **args);
 int		ft_convertbuiltin(char *builtin);
 int		ft_echo(char **args);
@@ -75,5 +85,6 @@ int		ft_env(char **args);
 int		ft_exit(char **args);
 void	ft_extractinfiles(t_cmd *cmd, char **tokens);
 void	ft_extractoutfiles(t_cmd *cmd, char **tokens);
+void	ft_abort(t_cmd *cmd);
 
 #endif

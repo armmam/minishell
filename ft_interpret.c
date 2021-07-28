@@ -1,5 +1,6 @@
 #include "minishell.h"
-int	ft_pipecount(char **tokens)
+
+int	ft_cmdcount(char **tokens)
 {
 	int	i;
 	int	count;
@@ -9,6 +10,12 @@ int	ft_pipecount(char **tokens)
 	while (tokens[i])
 	{
 		if (tokens[i][0] == '|' && tokens[i][1] == '\0')
+			count++;
+		if (tokens[i][0] == '&' && tokens[i][1] == '&'
+			&& tokens[i][2] == '\0')
+			count++;
+		if (tokens[i][0] == '|' && tokens[i][1] == '|'
+			&& tokens[i][2] == '\0')
 			count++;
 		i++;
 	}
@@ -35,15 +42,32 @@ t_cmd	*ft_parsecommands(char **tokens)
 	t_cmd	*commands;
 	int		pipefd[2];
 
-	//
-	(void)pipefd;
-	//
-	commands = malloc(sizeof(t_cmd) * (g_data.family_size + 1));
+	commands = malloc(sizeof(t_cmd) * g_data.family_size);
 	i = 0;
 	while (i < g_data.family_size)
 	{
 		ft_extractinfiles(&commands[i], tokens);
-		ft_extractoutfiles(&commands[i], tokens); 
+		ft_extractarguments(&commands[i], tokens);
+		ft_extractoutfiles(&commands[i], tokens);
+	}
+	i = 0;
+	while (i < g_data.family_size)
+	{
+		commands[i].in = 0;
+		commands[i].out = 1;
+		commands[i].err = 2;
+		if (i)
+		{
+			pipe(pipefd);
+			if (commands[i - 1].out != 1)
+				close(pipefd[1]);
+			else
+				commands[i - 1].out = pipefd[1];
+			if (commands[i].in != 0)
+				close(pipefd[0]);
+			else
+				commands[i].in = pipefd[0];
+		}
 		i++;
 	}
 	return (commands);
@@ -53,26 +77,19 @@ void	ft_interpret(char *line)
 {
 	int		i;
 	char	**tokens;
-	// char	**paths;
-	// char	*path;
 	t_cmd	*commands;
 
 	// ! treatment of special characters is needed !
 	tokens = ft_split(line, ' ');
-	g_data.family_size = ft_pipecount(tokens) + 1;
+	g_data.family_size = ft_cmdcount(tokens) + 1;
 	g_data.family = malloc(sizeof(pid_t) * g_data.family_size);
 	commands = ft_parsecommands(tokens);
 	i = 0;
 	while (i < g_data.family_size)
 	{
 		g_data.family[i] = fork();
-		if (g_data.family[i] == 0)
-		{
-			//
-			// ft_exec(commands[i]);
-			exit(0);
-			//
-		}
+		if (g_data.family[i] == 0) // child code
+			ft_exec(&commands[i]);
 		else if (g_data.family[i] < 0)
 		{
 			perror("minishell");
@@ -83,38 +100,10 @@ void	ft_interpret(char *line)
 	}
 	i = 0;
 	while (i < g_data.family_size)
-		waitpid(g_data.family[i], NULL, 0);
+		waitpid(g_data.family[i++], &g_data.status, 0);
 	
-	
-	// pid = fork();
-	// if (pid == 0)
-	// {
-	// 	if (args[0][0] == '/')
-	// 	{
-	// 		if (execve(args[0], args, g_data.env) == -1)
-	// 			ft_error(args[0], "No such file or directory");
-	// 	}
-	// 	else
-	// 	{
-	// 		if (!ft_execbuiltin(args))
-	// 		{
-	// 			if (ft_getenv("PATH"))
-	// 			{
-	// 				path = ft_getenv("PATH");
-	// 				paths = ft_split(path, ':');
-	// 				ft_exec(args, paths);
-	// 			}
-	// 			else
-	// 				ft_error(args[0], "No such file or directory");
-	// 		}
-	// 	}
-	// }
-	// else if (pid < 0)
-	// 	perror("minishell");
-	// else
-	// 	waitpid(pid, NULL, 0);
-	
-	// ft_freecomands(commands);
+	// free stuff
+	// ft_freecomands(commands); // ALSO CLOSE FDS
 	if (g_data.family)
 	{
 		free(g_data.family);
@@ -165,24 +154,68 @@ int	ft_execbuiltin(char **args)
 	return (0);
 }
 
-void	ft_exec(char **args, char **paths)
+void	ft_abort(t_cmd *cmd)
+{
+	int	i;
+
+	i = cmd->i + 1;
+	while (i < g_data.family_size)
+		kill(g_data.family[i++], SIGINT);
+	if (cmd->cond == or)
+		exit(0);
+	else
+		exit(1);
+}
+
+void	ft_exec(t_cmd *cmd)
 {
 	int		i;
 	char	*temp;
 	char	*newpath;
+	char	**paths;
+	int		status;
 
-	i = 0;
-	while (paths[i])
+	// associating fds
+	if (dup2(cmd->in, 0) == -1 || dup2(cmd->out, 1) == -1
+		|| dup2(cmd->err, 2) == -1)
+		ft_abort(cmd);
+	// wait for the previous one
+	if (cmd->i)
 	{
-		temp = ft_strjoin(paths[i], "/");
-		newpath = ft_strjoin(temp, args[0]);
-		execve(newpath, args, g_data.env);
-		free(newpath);
-		free(temp);
-		i++;
+		waitpid(g_data.family[cmd->i - 1], &status, 0);
+		if ((status && cmd->cond == and) || (!status && cmd->cond == or))
+			ft_abort(cmd);
 	}
-	ft_freematrix(paths);
-	ft_error(args[0], "no such command found");
+	// exec
+	if (cmd->args[0][0] == '/')
+	{
+		if (execve(cmd->args[0], cmd->args, g_data.env) == -1)
+			ft_error(cmd->args[0], "No such file or directory");
+	}
+	else
+	{
+		if (!ft_execbuiltin(cmd->args))
+		{
+			if (ft_getenv("PATH"))
+			{
+				paths = ft_split(ft_getenv("PATH"), ':');
+				i = 0;
+				while (paths[i])
+				{
+					temp = ft_strjoin(paths[i], "/");
+					newpath = ft_strjoin(temp, cmd->args[0]);
+					execve(newpath, cmd->args, g_data.env);
+					free(newpath);
+					free(temp);
+					i++;
+				}
+				ft_freematrix(paths);
+				ft_error(cmd->args[0], "no such command found");
+			}
+			else
+				ft_error(cmd->args[0], "No such file or directory");
+		}
+	}
 }
 
 int	ft_error(char *name, char *desc)
