@@ -36,74 +36,89 @@ void	ft_extractoutfiles(t_cmd *cmd, char **tokens)
 	//
 }
 
-t_cmd	*ft_parsecommands(char **tokens)
+t_cmd	*ft_parsecmds(char **tokens)
 {
 	int		i;
-	t_cmd	*commands;
+	t_cmd	*cmds;
 	int		pipefd[2];
 
-	commands = malloc(sizeof(t_cmd) * g_data.family_size);
+	cmds = malloc(sizeof(t_cmd) * g_data.cmdcount);
 	i = 0;
-	while (i < g_data.family_size)
+	while (i < g_data.cmdcount)
 	{
-		ft_extractinfiles(&commands[i], tokens);
-		ft_extractarguments(&commands[i], tokens);
-		ft_extractoutfiles(&commands[i], tokens);
+		cmds[i].i = i;
+		ft_extractinfiles(&cmds[i], tokens);
+		ft_extractarguments(&cmds[i], tokens);
+		ft_extractoutfiles(&cmds[i], tokens);
+		i++;
 	}
 	i = 0;
-	while (i < g_data.family_size)
+	while (i < g_data.cmdcount)
 	{
-		commands[i].in = 0;
-		commands[i].out = 1;
-		commands[i].err = 2;
+		cmds[i].in = 0;
+		cmds[i].out = 1;
+		cmds[i].err = 2;
 		if (i)
 		{
 			pipe(pipefd);
-			if (commands[i - 1].out != 1)
+			if (cmds[i - 1].out != 1)
 				close(pipefd[1]);
 			else
-				commands[i - 1].out = pipefd[1];
-			if (commands[i].in != 0)
+				cmds[i - 1].out = pipefd[1];
+			if (cmds[i].in != 0)
 				close(pipefd[0]);
 			else
-				commands[i].in = pipefd[0];
+				cmds[i].in = pipefd[0];
 		}
 		i++;
 	}
-	return (commands);
+	return (cmds);
 }
 
 void	ft_interpret(char *line)
 {
 	int		i;
+	int		j;
+	int		processes;
 	char	**tokens;
-	t_cmd	*commands;
+	t_cmd	*cmds;
 
 	// ! treatment of special characters is needed !
-	tokens = ft_split(line, ' ');
-	g_data.family_size = ft_cmdcount(tokens) + 1;
-	g_data.family = malloc(sizeof(pid_t) * g_data.family_size);
-	commands = ft_parsecommands(tokens);
+	tokens = ft_tokenize(line);
+	//
+	g_data.cmdcount = ft_cmdcount(tokens);
+	cmds = ft_parsecmds(tokens);
+	processes = g_data.cmdcount - ft_isbuiltin(cmds[0].args[0])
+		- ft_isbuiltin(cmds[g_data.cmdcount - 1].args[0]);
+	g_data.family = malloc(sizeof(pid_t) * processes);
 	i = 0;
-	while (i < g_data.family_size)
+	j = 0;
+	while (i < g_data.cmdcount)
 	{
-		g_data.family[i] = fork();
-		if (g_data.family[i] == 0) // child code
-			ft_exec(&commands[i]);
-		else if (g_data.family[i] < 0)
+		if ((!i || i == g_data.cmdcount - 1) && ft_isbuiltin(cmds[i].args[0]))
+			ft_exec(&cmds[i]);
+		else
 		{
-			perror("minishell");
-			while (--i >= 0)
-				kill(g_data.family[i], SIGINT);
-			break ;
+			g_data.family[j] = fork();
+			if (g_data.family[j] == 0) // child code
+				ft_exec(&cmds[i]);
+			else if (g_data.family[j] < 0)
+			{
+				perror("minishell");
+				while (--j >= 0)
+					kill(g_data.family[j], SIGINT);
+				break ;
+			}
+			j++;
 		}
+		i++;
 	}
 	i = 0;
-	while (i < g_data.family_size)
+	while (i < g_data.cmdcount)
 		waitpid(g_data.family[i++], &g_data.status, 0);
 	
 	// free stuff
-	// ft_freecomands(commands); // ALSO CLOSE FDS
+	// ft_freecomands(cmds); // ALSO CLOSE FDS
 	if (g_data.family)
 	{
 		free(g_data.family);
@@ -111,6 +126,13 @@ void	ft_interpret(char *line)
 	}
 	if (tokens)
 		ft_freematrix(tokens);
+}
+
+int	ft_isbuiltin(char *builtin)
+{
+	if (ft_convertbuiltin(builtin))
+		return (1);
+	return (0);
 }
 
 int	ft_convertbuiltin(char *builtin)
@@ -129,28 +151,30 @@ int	ft_convertbuiltin(char *builtin)
 		return (__env);
 	else if (ft_strlen(builtin) == 4 && !ft_strncmp(builtin, "exit", 4))
 		return (__exit);
-	return (-1);
+	return (0);
 }
 
-int	ft_execbuiltin(char **args)
+int	ft_execbuiltin(t_cmd *cmd)
 {
 	int	cmd;
 
-	cmd = ft_convertbuiltin(args[0]);
+	// do the dup2s!!
+
+	cmd = ft_convertbuiltin(cmd->args[0]);
 	if (cmd == __echo)
-		return (ft_echo(args));
+		g_data.status = ft_echo(cmd->args);
 	else if (cmd == __cd)
-		return (ft_cd(args));
+		g_data.status = ft_cd(cmd->args);
 	else if (cmd == __pwd)
-		return (ft_pwd(args));
+		g_data.status = ft_pwd(cmd->args);
 	else if (cmd == __export)
-		return (ft_export(args));
+		g_data.status = ft_export(cmd->args);
 	else if (cmd == __unset)
-		return (ft_unset(args));
+		g_data.status = ft_unset(cmd->args);
 	else if (cmd == __env)
-		return (ft_env(args));
+		g_data.status = ft_env(cmd->args);
 	else if (cmd == __exit)
-		return (ft_exit(args));
+		exit(0);
 	return (0);
 }
 
@@ -159,7 +183,7 @@ void	ft_abort(t_cmd *cmd)
 	int	i;
 
 	i = cmd->i + 1;
-	while (i < g_data.family_size)
+	while (i < g_data.cmdcount)
 		kill(g_data.family[i++], SIGINT);
 	if (cmd->cond == or)
 		exit(0);

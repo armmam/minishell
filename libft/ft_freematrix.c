@@ -12,11 +12,12 @@
 
 #include "libft.h"
 
-void	ft_freematrix(char **matrix)
+void	ft_freematrix(char ***matrix)
 {
 	int	i;
 
-	i = ft_matrixlen(matrix) - 1;
+	i = ft_matrixlen(*matrix) - 1;
 	while (i >= 0)
-		free(matrix[i--]);
+		free((*matrix)[i--]);
+	free(*matrix);
 }

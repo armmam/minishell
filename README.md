@@ -14,3 +14,8 @@ Alexander
 07/28/21:
 Alexander
 1) a rough draft of piping and executing was implemented
+
+07/29/21:
+Alexander
+1) implemented `cd`
+2) `env` now doesn't print uninitialized environment variables

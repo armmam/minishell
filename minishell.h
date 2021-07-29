@@ -27,7 +27,7 @@
 
 enum	e_builtins
 {
-	__echo,
+	__echo = 1,
 	__cd,
 	__pwd,
 	__export,
@@ -60,7 +60,7 @@ typedef struct s_cmd
 
 typedef struct s_env
 {
-	int		family_size;
+	int		cmdcount;
 	pid_t	*family;
 	char	**env;
 	int		status;
@@ -74,7 +74,7 @@ void	ft_interpret(char *line);
 char	*ft_getenv(const char *name);
 int		ft_error(char *name, char *desc);
 void	ft_exec(t_cmd *cmd);
-int		ft_execbuiltin(char **args);
+int		ft_execbuiltin(t_cmd *cmd);
 int		ft_convertbuiltin(char *builtin);
 int		ft_echo(char **args);
 int		ft_cd(char **args);
@@ -82,7 +82,6 @@ int		ft_pwd(char **args);
 int		ft_export(char **args);
 int		ft_unset(char **args);
 int		ft_env(char **args);
-int		ft_exit(char **args);
 void	ft_extractinfiles(t_cmd *cmd, char **tokens);
 void	ft_extractoutfiles(t_cmd *cmd, char **tokens);
 void	ft_abort(t_cmd *cmd);
