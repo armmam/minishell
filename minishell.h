@@ -70,7 +70,7 @@ typedef struct s_env
 t_env	g_data;
 
 void	ft_inheritenviron(char **environ);
-void	ft_interpret(char **tokens);
+void	ft_interpret(char *line);
 char	*ft_getenv(const char *name);
 void	ft_error(char *name, char *desc);
 void	ft_exec(t_cmd *cmd);

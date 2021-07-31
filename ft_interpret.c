@@ -24,6 +24,13 @@ int	ft_cmds(char **tokens)
 	return (count);
 }
 
+// puts char **args into given commands args field;
+// opens the files given as <, > or >> with open()
+// and writes them into the in and out fields (don't
+// forget that if multiple outfiles are received,
+// they have to be opened and closed except for the last
+// one. store only the last one)
+// parses 'heredoc' if applicable; else assigns NULL to it
 void	ft_extractarguments(t_cmd *cmd, char **tokens)
 {
 	(void)cmd;
@@ -59,18 +66,21 @@ t_cmd	*ft_parsecommands(char **tokens)
 	}
 	return (commands);
 }
-// void	ft_interpret(char *line) MUST BE LIKE THIS! changed for testing
-void	ft_interpret(char **tokens)
+
+void	ft_interpret(char *line)
 {
 	int		i;
 	int		j;
 	t_cmd	*commands;
 
+
+	// TAKE CARE OF THIS COMMENT BLOCK AND UNCOMMENT IT
 	// ! treatment of special characters is needed !
 	// tokens = ft_tokenize(line);
-	//
-	g_data.cmds = ft_cmds(tokens);
-	commands = ft_parsecommands(tokens);
+	// g_data.cmds = ft_cmds(tokens);
+	// commands = ft_parsecommands(tokens);
+
+
 	g_data.prcs = g_data.cmds - ft_isbuiltin(commands[0].args[0]);
 	g_data.family = malloc(sizeof(pid_t) * g_data.prcs);
 	i = 0;
@@ -106,8 +116,6 @@ void	ft_interpret(char **tokens)
 		free(g_data.family);
 		g_data.family = NULL;
 	}
-	if (tokens)
-		ft_freematrix(&tokens);
 }
 
 int	ft_isbuiltin(char *builtin)

@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+// man echo :)
 int	ft_echo(t_cmd *cmd)
 {
 	//
