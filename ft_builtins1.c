@@ -1,32 +1,38 @@
 #include "minishell.h"
 
-int	ft_echo(char **args)
+int	ft_echo(t_cmd *cmd)
 {
 	//
-	(void)args;
+	(void)cmd;
 	return (1);
 }
 
 void	ft_refreshpwds(char *oldpwd)
 {
-	char	exportargs[2];
+	t_cmd	export;
+	char	**exportargs;
 	char	*pwd;
 
-	getcwd(pwd, NULL);
-	exportargs[1] = ft_strjoin("PWD=", pwd);
-	ft_export(exportargs);
-	exportargs[1] = ft_strjoin("OLDPWD=", oldpwd);
-	ft_export(exportargs);
+	exportargs = malloc(sizeof(char *) * 3);
+	export.args = exportargs;
+	pwd = NULL;
+	getcwd(pwd, 0);
+	export.args[1] = ft_strjoin("PWD=", pwd);
+	export.args[2] = NULL;
+	ft_export(&export);
+	export.args[1] = ft_strjoin("OLDPWD=", oldpwd);
+	ft_export(&export);
 }
 
-int	ft_cd(char **args)
+int	ft_cd(t_cmd *cmd)
 {
 	int		status;
 	char	*oldpwd;
 
 	status = 1;
-	getcwd(oldpwd, NULL);
-	if (ft_matrixlen(args) == 1)
+	oldpwd = NULL;
+	getcwd(oldpwd, 0);
+	if (ft_matrixlen(cmd->args) == 1)
 	{
 		if (ft_getenv("HOME"))
 			status = chdir(ft_getenv("HOME"));
@@ -35,22 +41,22 @@ int	ft_cd(char **args)
 	}
 	else
 	{
-		if (args[1][0] == '-' && args[1][1] == '\0')
+		if (cmd->args[1][0] == '-' && cmd->args[1][1] == '\0')
 		{
 			if (ft_getenv("OLDPWD"))
 			{
 				status = chdir(ft_getenv("OLDPWD"));
 				if (!status)
 				{
-					ft_putstr_fd(oldpwd, 1);
-					ft_putstr_fd("\n", 1);
+					ft_putstr_fd(oldpwd, cmd->out);
+					ft_putstr_fd("\n", cmd->out);
 				}
 			}
 			else
 				ft_error("cd", "OLDPWD not set");
 		}
 		else
-			status = chdir(args[1]);
+			status = chdir(cmd->args[1]);
 	}
 	if (!status)
 		ft_refreshpwds(oldpwd);
@@ -59,13 +65,14 @@ int	ft_cd(char **args)
 	return (status);
 }
 
-int	ft_pwd(char **args)
+int	ft_pwd(t_cmd *cmd)
 {
 	char	*pwd;
 
-	getcwd(pwd, NULL);
-	ft_putstr_fd(pwd, 1);
-	ft_putstr_fd("\n", 1);
+	pwd = NULL;
+	getcwd(pwd, 0);
+	ft_putstr_fd(pwd, cmd->out);
+	ft_putstr_fd("\n", cmd->out);
 	return (0);
 }
 
@@ -99,6 +106,7 @@ void	ft_removematrixrow(char ***matrix, char *row)
 		return ;
 	newmatrix = malloc(ft_matrixlen(*matrix) * sizeof(char *));
 	i = 0;
+	j = 0;
 	while (i < ft_matrixlen(*matrix))
 	{
 		if (ft_strncmp(row, (*matrix)[i], ft_strlen(row)))
@@ -110,7 +118,7 @@ void	ft_removematrixrow(char ***matrix, char *row)
 	matrix = &newmatrix;
 }
 
-void	ft_printenvironment(void)
+void	ft_printenvironment(int fd)
 {
 	int	i;
 	int	j;
@@ -118,31 +126,32 @@ void	ft_printenvironment(void)
 	i = 0;
 	while (g_data.env[i])
 	{
-		ft_putstr_fd("declare -x ", 1);
+		ft_putstr_fd("declare -x ", fd);
 		j = 0;
 		while (g_data.env[i][j])
 		{
-			ft_putchar_fd(g_data.env[i][j], 1);
+			ft_putchar_fd(g_data.env[i][j], fd);
 			if (g_data.env[i][j++] == '=')
 				break ;
 		}
 		if (g_data.env[i][j - 1] == '=')
 		{
-			ft_putstr_fd("\"", 1);
+			ft_putstr_fd("\"", fd);
 			while (g_data.env[i][j])
-				ft_putchar_fd(g_data.env[i][j++], 1);
-			ft_putstr_fd("\"\n", 1);
+				ft_putchar_fd(g_data.env[i][j++], fd);
+			ft_putstr_fd("\"\n", fd);
 		}
 		i++;
 	}
 }
 
-int	ft_isdefined(char *variable)
+char	*ft_isdefined(char *variable)
 {
 	int		i;
 	char	*name;
-	int		ret;
+	char	*ret;
 
+	i = 0;
 	while (variable[i] && variable[i] != '=')
 		i++;
 	name = malloc(sizeof(char) * (i + 1));
@@ -174,34 +183,39 @@ int	ft_isvalididentifier(char *variable)
 	return (1);
 }
 
-int	ft_export(char **args)
+int	ft_export(t_cmd *cmd)
 {
-	int	i;
-	int	unsetargs[2];
-	int	ret;
+	int		i;
+	t_cmd	unset;
+	char	**unsetargs;
+	int		ret;
 
-	if (ft_matrixlen(args) == 1)
-		ft_printenvironment();
+	ret = 0;
+	if (ft_matrixlen(cmd->args) == 1)
+		ft_printenvironment(cmd->out);
 	else
 	{
 		i = 1;
-		while (args[i])
+		while (cmd->args[i])
 		{
-			if (ft_isvalididentifier(args[i]))
+			if (ft_isvalididentifier(cmd->args[i]))
 			{
-				ft_putstr_fd("minishell: export: `", 1);
-				ft_putstr_fd(args[i++], 1);
-				ft_putstr_fd("': not a valid identifier", 1);
+				ft_putstr_fd("minishell: export: `", 2);
+				ft_putstr_fd(cmd->args[i++], 2);
+				ft_putstr_fd("': not a valid identifier", 2);
 				ret = 1;
 				continue ;
 			}
-			if (!ft_isdefined(args[i])) 	// not present, just add
-				ft_addmatrixrow(&g_data.env, args[i]);
+			if (!ft_isdefined(cmd->args[i])) 	// not present, just add
+				ft_addmatrixrow(&g_data.env, cmd->args[i]);
 			else							// if present, overwrite
 			{
-				unsetargs[1] = args[i];
-				ft_unset(unsetargs);
-				ft_addmatrixrow(&g_data.env, args[i]);
+				unsetargs = malloc(sizeof(char *) * 3);
+				unsetargs[1] = cmd->args[i];
+				unsetargs[2] = NULL;
+				unset.args = unsetargs;
+				ft_unset(&unset);
+				ft_addmatrixrow(&g_data.env, cmd->args[i]);
 				ret = 0;
 			}
 			i++;
@@ -210,27 +224,28 @@ int	ft_export(char **args)
 	return (ret);
 }
 
-int	ft_unset(char **args)
+int	ft_unset(t_cmd *cmd)
 {
 	int	i;
 	int	ret;
 
-	if (ft_matrixlen(args) != 1)
+	ret = 0;
+	if (ft_matrixlen(cmd->args) != 1)
 	{
 		i = 1;
-		while (args[i])
+		while (cmd->args[i])
 		{
-			if (ft_isvalididentifier(args[i]))
+			if (ft_isvalididentifier(cmd->args[i]))
 			{
-				ft_putstr_fd("minishell: unset: `", 1);
-				ft_putstr_fd(args[i++], 1);
-				ft_putstr_fd("': not a valid identifier", 1);
+				ft_putstr_fd("minishell: unset: `", 2);
+				ft_putstr_fd(cmd->args[i++], 2);
+				ft_putstr_fd("': not a valid identifier", 2);
 				ret = 1;
 				continue ;
 			}
-			if (ft_isdefined(args[i]))
+			if (ft_isdefined(cmd->args[i]))
 			{
-				ft_removematrixrow(&g_data.env, args[i]);
+				ft_removematrixrow(&g_data.env, cmd->args[i]);
 				ret = 0;
 			}
 			i++;

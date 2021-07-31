@@ -39,7 +39,8 @@ enum	e_builtins
 enum	e_operators
 {
 	and,
-	or
+	or,
+	none
 };
 
 typedef struct s_cmd
@@ -48,42 +49,42 @@ typedef struct s_cmd
 	int		i;
 	// args for execve
 	char	**args;
-	// pids of the children
-	pid_t	*family;
-	// stdins, stdouts, stderrs for a command
-	int		*in;
-	int		*out;
-	int		*err;
-	// preceding operator
+	// last stdin, stdout for a command (open not the last ones with TRUNC if it's not >>; open with APPEND if >>)
+	int		in;
+	int		out;
+	// preceding operator (or, and or none)
 	int		cond;
+	// heredoc (for <<). if absent, please make it NULL
+	char	*heredoc;
 }				t_cmd;
 
 typedef struct s_env
 {
-	int		cmdcount;
+	int		cmds;
+	int		prcs;
 	pid_t	*family;
 	char	**env;
 	int		status;
-	t_cmd	cmd;
 }				t_env;
 
 t_env	g_data;
 
 void	ft_inheritenviron(char **environ);
-void	ft_interpret(char *line);
+void	ft_interpret(char **tokens);
 char	*ft_getenv(const char *name);
-int		ft_error(char *name, char *desc);
+void	ft_error(char *name, char *desc);
 void	ft_exec(t_cmd *cmd);
 int		ft_execbuiltin(t_cmd *cmd);
 int		ft_convertbuiltin(char *builtin);
-int		ft_echo(char **args);
-int		ft_cd(char **args);
-int		ft_pwd(char **args);
-int		ft_export(char **args);
-int		ft_unset(char **args);
-int		ft_env(char **args);
-void	ft_extractinfiles(t_cmd *cmd, char **tokens);
-void	ft_extractoutfiles(t_cmd *cmd, char **tokens);
+int		ft_echo(t_cmd *cmd);
+int		ft_cd(t_cmd *cmd);
+int		ft_pwd(t_cmd *cmd);
+int		ft_export(t_cmd *cmd);
+int		ft_unset(t_cmd *cmd);
+int		ft_env(t_cmd *cmd);
+void	ft_extractarguments(t_cmd *cmd, char **tokens);
 void	ft_abort(t_cmd *cmd);
+char	**ft_tokenize(char *line);
+int		ft_isbuiltin(char *builtin);
 
 #endif

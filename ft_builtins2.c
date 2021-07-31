@@ -1,11 +1,10 @@
 #include "minishell.h"
 
-int	ft_env(char **args)
+int	ft_env(t_cmd *cmd)
 {
 	int	i;
 	int	j;
 
-	(void)args;
 	i = 0;
 	while (g_data.env[i])
 	{
@@ -15,8 +14,8 @@ int	ft_env(char **args)
 		j++;
 		if (g_data.env[i][j])
 		{
-			ft_putstr_fd(g_data.env[i], 1);
-			ft_putstr_fd("\n", 1);
+			ft_putstr_fd(g_data.env[i], cmd->out);
+			ft_putstr_fd("\n", cmd->out);
 		}
 		i++;
 	}

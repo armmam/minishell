@@ -19,3 +19,9 @@ Alexander
 Alexander
 1) implemented `cd`
 2) `env` now doesn't print uninitialized environment variables
+
+07/30/21:
+Alexander
+1) ton of compiler-time errors fixes
+2) heredoc implementation
+3) better forking for built-ins
