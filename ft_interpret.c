@@ -245,9 +245,9 @@ void	ft_exec(t_cmd *cmd)
 				{
 					temp = ft_strjoin(paths[i], "/");
 					newpath = ft_strjoin(temp, cmd->args[0]);
+					free(temp);
 					execve(newpath, cmd->args, g_data.env);
 					free(newpath);
-					free(temp);
 					i++;
 				}
 				ft_freematrix(&paths);
