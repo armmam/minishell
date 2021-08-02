@@ -251,7 +251,7 @@ void	ft_exec(t_cmd *cmd)
 					i++;
 				}
 				ft_freematrix(&paths);
-				ft_error(cmd->args[0], "no such command found");
+				ft_error(cmd->args[0], "No such command found");
 				exit(1);
 			}
 			else
