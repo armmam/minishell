@@ -229,11 +229,9 @@ void	ft_exec(t_cmd *cmd)
 	// exec
 	if (cmd->args[0][0] == '/')
 	{
-		if (execve(cmd->args[0], cmd->args, g_data.env) == -1)
-		{
-			ft_error(cmd->args[0], "No such file or directory");
-			exit(1);
-		}
+		execve(cmd->args[0], cmd->args, g_data.env) == -1;
+		ft_error(cmd->args[0], "No such file or directory");
+		exit(1);
 	}
 	else
 	{
