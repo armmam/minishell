@@ -177,7 +177,7 @@ int	ft_isvalididentifier(char *variable)
 		return (0);
 	while (variable[i] && variable[i] != '=')
 	{
-		if (!ft_isalnum(variable[i]))
+		if (!(ft_isalnum(variable[i]) || variable[i] == '_'))
 			return (0);
 		i++;
 	}
