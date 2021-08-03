@@ -24,7 +24,7 @@ int	ft_cmds(char **tokens)
 	return (count);
 }
 
-// puts char **args into given commands args field;
+// puts char **args into given command's args field;
 // opens the files given as <, > or >> with open()
 // and writes them into the in and out fields (don't
 // forget that if multiple outfiles are received,
