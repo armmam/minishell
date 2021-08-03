@@ -24,7 +24,7 @@ int	ft_cmds(char **tokens)
 	return (count);
 }
 
-// puts char **args into given commands args field;
+// puts char **args into given command's args field;
 // opens the files given as <, > or >> with open()
 // and writes them into the in and out fields (don't
 // forget that if multiple outfiles are received,
@@ -168,6 +168,13 @@ int	ft_execbuiltin(t_cmd *cmd)
 	return (-1);
 }
 
+int		ft_isquoted(char *str, char c)
+{
+	if (str[0] == c && str[ft_strlen(str) - 1] == c)
+		return (1);
+	return (0);
+}
+
 void	ft_abort(t_cmd *cmd)
 {
 	int	i;
@@ -204,7 +211,7 @@ void	ft_exec(t_cmd *cmd)
 	if (cmd->heredoc)
 	{
 		int	refined = 0;
-		if (cmd->heredoc[0] == '\"' && cmd->heredoc[ft_strlen(cmd->heredoc) - 1] == '\"')
+		if (!(ft_isquoted(cmd->heredoc, '\'') || ft_isquoted(cmd->heredoc, '\"')))
 		{
 			cmd->heredoc[ft_strlen(cmd->heredoc) - 1] = '\0';
 			cmd->heredoc++;
@@ -245,13 +252,13 @@ void	ft_exec(t_cmd *cmd)
 				{
 					temp = ft_strjoin(paths[i], "/");
 					newpath = ft_strjoin(temp, cmd->args[0]);
+					free(temp);
 					execve(newpath, cmd->args, g_data.env);
 					free(newpath);
-					free(temp);
 					i++;
 				}
 				ft_freematrix(&paths);
-				ft_error(cmd->args[0], "no such command found");
+				ft_error(cmd->args[0], "No such command found");
 				exit(1);
 			}
 			else
