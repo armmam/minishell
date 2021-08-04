@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/02 19:36:44 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/03 12:49:13 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/04 18:59:01 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,20 @@ typedef struct s_list
 	void			*content;
 	struct s_list	*next;
 }				t_list;
+
+/*
+ * dynamic matrix that can automatically expand when necessary
+ * methods:
+ *   ft_dmtxnew
+ *   ft_dmtxpushback
+ *   ft_dmtxclear
+ */
+typedef struct s_dmtx
+{
+	char		**ptr;
+	size_t	len;
+	size_t	cap;
+}				t_dmtx;
 
 int				ft_strlen(char *str);
 int				ft_isdigitstr(char *str);
@@ -77,5 +91,8 @@ t_list			*ft_lstmap(t_list *lst, void *(*f)(void *),
 					void (*del)(void *));
 int				ft_matrixlen(char **matrix);
 void			ft_freematrix(char ***matrix);
+t_dmtx		*ft_dmtxnew(size_t cap);
+void			ft_dmtxpushback(t_dmtx *dmtx, char *item);
+void			ft_dmtxclear(t_dmtx *dmtx);
 
 #endif
