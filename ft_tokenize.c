@@ -29,9 +29,29 @@ char	*ft_strjoin3(const char *s1, const char *s2, const char *s3)
 // PLEASE MERGE THIS ONE WITH ft_parsecommands SO YOU'RE ABLE TO CORRECTLY
 // REMOVE ()S AND SET RESPECTIVE COMMAND'S cond FIELD.
 // removes ""s, ()s and other trash, uses ft_refineline on the arguments of commands
+//
+// has to spot unclosed quotes
+//
+// anything in double brackets is not executed and its return status is set to false (e.g. `((pwd)) && ls` doesn't print out anything)
+//
+// execution stops as soon as the global state is true or false (e.g. `pwd || ls` only executes `pwd`, `((pwd)) && ls` doesn't print out anything)
+//
+// if `echo`, then everything is treated as just one big argument
 char	**ft_tokenize(char *line)
 {
-	(void)line;
+	size_t	i, len;
+	int		arg; // flag: 1 if we're inside of a command's argument
+
+
+	len = ft_strlen(line);
+	i == 0;
+	while (i < len)
+	{
+		if (ft_isspace(line[i]) &&)
+			continue ;
+		i++;
+	}
+
 	//
 	return (NULL);
 }
