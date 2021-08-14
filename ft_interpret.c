@@ -238,7 +238,6 @@ void	ft_exec(t_cmd *cmd)
 	{
 		execve(cmd->args[0], cmd->args, g_data.env) == -1;
 		ft_error(cmd->args[0], "No such file or directory");
-		exit(1);
 	}
 	else
 	{
@@ -260,15 +259,12 @@ void	ft_exec(t_cmd *cmd)
 				}
 				ft_freematrix(&paths);
 				ft_error(cmd->args[0], "No such command found");
-				exit(1);
 			}
 			else
-			{
 				ft_error(cmd->args[0], "No such file or directory");
-				exit(1);
-			}
 		}
 	}
+	exit(1);
 }
 
 void	ft_error(char *name, char *desc)
