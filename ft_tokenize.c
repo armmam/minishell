@@ -12,20 +12,6 @@ int		ft_envlen(char *line)
 	return (i);
 }
 
-char	*ft_strjoin3(const char *s1, const char *s2, const char *s3)
-{
-	char	*temp, ret;
-
-	if (!s1 || !s2 || !s3)
-		return (NULL);
-	if (!(temp = ft_strjoin(s1, s2)))
-		return (NULL);
-	ret = ft_strjoin(temp, s3);
-	free(temp);
-	return (ret);
-
-}
-
 // PLEASE MERGE THIS ONE WITH ft_parsecommands SO YOU'RE ABLE TO CORRECTLY
 // REMOVE ()S AND SET RESPECTIVE COMMAND'S cond FIELD.
 // removes ""s, ()s and other trash, uses ft_refineline on the arguments of commands
