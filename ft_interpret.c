@@ -91,9 +91,10 @@ void	ft_interpret(char *line)
 			ft_exec(&commands[i]);
 		else
 		{
+			// spinning out child processes
 			g_data.family[j] = fork();
-			if (g_data.family[j] == 0) // child code
-				ft_exec(&commands[i]);
+			if (g_data.family[j] == 0) // child process
+				ft_exec(&commands[i]); // child process will exit here
 			else if (g_data.family[j] < 0)
 			{
 				perror("minishell");
