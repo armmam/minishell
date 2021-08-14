@@ -60,10 +60,15 @@ typedef struct s_cmd
 
 typedef struct s_env
 {
+	// number of commands in the current minishell session
 	int		cmds;
+	// how many additional processes have to be launched for the current minishell session
 	int		prcs;
+	// array of pids of launched processes
 	pid_t	*family;
+	// env vars of the current minishell session
 	char	**env;
+	// status of the process that was the latest of terminate
 	int		status;
 }				t_env;
 

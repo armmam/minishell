@@ -246,6 +246,7 @@ void	ft_exec(t_cmd *cmd)
 		{
 			if (ft_getenv("PATH"))
 			{
+				// try to find the command by iterating over paths in PATH
 				paths = ft_split(ft_getenv("PATH"), ':');
 				i = 0;
 				while (paths[i])
