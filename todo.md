@@ -1,3 +1,26 @@
+## ft_tokenize
+The naïve approach: use space symbols as delimiters while treating several successive space symbols as one delimiter
+
+Improvement: treat quotes: remove them
+
+## Skip invalid inputs
+Count the number of quotes, if odd then print out "Invalid input" and wait for the next input
+
+### How to count the number of quotes
+```
+bash-3.2$ echo 'blah "blah'"
+> 
+bash-3.2$ echo 'blah "blah'
+blah "blah
+bash-3.2$ echo "blah 'blah"
+blah 'blah
+bash-3.2$ echo "blah 'blah"'
+> 
+bash-3.2$
+```
+Keep track of the number of quotes with `s_quotes` and `d_quotes`. Then, if `'` (`"`) is encountered, increment `s_quotes` (`d_quotes`) and stop paying attention to `"`s (`'`s) as long as another `'` (`"`) is not encountered. If, by the time `line` is over, if the value of either of `s_quotes` and `d_quotes` is odd, then the input is invalid.
+
+## How to handle boolean operators and parentheses
 `minishell`'s command execution logic has to modified so that execution of commands is made recursively based on boolean operators present in `line` provided to `minishell`.
 
 Pseudocode of how it should look like:
@@ -31,3 +54,82 @@ Treat expressions with more than two boolean operators as follows:
 
 
 F && ((D && E) || ((A || B) && C)) || (G && H)
+
+
+<details>
+<summary>Some shell behavior</summary>
+<p>
+
+```
+bash-3.2$ echo $HOME
+/Users/amamian
+```
+```
+bash-3.2$ echo '$HOME'
+$HOME
+```
+```
+bash-3.2$ echo "$HOME"
+/Users/amamian
+```
+```
+bash-3.2$ echo $HOMEE
+bash-3.2$
+```
+```
+bash-3.2$ echo $HOMEE'andthen'$HOME
+andthen/Users/amamian
+```
+```
+bash-3.2$ echo $HOMEE 'andthen' $HOME
+andthen /Users/amamian
+```
+```
+bash-3.2$ echo $$
+23298 [current pid]
+```
+```
+bash-3.2$ echo $
+$
+```
+```
+bash-3.2$ echo $$$
+23298$
+```
+```
+bash-3.2$ echo $$$$
+2329823298
+```
+
+valid chars that env var can
+                             -consist of and can begin with: upper/lowercase letters, underscores
+                             -consist of                   : numbers
+
+Double expansions do not take place:
+```
+bash-3.2$ tar_tar='$tur'
+bash-3.2$ echo $tar_tar
+$tur
+```
+
+If heredoc is non-quoted, then env vars inside of it are ALWAYS expanded, no matter whether they themselves are quoted or not:
+```
+bash-3.2$ cat << END
+> $HOME
+> END
+/Users/amamian
+```
+```
+bash-3.2$ cat << END
+> "$HOME"
+> END
+"/Users/amamian"
+```
+```
+bash-3.2$ cat << END
+> '$HOME'
+> END
+'/Users/amamian'
+```
+</p>
+</details>
