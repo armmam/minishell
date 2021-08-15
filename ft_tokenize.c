@@ -18,7 +18,7 @@ int		ft_envlen(char *line)
 //
 // has to spot unclosed quotes
 //
-// anything in double brackets is not executed and its return status is set to false (e.g. `((pwd)) && ls` doesn't print out anything)
+// anything in double parentheses is not executed and its return status is set to false (e.g. `((pwd)) && ls` doesn't print out anything)
 //
 // execution stops as soon as the global state is true or false (e.g. `pwd || ls` only executes `pwd`, `((pwd)) && ls` doesn't print out anything)
 //
