@@ -1,11 +1,33 @@
 ## ft_tokenize
 The naïve approach: use space symbols as delimiters while treating several successive space symbols as one delimiter
 
-Improvement: treat spaces as valid characters for everything after `echo` and before another command
-
-Improvement: treat quotes:
+Improvement: treat quotes: everything between them is one token
  - `'`: remove them
  - `"`: remove them while expanding variables starting with `$`
+
+<details>
+<summary><tt>'</tt> bash-inputting</summary>
+<p>
+
+```
+bash-3.2$ echo '      hi there' '     and this as well'
+      hi there      and this as well
+```
+
+</p>
+</details>
+
+<details>
+<summary><tt>"</tt> bash-inputting</summary>
+<p>
+
+```
+bash-3.2$ " blah $HOME hi" blah
+bash:  blah /Users/amamian hi: No such file or directory
+```
+
+</p>
+</details>
 
 `ft_tokenize` shouldn't deal with boolean operators and parentheses, it should treat `(` as invalid input
 
@@ -22,7 +44,8 @@ bash-3.2$ echo "blah 'blah"
 blah 'blah
 bash-3.2$ echo "blah 'blah"'
 > 
-bash-3.2$
+bash-3.2$ 'echo'""
+
 ```
 Keep track of the number of quotes with `s_quotes` and `d_quotes`. Then, if `'` (`"`) is encountered, increment `s_quotes` (`d_quotes`) and stop paying attention to `"`s (`'`s) as long as another `'` (`"`) is not encountered. If, by the time `line` is over, if the value of either of `s_quotes` and `d_quotes` is odd, then the input is invalid.
 
