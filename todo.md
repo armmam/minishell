@@ -1,7 +1,13 @@
 ## ft_tokenize
 The naïve approach: use space symbols as delimiters while treating several successive space symbols as one delimiter
 
-Improvement: treat quotes: remove them
+Improvement: treat spaces as valid characters for everything after `echo` and before another command
+
+Improvement: treat quotes:
+ - `'`: remove them
+ - `"`: remove them while expanding variables starting with `$`
+
+`ft_tokenize` shouldn't deal with boolean operators and parentheses, it should treat `(` as invalid input
 
 ## Skip invalid inputs
 Count the number of quotes, if odd then print out "Invalid input" and wait for the next input
@@ -21,7 +27,7 @@ bash-3.2$
 Keep track of the number of quotes with `s_quotes` and `d_quotes`. Then, if `'` (`"`) is encountered, increment `s_quotes` (`d_quotes`) and stop paying attention to `"`s (`'`s) as long as another `'` (`"`) is not encountered. If, by the time `line` is over, if the value of either of `s_quotes` and `d_quotes` is odd, then the input is invalid.
 
 ## How to handle boolean operators and parentheses
-`minishell`'s command execution logic has to modified so that execution of commands is made recursively based on boolean operators present in `line` provided to `minishell`.
+`minishell`'s command execution logic has to be modified so that execution of commands is made recursively based on boolean operators present in `line` provided to `minishell`.
 
 Pseudocode of how it should look like:
 ```
@@ -47,7 +53,8 @@ Treat expressions with more than two boolean operators as follows:
 	          (C) && (D)
 ```
 
-`find a boolean operator`: first try to find a boolean operator outside of parentheses by skipping expressions in parentheses: `paren_num++` whenever `(` is encoutered, `paren_num--` whenever `)` is encountered; stop as soon as `paren_num` is `0` and any boolean expression is encountered
+### Find a boolean operator
+First try to find a boolean operator outside of parentheses by skipping expressions in parentheses: `paren_num++` whenever `(` is encoutered, `paren_num--` whenever `)` is encountered; stop as soon as `paren_num` is `0` and any boolean expression is encountered
 
 
 
