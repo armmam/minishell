@@ -25,17 +25,23 @@ int		ft_envlen(char *line)
 // if `echo`, then everything is treated as just one big argument
 char	**ft_tokenize(char *line)
 {
-	size_t	i, len;
-	int		arg; // flag: 1 if we're inside of a command's argument
+	size_t	i, j, len;
+	int		arg, echo; // flags: arg:  1 if we're inside of a command's argument
 
 
 	len = ft_strlen(line);
 	i == 0;
 	while (i < len)
 	{
-		if (ft_isspace(line[i]) &&)
+		if (ft_isspace(line[i]))
 			continue ;
 		i++;
+		if (line[i] == '\'')
+		{
+			j = i + 1;
+			while (line[j] != '\'')
+				j++;
+		}
 	}
 
 	//
