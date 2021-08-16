@@ -76,9 +76,7 @@ int		ft_extracttoken(const char *line, char **token)
 // execution stops as soon as the global state is true or false (e.g. `pwd || ls` only executes `pwd`, `((pwd)) && ls` doesn't print out anything)
 char	**ft_tokenize(const char *line)
 {
-	size_t	i, j, len;
-	int		arg, echo; // flags: arg:  1 if we're inside of a command's argument
-	//char	*match; // pointer to a closing quote
+	size_t	i;
 	char	*token;
 	t_dmtx	*tokens;
 
@@ -90,29 +88,6 @@ char	**ft_tokenize(const char *line)
 		ft_dmtxpushback(tokens, token);
 	}
 	return (tokens->ptr);
-
-	// len = ft_strlen(line);
-	// i == 0;
-	// while (i < len)
-	// {
-	// 	if (ft_isspace(line[i]))
-	// 		continue ;
-	// 	i++;
-	// 	if (line[i] == '\'')
-	// 	{
-	// 		match = ft_strchr(line[i + 1], '\'');
-	// 		if (match)
-	// 		{
-	// 			j = match - line;
-	// 		}
-	// 		j = i + 1;
-	// 		while (line[j] != '\'')
-	// 			j++;
-	// 	}
-	// }
-
-	//
-	return (NULL);
 }
 
 // takes a string and substitutes every environ variable encountered. frees the original string, allocates memory
