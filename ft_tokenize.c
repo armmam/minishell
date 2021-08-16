@@ -12,37 +12,104 @@ int		ft_envlen(char *line)
 	return (i);
 }
 
+/*
+ * this function replaces two lines in ft_extracttoken:
+ * tmp = ft_substr(line, i, j - i + 1);
+ * *token = ft_strjoinsafe(token, &tmp);
+*/
+void	ft_appendtoken(char **token, char *new, size_t len)
+{
+	char	*tmp;
+
+	tmp = ft_substr(new, 0, len);
+	*token = ft_strjoinsafe(token, &tmp);
+}
+
+/*
+ * assigns the first token in `line` to `token`
+ * returns the index of the first char in `line` after `token`
+ */
+int		ft_extracttoken(const char *line, char **token)
+{
+	size_t	i, j;
+	char	*tmp, *match;
+
+	i = 0; // index of the first char in the part of token about to be appended to `token`
+	j = 0; // index of the current char
+	tmp = NULL;
+	*token = ft_strdup("");
+	while (!ft_isspace(line[j]) && line[j])
+	{
+		if (line[j] != '\'' && line[j] != '\"' && !ft_isspace(line[j + 1]) && line[j + 1]) // no weird stuff is about to be encountered
+			 ;
+		else if (ft_isspace(line[j + 1]) || !line[j + 1]) // space or \0 is about to be encountered, append the last part of token to `token`
+			ft_appendtoken(token, line[i], j - i + 1);
+		else // a quote has been encountered (and it's not the very last char in `line`)
+		{
+			tmp = ft_strchr(&line[j + 1], line[j]); // try to find a closing quote
+			if (tmp) // found a closing quote
+			{
+				ft_appendtoken(token, line[i], j - i); // first safe everything (that was not already saved) up to the quote (not including) into `token`
+				i = j + 1; // update the beginning of the part of token about to be appended to `token` (set it to the first char after the opening quote)
+				j = (tmp - 1) - line; // index of the char before the closing quote
+				tmp = ft_substr(line, i, j - i + 1); // extract everything between quotes
+				if (line[j + 1] == '\"') // if a double quote has been encountered
+					tmp = ft_refineline(tmp); // then expand environment variables
+				*token = ft_strjoinsafe(token, &tmp); // append everything between quotes to `token`
+				i = j + 2; // index of the char after the closing quote
+				j = i;
+				continue ;
+			}
+			// else, if didn't find a closing quote, treat it as a regular char, i.e. just skip it and later append to `token`
+		}
+		j++;
+	}
+	return (j);
+}
+
 // PLEASE MERGE THIS ONE WITH ft_parsecommands SO YOU'RE ABLE TO CORRECTLY
 // REMOVE ()S AND SET RESPECTIVE COMMAND'S cond FIELD.
 // removes ""s, ()s and other trash, uses ft_refineline on the arguments of commands
 //
-// has to spot unclosed quotes
-//
 // anything in double parentheses is not executed and its return status is set to false (e.g. `((pwd)) && ls` doesn't print out anything)
 //
 // execution stops as soon as the global state is true or false (e.g. `pwd || ls` only executes `pwd`, `((pwd)) && ls` doesn't print out anything)
-//
-// if `echo`, then everything is treated as just one big argument
-char	**ft_tokenize(char *line)
+char	**ft_tokenize(const char *line)
 {
 	size_t	i, j, len;
 	int		arg, echo; // flags: arg:  1 if we're inside of a command's argument
+	//char	*match; // pointer to a closing quote
+	char	*token;
+	t_dmtx	*tokens;
 
-
-	len = ft_strlen(line);
-	i == 0;
-	while (i < len)
+	tokens = ft_dmtxnew(0);
+	i = 0;
+	while (line[i])
 	{
-		if (ft_isspace(line[i]))
-			continue ;
-		i++;
-		if (line[i] == '\'')
-		{
-			j = i + 1;
-			while (line[j] != '\'')
-				j++;
-		}
+		i += ft_extracttoken(line[i], &token);
+		ft_dmtxpushback(tokens, token);
 	}
+	return (tokens->ptr);
+
+	// len = ft_strlen(line);
+	// i == 0;
+	// while (i < len)
+	// {
+	// 	if (ft_isspace(line[i]))
+	// 		continue ;
+	// 	i++;
+	// 	if (line[i] == '\'')
+	// 	{
+	// 		match = ft_strchr(line[i + 1], '\'');
+	// 		if (match)
+	// 		{
+	// 			j = match - line;
+	// 		}
+	// 		j = i + 1;
+	// 		while (line[j] != '\'')
+	// 			j++;
+	// 	}
+	// }
 
 	//
 	return (NULL);
