@@ -2,8 +2,11 @@
 The naïve approach: use space symbols as delimiters while treating several successive space symbols as one delimiter
 
 Improvement: treat quotes: everything between them is one token
- - `'`: remove them
- - `"`: remove them while expanding variables starting with `$`
+ - upon encountering a quote, try to find the closing quote after it
+   - if failed, then treat this quote as a regular character
+   - if successful, then treat everything between them as one token
+     - `'`: just remove the quotes
+     - `"`: remove the quotes while expanding variables starting with `$`
 
 <details>
 <summary><tt>'</tt> bash-inputting</summary>
@@ -12,6 +15,11 @@ Improvement: treat quotes: everything between them is one token
 ```
 bash-3.2$ echo '      hi there' '     and this as well'
       hi there      and this as well
+```
+```
+bash-3.2$ touch blah'   'and'   'this.txt
+bash-3.2$ ls
+blah   and   this.txt
 ```
 
 </p>
@@ -30,24 +38,6 @@ bash:  blah /Users/amamian hi: No such file or directory
 </details>
 
 `ft_tokenize` shouldn't deal with boolean operators and parentheses, it should treat `(` as invalid input
-
-## Skip invalid inputs
-Count the number of quotes, if odd then print out "Invalid input" and wait for the next input
-
-### How to count the number of quotes
-```
-bash-3.2$ echo 'blah "blah'"
-> 
-bash-3.2$ echo 'blah "blah'
-blah "blah
-bash-3.2$ echo "blah 'blah"
-blah 'blah
-bash-3.2$ echo "blah 'blah"'
-> 
-bash-3.2$ 'echo'""
-
-```
-Keep track of the number of quotes with `s_quotes` and `d_quotes`. Then, if `'` (`"`) is encountered, increment `s_quotes` (`d_quotes`) and stop paying attention to `"`s (`'`s) as long as another `'` (`"`) is not encountered. If, by the time `line` is over, if the value of either of `s_quotes` and `d_quotes` is odd, then the input is invalid.
 
 ## How to handle boolean operators and parentheses
 `minishell`'s command execution logic has to be modified so that execution of commands is made recursively based on boolean operators present in `line` provided to `minishell`.
@@ -161,5 +151,31 @@ bash-3.2$ cat << END
 > END
 '/Users/amamian'
 ```
+</p>
+</details>
+
+
+<details>
+<summary>Irrelevant notes</summary>
+<p>
+
+## Skip invalid inputs
+Count the number of quotes, if odd then print out "Invalid input" and wait for the next input
+
+### How to count the number of quotes
+```
+bash-3.2$ echo 'blah "blah'"
+> 
+bash-3.2$ echo 'blah "blah'
+blah "blah
+bash-3.2$ echo "blah 'blah"
+blah 'blah
+bash-3.2$ echo "blah 'blah"'
+> 
+bash-3.2$ 'echo'""
+
+```
+Keep track of the number of quotes with `s_quotes` and `d_quotes`. Then, if `'` (`"`) is encountered, increment `s_quotes` (`d_quotes`) and stop paying attention to `"`s (`'`s) as long as another `'` (`"`) is not encountered. If, by the time `line` is over, if the value of either of `s_quotes` and `d_quotes` is odd, then the input is invalid.
+
 </p>
 </details>
