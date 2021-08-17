@@ -24,17 +24,84 @@ int	ft_cmds(char **tokens)
 	return (count);
 }
 
+/*
+ * returns 0 upon success, 1 upon failure
+ */
+int		ft_parseheredoc(char ***tokens, char **heredoc)
+{
+	*tokens += sizeof(char *);
+	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // << is the last token in the command
+	{
+		ft_error(*(*tokens - sizeof(char *)), "syntax error");
+		return (NULL);
+	}
+	if (*heredoc) // if already encountered any heredocs
+		free(*heredoc); // then free memory allocated for it
+	*heredoc = ft_strdup(**tokens);
+}
+
+/*
+ * returns 0 upon success, 1 upon failure
+ */
+int		ft_parsefiletoken(char ***tokens, int *cmd_fd, int open_flag)
+{
+	int		fd;
+
+	*tokens += sizeof(char *);
+	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // </>>/> is the last token in the command
+	{
+		ft_error(*(*tokens - sizeof(char *)), "syntax error");
+		return (1);
+	}
+	if (*cmd_fd != 0) // if already encoutered </>>/> before for this command
+		close(*cmd_fd);
+	if ((fd = open(**tokens, open_flag)) == -1)
+	{
+		perror("minishell");
+		return (1);
+	}
+	*cmd_fd = fd;
+	return (0);
+}
+
 // puts char **args into given command's args field;
 // opens the files given as <, > or >> with open()
 // and writes them into the in and out fields (don't
 // forget that if multiple outfiles are received,
 // they have to be opened and closed except for the last
 // one. store only the last one)
-// parses 'heredoc' if applicable; else assigns NULL to it
-void	ft_extractarguments(t_cmd *cmd, char **tokens)
+// parses 'heredoc' if applicable; else assigns NULL to it -- it's null because of ft_calloc
+//
+// returns a pointer to the next command in `tokens`
+char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 {
-	(void)cmd;
-	(void)tokens;
+	int		err;
+	t_dmtx	*args;
+
+	args = ft_dmtxnew(0);
+	err = 0;
+	while (*tokens != NULL && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
+	{
+		if ((*tokens)[0] == '<' && (*tokens)[1] == '<' && (*tokens)[2] == '\0') // if encountered <<
+			err = ft_parseheredoc(&tokens, &(cmd->heredoc));
+		else if ((*tokens)[0] == '>' && (*tokens)[1] == '\0') // if encoutered >
+			err = ft_parsefiletoken(&tokens, &(cmd->out), O_WRONLY|O_CREAT);
+		else if ((*tokens)[0] == '>' && (*tokens)[1] == '>' && (*tokens)[2] == '\0') // if encoutered >>
+			err = ft_parsefiletoken(&tokens, &(cmd->out), O_APPEND|O_CREAT);
+		else if ((*tokens)[0] == '<' && (*tokens)[1] == '\0') // if encoutered <
+			err = ft_parsefiletoken(&tokens, &(cmd->in), O_RDONLY);
+		else // encountered an arg
+			ft_dmtxpushback(args, ft_strdup(*tokens));
+		if (err)
+		{
+			ft_dmtxclear(args);
+			return (NULL);
+		}
+		tokens += sizeof(char *);
+	}
+	ft_dmtxpushback(args, NULL);
+	cmd->args = args->ptr;
+	return (args);
 }
 
 t_cmd	*ft_parsecommands(char **tokens)
@@ -49,7 +116,12 @@ t_cmd	*ft_parsecommands(char **tokens)
 	{
 		commands[i].in = 0;
 		commands[i].out = 1;
-		ft_extractarguments(&commands[i], tokens);
+		commands[i].i = i;
+		if (!(tokens = ft_extractarguments(&commands[i], tokens)))
+		{
+			// free commands and close FDs
+			return (commands); // error while parsing tokens, return an error and wait for another input
+		}
 		if (i)
 		{
 			pipe(pipefd);
@@ -72,13 +144,18 @@ void	ft_interpret(char *line)
 	int		i;
 	int		j;
 	t_cmd	*commands;
+	char	**tokens;
 
 
 	// TAKE CARE OF THIS COMMENT BLOCK AND UNCOMMENT IT
 	// ! treatment of special characters is needed !
-	// tokens = ft_tokenize(line);
-	// g_data.cmds = ft_cmds(tokens);
-	// commands = ft_parsecommands(tokens);
+	tokens = ft_tokenize(line);
+	g_data.cmds = ft_cmds(tokens);
+	if (!(commands = ft_parsecommands(tokens)))
+	{
+		// ft_freecomands(commands); // ALSO CLOSE FDS
+		return ;
+	}
 
 
 	g_data.prcs = g_data.cmds - ft_isbuiltin(commands[0].args[0]);
