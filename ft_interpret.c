@@ -43,7 +43,7 @@ t_cmd	*ft_parsecommands(char **tokens)
 	t_cmd	*commands;
 	int		pipefd[2];
 
-	commands = malloc(sizeof(t_cmd) * g_data.cmds);
+	commands = ft_calloc(g_data.cmds, sizeof(t_cmd));
 	i = 0;
 	while (i < g_data.cmds)
 	{
@@ -82,7 +82,7 @@ void	ft_interpret(char *line)
 
 
 	g_data.prcs = g_data.cmds - ft_isbuiltin(commands[0].args[0]);
-	g_data.family = malloc(sizeof(pid_t) * g_data.prcs);
+	g_data.family = ft_calloc(g_data.prcs, sizeof(pid_t));
 	i = 0;
 	j = 0;
 	while (i < g_data.cmds)

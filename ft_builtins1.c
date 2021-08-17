@@ -14,7 +14,7 @@ void	ft_refreshpwds(char *oldpwd)
 	char	**exportargs;
 	char	*pwd;
 
-	exportargs = malloc(sizeof(char *) * 3);
+	exportargs = ft_calloc(3, sizeof(char *));
 	export.args = exportargs;
 	pwd = NULL;
 	getcwd(pwd, 0);
@@ -84,7 +84,7 @@ void	ft_addmatrixrow(char ***matrix, char *row)
 
 	if (!matrix || !(*matrix))
 		return ;
-	newmatrix = malloc((ft_matrixlen(*matrix) + 2) * sizeof(char *));
+	newmatrix = ft_calloc((ft_matrixlen(*matrix) + 2), sizeof(char *));
 	i = 0;
 	while (i < ft_matrixlen(*matrix))
 	{
@@ -105,7 +105,7 @@ void	ft_removematrixrow(char ***matrix, char *row)
 
 	if (!matrix || !(*matrix))
 		return ;
-	newmatrix = malloc(ft_matrixlen(*matrix) * sizeof(char *));
+	newmatrix = ft_calloc(ft_matrixlen(*matrix), sizeof(char *));
 	i = 0;
 	j = 0;
 	while (i < ft_matrixlen(*matrix))
@@ -155,7 +155,7 @@ char	*ft_isdefined(char *variable)
 	i = 0;
 	while (variable[i] && variable[i] != '=')
 		i++;
-	name = malloc(sizeof(char) * (i + 1));
+	name = ft_calloc((i + 1), sizeof(char));
 	i = 0;
 	while (variable[i] && variable[i] != '=')
 	{
@@ -211,7 +211,7 @@ int	ft_export(t_cmd *cmd)
 				ft_addmatrixrow(&g_data.env, cmd->args[i]);
 			else							// if present, overwrite
 			{
-				unsetargs = malloc(sizeof(char *) * 3);
+				unsetargs = ft_calloc(3, sizeof(char *));
 				unsetargs[1] = cmd->args[i];
 				unsetargs[2] = NULL;
 				unset.args = unsetargs;
