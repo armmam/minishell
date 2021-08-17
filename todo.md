@@ -39,6 +39,19 @@ bash:  blah /Users/amamian hi: No such file or directory
 
 `ft_tokenize` shouldn't deal with boolean operators and parentheses, it should treat `(` as invalid input
 
+<details>
+<summary>Run these tests</summary>
+<p>
+
+```
+minishell$ echo''two three
+minishell$ echo"$HOME "two three
+minishell$     "e"cho hello
+```
+
+</p>
+</details>
+
 ## How to handle boolean operators and parentheses
 `minishell`'s command execution logic has to be modified so that execution of commands is made recursively based on boolean operators present in `line` provided to `minishell`.
 
