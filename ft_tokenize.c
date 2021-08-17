@@ -42,6 +42,18 @@ int		ft_extracttoken(const char *line, char **token)
 		i++;
 	while (!ft_isspace(line[j]) && line[j])
 	{
+		if ((line[j] == '<' || line[j] == '>') && (j != i || (*token)[0] != '\0')) // encountered </> but also need to add something encountered before to `token` OR already added something to `token`
+		{
+			ft_appendtoken(token, &line[i], j - i); // append whatever has not been appended yet
+			return (j); // </> will be included in the next call to this function, not this one
+		}
+		else if (line[j] == '<' || line[j] == '>') // encountered </> and haven't added anything to `token` yet
+		{ // here we assume that i == j
+			if ((line[j] == '<' && line[j + 1] == '<') || (line[j] == '>' && line[j + 1] == '>'))
+				j++;
+			ft_appendtoken(token, &line[i], j - i + 1);
+			return (j + 1);
+		}
 		if (line[j] != '\'' && line[j] != '\"' && !ft_isspace(line[j + 1]) && line[j + 1]) // no weird stuff is about to be encountered
 			 ;
 		else if (ft_isspace(line[j + 1]) || !line[j + 1]) // space or \0 is about to be encountered, append the last part of token to `token`
