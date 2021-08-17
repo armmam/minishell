@@ -24,7 +24,8 @@ void	ft_appendtoken(char **token, char *new, size_t len)
 	tmp = ft_substr(new, 0, len);
 	*token = ft_strjoinsafe(token, &tmp);
 }
-
+// ""
+// echo 
 /*
  * assigns the first token in `line` to `token`
  * returns the index of the first char in `line` after `token`
@@ -38,18 +39,20 @@ int		ft_extracttoken(const char *line, char **token)
 	j = 0; // index of the current char
 	tmp = NULL;
 	*token = ft_strdup("");
+	while (ft_isspace(line[j++]))
+		i++;
 	while (!ft_isspace(line[j]) && line[j])
 	{
 		if (line[j] != '\'' && line[j] != '\"' && !ft_isspace(line[j + 1]) && line[j + 1]) // no weird stuff is about to be encountered
 			 ;
 		else if (ft_isspace(line[j + 1]) || !line[j + 1]) // space or \0 is about to be encountered, append the last part of token to `token`
-			ft_appendtoken(token, line[i], j - i + 1);
+			ft_appendtoken(token, &line[i], j - i + 1);
 		else // a quote has been encountered (and it's not the very last char in `line`)
 		{
 			tmp = ft_strchr(&line[j + 1], line[j]); // try to find a closing quote
 			if (tmp) // found a closing quote
 			{
-				ft_appendtoken(token, line[i], j - i); // first safe everything (that was not already saved) up to the quote (not including) into `token`
+				ft_appendtoken(token, &line[i], j - i); // first safe everything (that was not already saved) up to the quote (not including) into `token`
 				i = j + 1; // update the beginning of the part of token about to be appended to `token` (set it to the first char after the opening quote)
 				j = (tmp - 1) - line; // index of the char before the closing quote
 				tmp = ft_substr(line, i, j - i + 1); // extract everything between quotes
@@ -66,6 +69,11 @@ int		ft_extracttoken(const char *line, char **token)
 	}
 	return (j);
 }
+// token: "echo"
+// tmp: "e"
+// minishell$ echo''two three
+// minishell$ echo"$HOME "two three
+// minishell$     "e"cho hello
 
 // PLEASE MERGE THIS ONE WITH ft_parsecommands SO YOU'RE ABLE TO CORRECTLY
 // REMOVE ()S AND SET RESPECTIVE COMMAND'S cond FIELD.
@@ -84,7 +92,7 @@ char	**ft_tokenize(const char *line)
 	i = 0;
 	while (line[i])
 	{
-		i += ft_extracttoken(line[i], &token);
+		i += ft_extracttoken(&line[i], &token);
 		ft_dmtxpushback(tokens, token);
 	}
 	return (tokens->ptr);
