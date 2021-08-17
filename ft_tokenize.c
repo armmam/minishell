@@ -24,8 +24,7 @@ void	ft_appendtoken(char **token, char *new, size_t len)
 	tmp = ft_substr(new, 0, len);
 	*token = ft_strjoinsafe(token, &tmp);
 }
-// ""
-// echo 
+
 /*
  * assigns the first token in `line` to `token`
  * returns the index of the first char in `line` after `token`
@@ -69,11 +68,6 @@ int		ft_extracttoken(const char *line, char **token)
 	}
 	return (j);
 }
-// token: "echo"
-// tmp: "e"
-// minishell$ echo''two three
-// minishell$ echo"$HOME "two three
-// minishell$     "e"cho hello
 
 // PLEASE MERGE THIS ONE WITH ft_parsecommands SO YOU'RE ABLE TO CORRECTLY
 // REMOVE ()S AND SET RESPECTIVE COMMAND'S cond FIELD.
