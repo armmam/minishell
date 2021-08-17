@@ -89,6 +89,7 @@ char	**ft_tokenize(const char *line)
 		i += ft_extracttoken(&line[i], &token);
 		ft_dmtxpushback(tokens, token);
 	}
+	ft_dmtxpushback(tokens, NULL); // null-terminate the matrix
 	return (tokens->ptr);
 }
 
