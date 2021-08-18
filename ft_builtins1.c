@@ -146,21 +146,21 @@ void	ft_printenvironment(int fd)
 	int	j;
 
 	i = 0;
-	while (g_data.env[i])
+	while (g_data.env->ptr[i])
 	{
 		ft_putstr_fd("declare -x ", fd);
 		j = 0;
-		while (g_data.env[i][j])
+		while (g_data.env->ptr[i][j])
 		{
-			ft_putchar_fd(g_data.env[i][j], fd);
-			if (g_data.env[i][j++] == '=')
+			ft_putchar_fd(g_data.env->ptr[i][j], fd);
+			if (g_data.env->ptr[i][j++] == '=')
 				break ;
 		}
-		if (g_data.env[i][j - 1] == '=')
+		if (g_data.env->ptr[i][j - 1] == '=')
 		{
 			ft_putstr_fd("\"", fd);
-			while (g_data.env[i][j])
-				ft_putchar_fd(g_data.env[i][j++], fd);
+			while (g_data.env->ptr[i][j])
+				ft_putchar_fd(g_data.env->ptr[i][j++], fd);
 			ft_putstr_fd("\"\n", fd);
 		}
 		i++;
@@ -229,7 +229,7 @@ int	ft_export(t_cmd *cmd)
 				continue ;
 			}
 			if (!ft_isdefined(cmd->args[i])) 	// not present, just add
-				ft_addmatrixrow(&g_data.env, cmd->args[i]);
+				ft_dmtxpushback(g_data.env, cmd->args[i]);
 			else							// if present, overwrite
 			{
 				unsetargs = ft_calloc(3, sizeof(char *));
@@ -237,7 +237,7 @@ int	ft_export(t_cmd *cmd)
 				unsetargs[2] = NULL;
 				unset.args = unsetargs;
 				ft_unset(&unset);
-				ft_addmatrixrow(&g_data.env, cmd->args[i]);
+				ft_dmtxpushback(g_data.env, cmd->args[i]);
 				ret = 0;
 			}
 			i++;
