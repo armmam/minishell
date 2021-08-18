@@ -106,13 +106,13 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 	err = 0;
 	while (*tokens != NULL && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
 	{
-		if ((*tokens)[0] == '<' && (*tokens)[1] == '<' && (*tokens)[2] == '\0') // if encountered <<
+		if (ft_strlen(*tokens) == 2 && !ft_strncmp(*tokens, "<<", 2)) // if encountered <<
 			err = ft_parseheredoc(&tokens, &(cmd->heredoc));
-		else if ((*tokens)[0] == '>' && (*tokens)[1] == '\0') // if encoutered >
+		else if (ft_strlen(*tokens) == 1 && !ft_strncmp(*tokens, ">", 1)) // if encoutered >
 			err = ft_parsefiletoken(&tokens, &(cmd->out), O_WRONLY|O_CREAT);
-		else if ((*tokens)[0] == '>' && (*tokens)[1] == '>' && (*tokens)[2] == '\0') // if encoutered >>
+		else if (ft_strlen(*tokens) == 2 && !ft_strncmp(*tokens, ">>", 1)) // if encoutered >>
 			err = ft_parsefiletoken(&tokens, &(cmd->out), O_APPEND|O_CREAT);
-		else if ((*tokens)[0] == '<' && (*tokens)[1] == '\0') // if encoutered <
+		else if (ft_strlen(*tokens) == 1 && !ft_strncmp(*tokens, "<", 1)) // if encoutered <
 			err = ft_parsefiletoken(&tokens, &(cmd->in), O_RDONLY);
 		else // encountered an arg
 			ft_dmtxpushback(args, ft_strdup(*tokens));
