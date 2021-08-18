@@ -1,11 +1,32 @@
 #include "minishell.h"
 
-// man echo :)
+// can this command ever exit with status=1?
 int	ft_echo(t_cmd *cmd)
 {
-	//
-	(void)cmd;
-	return (1);
+	char	**arg;
+	int		nl; // newline
+
+	arg = (cmd->args) + 1;
+	nl = 1;
+	if (ft_strlen(*arg) == 2 && !ft_strncmp(*arg, "-n", 2))
+	{
+		nl = 0;
+		arg++;
+	}
+	if (!*arg)
+	{
+		ft_putstr_fd("\n", cmd->out);
+		return (0);
+	}
+	while (*arg)
+	{
+		ft_putstr_fd((*arg)++, cmd->out);
+		if (*arg)
+			ft_putstr_fd(" ", cmd->out);
+	}
+	if (nl)
+		ft_putstr_fd("\n", cmd->out);
+	return (0);
 }
 
 void	ft_refreshpwds(char *oldpwd)
