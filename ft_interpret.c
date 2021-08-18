@@ -53,7 +53,7 @@ void	ft_freecomands(t_cmd **cmds)
  */
 int		ft_parseheredoc(char ***tokens, char **heredoc)
 {
-	*tokens += sizeof(char *);
+	(*tokens)++;
 	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // << is the last token in the command
 	{
 		ft_error(*(*tokens - sizeof(char *)), "syntax error");
@@ -71,7 +71,7 @@ int		ft_parsefiletoken(char ***tokens, int *cmd_fd, int open_flag)
 {
 	int		fd;
 
-	*tokens += sizeof(char *);
+	(*tokens)++;
 	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // </>>/> is the last token in the command
 	{
 		ft_error(*(*tokens - sizeof(char *)), "syntax error");
@@ -121,7 +121,7 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 			ft_dmtxclear(args);
 			return (NULL);
 		}
-		tokens += sizeof(char *);
+		tokens++;
 	}
 	ft_dmtxpushback(args, NULL);
 	cmd->args = args->ptr;
