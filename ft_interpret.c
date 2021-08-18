@@ -134,7 +134,7 @@ t_cmd	*ft_parsecommands(char **tokens)
 	t_cmd	*commands;
 	int		pipefd[2];
 
-	commands = ft_calloc(g_data.cmds, sizeof(t_cmd));
+	commands = ft_calloc(g_data.cmds, sizeof(t_cmd) + 1); // +1 so that the array of `t_cmd`s is null-terminated
 	i = 0;
 	while (i < g_data.cmds)
 	{
