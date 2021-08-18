@@ -25,6 +25,30 @@ int	ft_cmds(char **tokens)
 }
 
 /*
+ * frees commands and close FDs
+ */
+void	ft_freecomands(t_cmd **cmds)
+{
+	t_cmd	*ptr;
+
+	ptr = *cmds;
+	while (ptr)
+	{
+		if ((ptr)->in != 0)
+			close((ptr)->in);
+		if ((ptr)->out != 1 && (ptr)->out != 0)
+			close((ptr)->out);
+		if ((ptr)->heredoc)
+			free((ptr)->heredoc);
+		if ((ptr)->args)
+			ft_freematrix((ptr)->args);
+		ptr++;
+	}
+	free((*cmds));
+	*cmds = NULL;
+}
+
+/*
  * returns 0 upon success, 1 upon failure
  */
 int		ft_parseheredoc(char ***tokens, char **heredoc)
@@ -117,10 +141,10 @@ t_cmd	*ft_parsecommands(char **tokens)
 		commands[i].in = 0;
 		commands[i].out = 1;
 		commands[i].i = i;
-		if (!(tokens = ft_extractarguments(&commands[i], tokens)))
+		if (!(tokens = ft_extractarguments(&commands[i], tokens))) // error while parsing tokens
 		{
-			// free commands and close FDs
-			return (commands); // error while parsing tokens, return an error and wait for another input
+			ft_freecomands(&commands); // free commands and close FDs
+			return (NULL);
 		}
 		if (i)
 		{
@@ -153,7 +177,7 @@ void	ft_interpret(char *line)
 	g_data.cmds = ft_cmds(tokens);
 	if (!(commands = ft_parsecommands(tokens)))
 	{
-		// ft_freecomands(commands); // ALSO CLOSE FDS
+		ft_freematrix(tokens);
 		return ;
 	}
 
@@ -188,7 +212,8 @@ void	ft_interpret(char *line)
 		waitpid(g_data.family[i++], &g_data.status, 0);
 	
 	// free stuff
-	// ft_freecomands(commands); // ALSO CLOSE FDS
+	ft_freematrix(tokens);
+	ft_freecomands(commands); // also closes FDs
 	if (g_data.family)
 	{
 		free(g_data.family);
