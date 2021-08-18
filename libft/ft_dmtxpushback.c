@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:13:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/04 18:49:57 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/18 17:46:47 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ void			ft_dmtxpushback(t_dmtx *dmtx, char *item)
 	size_t	new_cap;
 	char	*new_ptr;
 
+	if (!dmtx || !item)
+		return ;
 	/*
 	 * replace the underlying matrix with one with more capacity if dmtx->ptr
 	 * doesn't have enough capacity

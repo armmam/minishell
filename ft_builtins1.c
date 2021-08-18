@@ -105,7 +105,7 @@ void	ft_addmatrixrow(char ***matrix, char *row)
 
 	if (!matrix || !(*matrix))
 		return ;
-	newmatrix = ft_calloc((ft_matrixlen(*matrix) + 2), sizeof(char *));
+	newmatrix = ft_calloc(ft_matrixlen(*matrix) + 2, sizeof(char *));
 	i = 0;
 	while (i < ft_matrixlen(*matrix))
 	{
@@ -176,7 +176,7 @@ char	*ft_isdefined(char *variable)
 	i = 0;
 	while (variable[i] && variable[i] != '=')
 		i++;
-	name = ft_calloc((i + 1), sizeof(char));
+	name = ft_calloc(i + 1, sizeof(char));
 	i = 0;
 	while (variable[i] && variable[i] != '=')
 	{
