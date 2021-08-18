@@ -8,7 +8,7 @@ int	ft_echo(t_cmd *cmd)
 
 	arg = (cmd->args) + 1;
 	nl = 1;
-	if (ft_strlen(*arg) == 2 && !ft_strncmp(*arg, "-n", 2))
+	if (!ft_strcmp(*arg, "-n"))
 	{
 		nl = 0;
 		arg++;
@@ -131,7 +131,7 @@ void	ft_removematrixrow(char ***matrix, char *row)
 	j = 0;
 	while (i < ft_matrixlen(*matrix))
 	{
-		if (ft_strncmp(row, (*matrix)[i], ft_strlen(row)))
+		if (ft_strncmp(row, (*matrix)[i], ft_strlen(row))) // typo: their lengths have to be equal also
 			newmatrix[i] = (*matrix)[j++];
 		i++;
 	}

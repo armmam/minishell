@@ -106,13 +106,13 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 	err = 0;
 	while (*tokens != NULL && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
 	{
-		if (ft_strlen(*tokens) == 2 && !ft_strncmp(*tokens, "<<", 2)) // if encountered <<
+		if (!ft_strcmp(*tokens, "<<"))  // if encountered <<
 			err = ft_parseheredoc(&tokens, &(cmd->heredoc));
-		else if (ft_strlen(*tokens) == 1 && !ft_strncmp(*tokens, ">", 1)) // if encoutered >
+		else if (!ft_strcmp(*tokens, ">"))  // if encoutered >
 			err = ft_parsefiletoken(&tokens, &(cmd->out), O_WRONLY|O_CREAT);
-		else if (ft_strlen(*tokens) == 2 && !ft_strncmp(*tokens, ">>", 1)) // if encoutered >>
+		else if (!ft_strcmp(*tokens, ">>"))  // if encoutered >>
 			err = ft_parsefiletoken(&tokens, &(cmd->out), O_APPEND|O_CREAT);
-		else if (ft_strlen(*tokens) == 1 && !ft_strncmp(*tokens, "<", 1)) // if encoutered <
+		else if (!ft_strcmp(*tokens, "<"))  // if encoutered <
 			err = ft_parsefiletoken(&tokens, &(cmd->in), O_RDONLY);
 		else // encountered an arg
 			ft_dmtxpushback(args, ft_strdup(*tokens));
@@ -230,19 +230,19 @@ int	ft_isbuiltin(char *builtin)
 
 int	ft_convertbuiltin(char *builtin)
 {
-	if (ft_strlen(builtin) == 4 && !ft_strncmp(builtin, "echo", 4))
+	if (!ft_strcmp(builtin, "echo"))
 		return (__echo);
-	else if (ft_strlen(builtin) == 2 && !ft_strncmp(builtin, "cd", 2))
+	else if (!ft_strcmp(builtin, "cd"))
 		return (__cd);
-	else if (ft_strlen(builtin) == 3 && !ft_strncmp(builtin, "pwd", 3))
+	else if (!ft_strcmp(builtin, "pwd"))
 		return (__pwd);
-	else if (ft_strlen(builtin) == 6 && !ft_strncmp(builtin, "export", 6))
+	else if (!ft_strcmp(builtin, "export"))
 		return (__export);
-	else if (ft_strlen(builtin) == 5 && !ft_strncmp(builtin, "unset", 5))
+	else if (!ft_strcmp(builtin, "unset"))
 		return (__unset);
-	else if (ft_strlen(builtin) == 3 && !ft_strncmp(builtin, "env", 3))
+	else if (!ft_strcmp(builtin, "env"))
 		return (__env);
-	else if (ft_strlen(builtin) == 4 && !ft_strncmp(builtin, "exit", 4))
+	else if (!ft_strcmp(builtin, "exit"))
 		return (__exit);
 	return (0);
 }
@@ -323,8 +323,7 @@ void	ft_exec(t_cmd *cmd)
 		while (1)
 		{
 			temp = readline("> ");
-			if (ft_strlen(cmd->heredoc) == ft_strlen(temp)
-				&& !ft_strncmp(temp, cmd->heredoc, ft_strlen(cmd->heredoc)))
+			if (!ft_strcmp(temp, cmd->heredoc))
 			{
 				free(temp);
 				break ;

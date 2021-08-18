@@ -24,7 +24,7 @@ char	*ft_getenv(const char *name)
 		return (NULL);
 	while (g_data.env[i])
 	{
-		if (!ft_strncmp(g_data.env[i], name, ft_strlen((char *) name)))
+		if (!ft_strncmp(g_data.env->ptr[i], name, ft_strlen((char *) name))) // another likely typo
 		{
 			var = g_data.env[i];
 			var += ft_strlen((char *) name) + 1;
