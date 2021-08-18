@@ -360,7 +360,7 @@ void	ft_exec(t_cmd *cmd)
 					free(newpath);
 					i++;
 				}
-				ft_freematrix(&paths);
+				ft_freematrix(paths);
 				ft_error(cmd->args[0], "No such command found");
 			}
 			else
