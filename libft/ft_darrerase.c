@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dmtxerase.c                                     :+:      :+:    :+:   */
+/*   ft_darrerase.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/18 17:43:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/18 19:26:04 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 21:40:50 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,11 @@
  * erase an item from dynamic matrix
  * modifies `len` and leaves `cap` unchanged
  */
-void	ft_dmtxerase(t_dmtx *dmtx, char *item)
+void	ft_darrerase(t_darr *darr, char *item)
 {
 	size_t	i, j, new_len; // i -- index of the resulting mtx, j -- index of the given mtx
 
-	if (!dmtx || !item || !*item)
+	if (!darr || !item || !*item)
 		return ;
 	i = 0;
 	j = 0;
@@ -28,17 +28,17 @@ void	ft_dmtxerase(t_dmtx *dmtx, char *item)
 	 * iterate over the underlying matrix while freeing and skipping all `item`s (j)
 	 * and move the strings that are not equal to `item` to their corresponding position (i)
 	 */
-	while (j < dmtx->len)
+	while (j < darr->len)
 	{
-		if (!ft_strcmp(dmtx->ptr[j], item))
+		if (!ft_strcmp(darr->ptr[j], item))
 		{
-			while (!ft_strcmp(dmtx->ptr[j], item))
+			while (!ft_strcmp(darr->ptr[j], item))
 			{
-				free(dmtx->ptr[j]);
+				free(darr->ptr[j]);
 				j++;
 			}
 		}
-		dmtx->ptr[i] = dmtx->ptr[j];
+		darr->ptr[i] = darr->ptr[j];
 		j++;
 		i++;
 	}
@@ -46,7 +46,7 @@ void	ft_dmtxerase(t_dmtx *dmtx, char *item)
 	 * remember the new `len` and fill the rest of the remaining (between new `len` and old `len) positions with NULL
 	 */
 	new_len = i; // don't count the first NULL after the last valid element in the new mtx as a valid element
-	while (i < dmtx->len)
-		dmtx->ptr[i++] = NULL;
-	dmtx->len = new_len;
+	while (i < darr->len)
+		darr->ptr[i++] = NULL;
+	darr->len = new_len;
 }

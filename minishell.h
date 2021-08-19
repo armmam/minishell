@@ -67,7 +67,7 @@ typedef struct s_env
 	// array of pids of launched processes
 	pid_t	*family;
 	// env vars of the current minishell session
-	t_dmtx	*env;
+	t_darr	*env;
 	// status of the process that was the latest of terminate
 	int		status;
 }				t_env;

@@ -36,12 +36,12 @@ void	test_extracttoken(void)
 
 void	test_tokenize(void)
 {
-	t_dmtx	*expected;
+	t_darr	*expected;
 
-	expected = ft_dmtxnew(10);
-	ft_dmtxpushback(expected, "<<");
-	ft_dmtxpushback(expected, "an");
+	expected = ft_darrnew(10);
+	ft_darrpushback(expected, "<<");
+	ft_darrpushback(expected, "an");
 	TEST_ASSERT_EQUAL_STRING(expected->ptr[0], "<<");
 	TEST_ASSERT_EQUAL_STRING(expected->ptr[1], "an");
-	TEST_ASSERT_EQUAL_STRING_ARRAY(expected->ptr, ft_tokenize("a   <<an    "), 2);
+	TEST_ASSERT_EQUAL_STRING_ARRAY(expected->ptr, ft_tokenize("   <<an    "), 2);
 }

@@ -100,9 +100,9 @@ int		ft_parsefiletoken(char ***tokens, int *cmd_fd, int open_flag)
 char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 {
 	int		err;
-	t_dmtx	*args;
+	t_darr	*args;
 
-	args = ft_dmtxnew(0);
+	args = ft_darrnew(0);
 	err = 0;
 	while (*tokens != NULL && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
 	{
@@ -115,15 +115,15 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 		else if (!ft_strcmp(*tokens, "<"))  // if encoutered <
 			err = ft_parsefiletoken(&tokens, &(cmd->in), O_RDONLY);
 		else // encountered an arg
-			ft_dmtxpushback(args, ft_strdup(*tokens));
+			ft_darrpushback(args, ft_strdup(*tokens));
 		if (err)
 		{
-			ft_dmtxclear(args);
+			ft_darrclear(args);
 			return (NULL);
 		}
 		tokens++;
 	}
-	ft_dmtxpushback(args, NULL);
+	ft_darrpushback(args, NULL);
 	cmd->args = args->ptr;
 	return (args);
 }

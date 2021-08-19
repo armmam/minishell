@@ -229,7 +229,7 @@ int	ft_export(t_cmd *cmd)
 				continue ;
 			}
 			if (!ft_isdefined(cmd->args[i])) 	// not present, just add
-				ft_dmtxpushback(g_data.env, cmd->args[i]);
+				ft_darrpushback(g_data.env, cmd->args[i]);
 			else							// if present, overwrite
 			{
 				unsetargs = ft_calloc(3, sizeof(char *));
@@ -237,7 +237,7 @@ int	ft_export(t_cmd *cmd)
 				unsetargs[2] = NULL;
 				unset.args = unsetargs;
 				ft_unset(&unset);
-				ft_dmtxpushback(g_data.env, cmd->args[i]);
+				ft_darrpushback(g_data.env, cmd->args[i]);
 				ret = 0;
 			}
 			i++;

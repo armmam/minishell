@@ -4,7 +4,7 @@ void	ft_inheritenviron(char **environ)
 {
 	int	i;
 
-	g_data.env = ft_dmtxnew(ft_matrixlen(environ) + 1);
+	g_data.env = ft_darrnew(ft_matrixlen(environ) + 1);
 	i = 0;
 	while (environ[i])
 	{

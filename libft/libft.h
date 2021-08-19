@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/02 19:36:44 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/18 18:12:41 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 21:39:35 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,16 @@ typedef struct s_list
 /*
  * dynamic matrix that can automatically expand when necessary
  * methods:
- *   ft_dmtxnew
- *   ft_dmtxpushback
- *   ft_dmtxclear
+ *   ft_darrnew
+ *   ft_darrpushback
+ *   ft_darrclear
  */
-typedef struct s_dmtx
+typedef struct s_darr
 {
 	char		**ptr;
 	size_t	len;
 	size_t	cap;
-}				t_dmtx;
+}				t_darr;
 
 int				ft_strlen(char *str);
 int				ft_isdigitstr(char *str);
@@ -94,8 +94,8 @@ t_list			*ft_lstmap(t_list *lst, void *(*f)(void *),
 					void (*del)(void *));
 int				ft_matrixlen(char **matrix);
 void			ft_freematrix(char **matrix);
-t_dmtx		*ft_dmtxnew(size_t cap);
-void			ft_dmtxpushback(t_dmtx *dmtx, char *item);
-void			ft_dmtxclear(t_dmtx *dmtx);
+t_darr		*ft_darrnew(size_t cap);
+void			ft_darrpushback(t_darr *darr, char *item);
+void			ft_darrclear(t_darr *darr);
 
 #endif

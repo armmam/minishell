@@ -173,15 +173,15 @@ char	**ft_tokenize(const char *line)
 {
 	size_t	i;
 	char	*token;
-	t_dmtx	*tokens;
+	t_darr	*tokens;
 
-	tokens = ft_dmtxnew(0);
+	tokens = ft_darrnew(0);
 	i = 0;
 	while (line[i])
 	{
 		i += ft_extracttoken(&line[i], &token);
-		ft_dmtxpushback(tokens, token);
+		ft_darrpushback(tokens, token);
 	}
-	ft_dmtxpushback(tokens, NULL); // null-terminate the matrix
+	ft_darrpushback(tokens, NULL); // null-terminate the matrix
 	return (tokens->ptr);
 }

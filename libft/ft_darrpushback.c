@@ -1,19 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dmtxpushback.c                                  :+:      :+:    :+:   */
+/*   ft_darrpushback.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:13:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/19 21:28:49 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 21:40:11 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
 /*
- * calculate capacity for the new underlying matrix (when the dmtx->ptr
+ * calculate capacity for the new underlying matrix (when the darr->ptr
  * in use cannot fit the new element)
  */
 static size_t	cap_calc(size_t cap)
@@ -46,32 +46,32 @@ static void		matrix_copy(char **m1, char **m2, size_t len)
  * push an item to the end of a dynamic matrix and expand the underlying matrix
  * if necessary
  */
-void			ft_dmtxpushback(t_dmtx *dmtx, char *item)
+void			ft_darrpushback(t_darr *darr, char *item)
 {
 	size_t	new_cap;
 	char	**new_ptr;
 
-	if (!dmtx || !item)
+	if (!darr || !item)
 		return ;
 	/*
-	 * replace the underlying matrix with one with more capacity if dmtx->ptr
+	 * replace the underlying matrix with one with more capacity if darr->ptr
 	 * doesn't have enough capacity
 	 */
-	if (dmtx->cap - dmtx->len <= 1)
+	if (darr->cap - darr->len <= 1)
 	{
-		if (dmtx->cap > dmtx->cap + 1)
+		if (darr->cap > darr->cap + 1)
 			return ;
-		new_cap = cap_calc(dmtx->cap);
+		new_cap = cap_calc(darr->cap);
 		if (!(new_ptr = ft_calloc(new_cap, sizeof(char *))))
 			return ;
-		matrix_copy(new_ptr, dmtx->ptr, dmtx->len);
-		free(dmtx->ptr);
-		dmtx->ptr = new_ptr;
-		dmtx->cap = new_cap;
+		matrix_copy(new_ptr, darr->ptr, darr->len);
+		free(darr->ptr);
+		darr->ptr = new_ptr;
+		darr->cap = new_cap;
 	}
 	/*
 	 * push the new item back the dynamic matrix
 	 */
-	dmtx->ptr[dmtx->len] = item;
-	dmtx->len++;
+	darr->ptr[darr->len] = item;
+	darr->len++;
 }

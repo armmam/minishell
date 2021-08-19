@@ -1,31 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_dmtxnew.c                                       :+:      :+:    :+:   */
+/*   ft_darrclear.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/07/27 18:54:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/04 18:58:08 by amamian          ###   ########.fr       */
+/*   Created: 2021/07/27 18:49:21 by amamian           #+#    #+#             */
+/*   Updated: 2021/08/19 21:41:01 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
 /*
- * initialize a new and empty dynamic matrix with a given capacity
+ * free dynamic memory allocated for a dynamic matrix
  */
-t_dmtx	*ft_dmtxnew(size_t cap)
+void	ft_darrclear(t_darr *darr)
 {
-	t_dmtx	*dmtx;
-	char	**ptr;
+	size_t	i;
 
-	if (!(dmtx = ft_calloc(1, sizeof(t_dmtx))))
-		return (NULL);
-	if (!(ptr = ft_calloc(cap, sizeof(char *))))
-		return (NULL);
-	dmtx->ptr = ptr;
-	dmtx->len = 0;
-	dmtx->cap = cap;
-	return (dmtx);
+	i = 0;
+	while (i < darr->len)
+		free(darr->ptr[i++]);
+	free(darr->ptr);
+	free(darr);
 }
