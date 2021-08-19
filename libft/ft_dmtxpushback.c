@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:13:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/19 14:07:06 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 21:28:49 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,28 @@
  */
 static size_t	cap_calc(size_t cap)
 {
-	return(cap < 1024 ? cap * 2 : cap + (1048576 / cap + 1));
+	if (cap == 0)
+		cap = 1;
+	else if (cap < 1024)
+		cap *= 2;
+	else
+		cap += (1048576 / cap + 1);
+	return(cap);
+}
+
+/*
+ * copy first `len` items of `m2` into `m1`
+ */
+static void		matrix_copy(char **m1, char **m2, size_t len)
+{
+	size_t		i;
+
+	i = 0;
+	while (i < len)
+	{
+		m1[i] = m2[i];
+		i++;
+	}
 }
 
 /*
@@ -36,14 +57,14 @@ void			ft_dmtxpushback(t_dmtx *dmtx, char *item)
 	 * replace the underlying matrix with one with more capacity if dmtx->ptr
 	 * doesn't have enough capacity
 	 */
-	if (dmtx->cap - dmtx->len == 1)
+	if (dmtx->cap - dmtx->len <= 1)
 	{
 		if (dmtx->cap > dmtx->cap + 1)
 			return ;
 		new_cap = cap_calc(dmtx->cap);
 		if (!(new_ptr = ft_calloc(new_cap, sizeof(char *))))
 			return ;
-		ft_memmove(new_ptr, dmtx->ptr, dmtx->len);
+		matrix_copy(new_ptr, dmtx->ptr, dmtx->len);
 		free(dmtx->ptr);
 		dmtx->ptr = new_ptr;
 		dmtx->cap = new_cap;
