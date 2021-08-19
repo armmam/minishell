@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:13:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/18 17:46:47 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 14:07:06 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static size_t	cap_calc(size_t cap)
 void			ft_dmtxpushback(t_dmtx *dmtx, char *item)
 {
 	size_t	new_cap;
-	char	*new_ptr;
+	char	**new_ptr;
 
 	if (!dmtx || !item)
 		return ;
