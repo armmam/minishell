@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/02 19:36:44 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/19 21:39:35 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 22:18:54 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,8 +94,9 @@ t_list			*ft_lstmap(t_list *lst, void *(*f)(void *),
 					void (*del)(void *));
 int				ft_matrixlen(char **matrix);
 void			ft_freematrix(char **matrix);
-t_darr		*ft_darrnew(size_t cap);
+t_darr			*ft_darrnew(size_t cap);
 void			ft_darrpushback(t_darr *darr, char *item);
 void			ft_darrclear(t_darr *darr);
+void			ft_darrerase(t_darr *darr, char *item);
 
 #endif
