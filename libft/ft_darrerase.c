@@ -6,14 +6,14 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/18 17:43:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/19 21:40:50 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 22:07:45 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
 /*
- * erase an item from dynamic matrix
+ * erase an item from dynamic array
  * modifies `len` and leaves `cap` unchanged
  */
 void	ft_darrerase(t_darr *darr, char *item)
@@ -25,7 +25,7 @@ void	ft_darrerase(t_darr *darr, char *item)
 	i = 0;
 	j = 0;
 	/*
-	 * iterate over the underlying matrix while freeing and skipping all `item`s (j)
+	 * iterate over the underlying array while freeing and skipping all `item`s (j)
 	 * and move the strings that are not equal to `item` to their corresponding position (i)
 	 */
 	while (j < darr->len)

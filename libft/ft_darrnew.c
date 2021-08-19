@@ -6,14 +6,14 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:54:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/19 21:41:12 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 22:07:43 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
 /*
- * initialize a new and empty dynamic matrix with a given capacity
+ * initialize a new and empty dynamic array with a given capacity
  */
 t_darr	*ft_darrnew(size_t cap)
 {

@@ -6,14 +6,14 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:49:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/19 21:41:01 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 22:07:44 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
 /*
- * free dynamic memory allocated for a dynamic matrix
+ * free dynamic memory allocated for a dynamic array
  */
 void	ft_darrclear(t_darr *darr)
 {
