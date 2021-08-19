@@ -1,23 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_freematrix.c                                    :+:      :+:    :+:   */
+/*   ft_darrnew.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/07/27 14:18:28 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/16 18:58:45 by amamian          ###   ########.fr       */
+/*   Created: 2021/07/27 18:54:21 by amamian           #+#    #+#             */
+/*   Updated: 2021/08/19 22:07:43 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_freematrix(char **matrix)
+/*
+ * initialize a new and empty dynamic array with a given capacity
+ */
+t_darr	*ft_darrnew(size_t cap)
 {
-	int	i;
+	t_darr	*darr;
+	char	**ptr;
 
-	i = ft_matrixlen(matrix) - 1;
-	while (i >= 0)
-		free((matrix)[i--]);
-	free(matrix);
+	if (!(darr = ft_calloc(1, sizeof(t_darr))))
+		return (NULL);
+	if (!(ptr = ft_calloc(cap, sizeof(char *))))
+		return (NULL);
+	darr->ptr = ptr;
+	darr->len = 0;
+	darr->cap = cap;
+	return (darr);
 }

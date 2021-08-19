@@ -1,11 +1,31 @@
 #include "minishell.h"
 
-// man echo :)
 int	ft_echo(t_cmd *cmd)
 {
-	//
-	(void)cmd;
-	return (1);
+	char	**arg;
+	int		nl; // newline
+
+	arg = (cmd->args) + 1;
+	nl = 1;
+	if (!ft_strcmp(*arg, "-n"))
+	{
+		nl = 0;
+		arg++;
+	}
+	if (!*arg)
+	{
+		ft_putstr_fd("\n", cmd->out);
+		return (0);
+	}
+	while (*arg)
+	{
+		ft_putstr_fd((*arg)++, cmd->out);
+		if (*arg)
+			ft_putstr_fd(" ", cmd->out);
+	}
+	if (nl)
+		ft_putstr_fd("\n", cmd->out);
+	return (0);
 }
 
 void	ft_refreshpwds(char *oldpwd)
@@ -14,7 +34,7 @@ void	ft_refreshpwds(char *oldpwd)
 	char	**exportargs;
 	char	*pwd;
 
-	exportargs = malloc(sizeof(char *) * 3);
+	exportargs = ft_calloc(3, sizeof(char *));
 	export.args = exportargs;
 	pwd = NULL;
 	getcwd(pwd, 0);
@@ -77,6 +97,7 @@ int	ft_pwd(t_cmd *cmd)
 	return (0);
 }
 
+// not used anywhere anymore
 void	ft_addmatrixrow(char ***matrix, char *row)
 {
 	int		i;
@@ -84,7 +105,7 @@ void	ft_addmatrixrow(char ***matrix, char *row)
 
 	if (!matrix || !(*matrix))
 		return ;
-	newmatrix = malloc((ft_matrixlen(*matrix) + 2) * sizeof(char *));
+	newmatrix = ft_calloc(ft_matrixlen(*matrix) + 2, sizeof(char *));
 	i = 0;
 	while (i < ft_matrixlen(*matrix))
 	{
@@ -97,6 +118,7 @@ void	ft_addmatrixrow(char ***matrix, char *row)
 	matrix = &newmatrix;
 }
 
+// not used anywhere anymore
 void	ft_removematrixrow(char ***matrix, char *row)
 {
 	int		i;
@@ -105,12 +127,12 @@ void	ft_removematrixrow(char ***matrix, char *row)
 
 	if (!matrix || !(*matrix))
 		return ;
-	newmatrix = malloc(ft_matrixlen(*matrix) * sizeof(char *));
+	newmatrix = ft_calloc(ft_matrixlen(*matrix), sizeof(char *));
 	i = 0;
 	j = 0;
 	while (i < ft_matrixlen(*matrix))
 	{
-		if (ft_strncmp(row, (*matrix)[i], ft_strlen(row)))
+		if (ft_strncmp(row, (*matrix)[i], ft_strlen(row))) // typo: their lengths have to be equal also
 			newmatrix[i] = (*matrix)[j++];
 		i++;
 	}
@@ -125,21 +147,21 @@ void	ft_printenvironment(int fd)
 	int	j;
 
 	i = 0;
-	while (g_data.env[i])
+	while (g_data.env->ptr[i])
 	{
 		ft_putstr_fd("declare -x ", fd);
 		j = 0;
-		while (g_data.env[i][j])
+		while (g_data.env->ptr[i][j])
 		{
-			ft_putchar_fd(g_data.env[i][j], fd);
-			if (g_data.env[i][j++] == '=')
+			ft_putchar_fd(g_data.env->ptr[i][j], fd);
+			if (g_data.env->ptr[i][j++] == '=')
 				break ;
 		}
-		if (g_data.env[i][j - 1] == '=')
+		if (g_data.env->ptr[i][j - 1] == '=')
 		{
 			ft_putstr_fd("\"", fd);
-			while (g_data.env[i][j])
-				ft_putchar_fd(g_data.env[i][j++], fd);
+			while (g_data.env->ptr[i][j])
+				ft_putchar_fd(g_data.env->ptr[i][j++], fd);
 			ft_putstr_fd("\"\n", fd);
 		}
 		i++;
@@ -155,7 +177,7 @@ char	*ft_isdefined(char *variable)
 	i = 0;
 	while (variable[i] && variable[i] != '=')
 		i++;
-	name = malloc(sizeof(char) * (i + 1));
+	name = ft_calloc(i + 1, sizeof(char));
 	i = 0;
 	while (variable[i] && variable[i] != '=')
 	{
@@ -208,15 +230,15 @@ int	ft_export(t_cmd *cmd)
 				continue ;
 			}
 			if (!ft_isdefined(cmd->args[i])) 	// not present, just add
-				ft_addmatrixrow(&g_data.env, cmd->args[i]);
+				ft_darrpushback(g_data.env, cmd->args[i]);
 			else							// if present, overwrite
 			{
-				unsetargs = malloc(sizeof(char *) * 3);
+				unsetargs = ft_calloc(3, sizeof(char *));
 				unsetargs[1] = cmd->args[i];
 				unsetargs[2] = NULL;
 				unset.args = unsetargs;
 				ft_unset(&unset);
-				ft_addmatrixrow(&g_data.env, cmd->args[i]);
+				ft_darrpushback(g_data.env, cmd->args[i]);
 				ret = 0;
 			}
 			i++;
@@ -246,7 +268,7 @@ int	ft_unset(t_cmd *cmd)
 			}
 			if (ft_isdefined(cmd->args[i]))
 			{
-				ft_removematrixrow(&g_data.env, cmd->args[i]);
+				ft_darrerase(g_data.env, cmd->args[i]);
 				ret = 0;
 			}
 			i++;

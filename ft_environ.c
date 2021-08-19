@@ -4,14 +4,14 @@ void	ft_inheritenviron(char **environ)
 {
 	int	i;
 
-	g_data.env = malloc((ft_matrixlen(environ) + 1) * sizeof(char *));
+	g_data.env = ft_darrnew(ft_matrixlen(environ) + 1);
 	i = 0;
 	while (environ[i])
 	{
-		g_data.env[i] = ft_strdup(environ[i]);
+		g_data.env->ptr[i] = ft_strdup(environ[i]);
 		i++;
 	}
-	g_data.env[i] = NULL;
+	g_data.env->ptr[i] = NULL;
 }
 
 char	*ft_getenv(const char *name)
@@ -22,11 +22,11 @@ char	*ft_getenv(const char *name)
 	i = 0;
 	if (ft_strrchr(name, '='))
 		return (NULL);
-	while (g_data.env[i])
+	while (g_data.env->ptr[i])
 	{
-		if (!ft_strncmp(g_data.env[i], name, ft_strlen((char *) name)))
+		if (!ft_strcmp(g_data.env->ptr[i], name))
 		{
-			var = g_data.env[i];
+			var = g_data.env->ptr[i];
 			var += ft_strlen((char *) name) + 1;
 			return (var);
 		}

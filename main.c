@@ -23,7 +23,7 @@ int	main(int argc, char **argv, char **environ)
 		//ft_interpret(line);
 
 		// THIS IS TO EXIT THE SHELL UNTIL PARSING AND TOKENIZATION ARE DONE
-		if (ft_strlen(line) == 4 && !ft_strncmp(line, "exit", 4))
+		if (!ft_strcmp(line, "exit"))
 			exit(0);
 		//
 		add_history(line);

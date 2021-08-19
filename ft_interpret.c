@@ -24,17 +24,109 @@ int	ft_cmds(char **tokens)
 	return (count);
 }
 
+/*
+ * frees commands and close FDs
+ */
+void	ft_freecomands(t_cmd **cmds)
+{
+	t_cmd	*ptr;
+
+	ptr = *cmds;
+	while (ptr)
+	{
+		if ((ptr)->in != 0)
+			close((ptr)->in);
+		if ((ptr)->out != 1 && (ptr)->out != 0)
+			close((ptr)->out);
+		if ((ptr)->heredoc)
+			free((ptr)->heredoc);
+		if ((ptr)->args)
+			ft_freematrix((ptr)->args);
+		ptr++;
+	}
+	free((*cmds));
+	*cmds = NULL;
+}
+
+/*
+ * returns 0 upon success, 1 upon failure
+ */
+int		ft_parseheredoc(char ***tokens, char **heredoc)
+{
+	(*tokens)++;
+	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // << is the last token in the command
+	{
+		ft_error(*(*tokens - sizeof(char *)), "syntax error");
+		return (NULL);
+	}
+	if (*heredoc) // if already encountered any heredocs
+		free(*heredoc); // then free memory allocated for it
+	*heredoc = ft_strdup(**tokens);
+}
+
+/*
+ * returns 0 upon success, 1 upon failure
+ */
+int		ft_parsefiletoken(char ***tokens, int *cmd_fd, int open_flag)
+{
+	int		fd;
+
+	(*tokens)++;
+	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // </>>/> is the last token in the command
+	{
+		ft_error(*(*tokens - sizeof(char *)), "syntax error");
+		return (1);
+	}
+	if (*cmd_fd != 0) // if already encoutered </>>/> before for this command
+		close(*cmd_fd);
+	if ((fd = open(**tokens, open_flag)) == -1)
+	{
+		perror("minishell");
+		return (1);
+	}
+	*cmd_fd = fd;
+	return (0);
+}
+
 // puts char **args into given command's args field;
 // opens the files given as <, > or >> with open()
 // and writes them into the in and out fields (don't
 // forget that if multiple outfiles are received,
 // they have to be opened and closed except for the last
 // one. store only the last one)
-// parses 'heredoc' if applicable; else assigns NULL to it
-void	ft_extractarguments(t_cmd *cmd, char **tokens)
+// parses 'heredoc' if applicable; else assigns NULL to it -- it's null because of ft_calloc
+//
+// returns a pointer to the next command in `tokens`
+char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 {
-	(void)cmd;
-	(void)tokens;
+	int		err;
+	t_darr	*args;
+
+	args = ft_darrnew(0);
+	err = 0;
+	while (*tokens != NULL && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
+	{
+		if (!ft_strcmp(*tokens, "<<"))  // if encountered <<
+			err = ft_parseheredoc(&tokens, &(cmd->heredoc));
+		else if (!ft_strcmp(*tokens, ">"))  // if encoutered >
+			err = ft_parsefiletoken(&tokens, &(cmd->out), O_WRONLY|O_CREAT);
+		else if (!ft_strcmp(*tokens, ">>"))  // if encoutered >>
+			err = ft_parsefiletoken(&tokens, &(cmd->out), O_APPEND|O_CREAT);
+		else if (!ft_strcmp(*tokens, "<"))  // if encoutered <
+			err = ft_parsefiletoken(&tokens, &(cmd->in), O_RDONLY);
+		else // encountered an arg
+			ft_darrpushback(args, ft_strdup(*tokens));
+		if (err)
+		{
+			ft_darrclear(args);
+			return (NULL);
+		}
+		tokens++;
+	}
+	ft_darrpushback(args, NULL);
+	cmd->args = args->ptr;
+	free(args);
+	return (args);
 }
 
 t_cmd	*ft_parsecommands(char **tokens)
@@ -43,13 +135,18 @@ t_cmd	*ft_parsecommands(char **tokens)
 	t_cmd	*commands;
 	int		pipefd[2];
 
-	commands = malloc(sizeof(t_cmd) * g_data.cmds);
+	commands = ft_calloc(g_data.cmds + 1, sizeof(t_cmd)); // +1 so that the array of `t_cmd`s is null-terminated
 	i = 0;
 	while (i < g_data.cmds)
 	{
 		commands[i].in = 0;
 		commands[i].out = 1;
-		ft_extractarguments(&commands[i], tokens);
+		commands[i].i = i;
+		if (!(tokens = ft_extractarguments(&commands[i], tokens))) // error while parsing tokens
+		{
+			ft_freecomands(&commands); // free commands and close FDs
+			return (NULL);
+		}
 		if (i)
 		{
 			pipe(pipefd);
@@ -72,17 +169,21 @@ void	ft_interpret(char *line)
 	int		i;
 	int		j;
 	t_cmd	*commands;
+	char	**tokens;
 
 
 	// TAKE CARE OF THIS COMMENT BLOCK AND UNCOMMENT IT
 	// ! treatment of special characters is needed !
-	// tokens = ft_tokenize(line);
-	// g_data.cmds = ft_cmds(tokens);
-	// commands = ft_parsecommands(tokens);
-
+	tokens = ft_tokenize(line);
+	g_data.cmds = ft_cmds(tokens);
+	if (!(commands = ft_parsecommands(tokens)))
+	{
+		ft_freematrix(tokens);
+		return ;
+	}
 
 	g_data.prcs = g_data.cmds - ft_isbuiltin(commands[0].args[0]);
-	g_data.family = malloc(sizeof(pid_t) * g_data.prcs);
+	g_data.family = ft_calloc(g_data.prcs, sizeof(pid_t));
 	i = 0;
 	j = 0;
 	while (i < g_data.cmds)
@@ -91,9 +192,10 @@ void	ft_interpret(char *line)
 			ft_exec(&commands[i]);
 		else
 		{
+			// spinning out child processes
 			g_data.family[j] = fork();
-			if (g_data.family[j] == 0) // child code
-				ft_exec(&commands[i]);
+			if (g_data.family[j] == 0) // child process
+				ft_exec(&commands[i]); // child process will exit here
 			else if (g_data.family[j] < 0)
 			{
 				perror("minishell");
@@ -110,7 +212,8 @@ void	ft_interpret(char *line)
 		waitpid(g_data.family[i++], &g_data.status, 0);
 	
 	// free stuff
-	// ft_freecomands(commands); // ALSO CLOSE FDS
+	ft_freematrix(tokens);
+	ft_freecomands(commands); // also closes FDs
 	if (g_data.family)
 	{
 		free(g_data.family);
@@ -127,19 +230,19 @@ int	ft_isbuiltin(char *builtin)
 
 int	ft_convertbuiltin(char *builtin)
 {
-	if (ft_strlen(builtin) == 4 && !ft_strncmp(builtin, "echo", 4))
+	if (!ft_strcmp(builtin, "echo"))
 		return (__echo);
-	else if (ft_strlen(builtin) == 2 && !ft_strncmp(builtin, "cd", 2))
+	else if (!ft_strcmp(builtin, "cd"))
 		return (__cd);
-	else if (ft_strlen(builtin) == 3 && !ft_strncmp(builtin, "pwd", 3))
+	else if (!ft_strcmp(builtin, "pwd"))
 		return (__pwd);
-	else if (ft_strlen(builtin) == 6 && !ft_strncmp(builtin, "export", 6))
+	else if (!ft_strcmp(builtin, "export"))
 		return (__export);
-	else if (ft_strlen(builtin) == 5 && !ft_strncmp(builtin, "unset", 5))
+	else if (!ft_strcmp(builtin, "unset"))
 		return (__unset);
-	else if (ft_strlen(builtin) == 3 && !ft_strncmp(builtin, "env", 3))
+	else if (!ft_strcmp(builtin, "env"))
 		return (__env);
-	else if (ft_strlen(builtin) == 4 && !ft_strncmp(builtin, "exit", 4))
+	else if (!ft_strcmp(builtin, "exit"))
 		return (__exit);
 	return (0);
 }
@@ -220,8 +323,7 @@ void	ft_exec(t_cmd *cmd)
 		while (1)
 		{
 			temp = readline("> ");
-			if (ft_strlen(cmd->heredoc) == ft_strlen(temp)
-				&& !ft_strncmp(temp, cmd->heredoc, ft_strlen(cmd->heredoc)))
+			if (!ft_strcmp(temp, cmd->heredoc))
 			{
 				free(temp);
 				break ;
@@ -238,7 +340,6 @@ void	ft_exec(t_cmd *cmd)
 	{
 		execve(cmd->args[0], cmd->args, g_data.env) == -1;
 		ft_error(cmd->args[0], "No such file or directory");
-		exit(1);
 	}
 	else
 	{
@@ -246,6 +347,7 @@ void	ft_exec(t_cmd *cmd)
 		{
 			if (ft_getenv("PATH"))
 			{
+				// try to find the command by iterating over paths in PATH
 				paths = ft_split(ft_getenv("PATH"), ':');
 				i = 0;
 				while (paths[i])
@@ -257,17 +359,14 @@ void	ft_exec(t_cmd *cmd)
 					free(newpath);
 					i++;
 				}
-				ft_freematrix(&paths);
+				ft_freematrix(paths);
 				ft_error(cmd->args[0], "No such command found");
-				exit(1);
 			}
 			else
-			{
 				ft_error(cmd->args[0], "No such file or directory");
-				exit(1);
-			}
 		}
 	}
+	exit(1);
 }
 
 void	ft_error(char *name, char *desc)

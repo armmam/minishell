@@ -1,23 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_freematrix.c                                    :+:      :+:    :+:   */
+/*   ft_darrclear.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/07/27 14:18:28 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/16 18:58:45 by amamian          ###   ########.fr       */
+/*   Created: 2021/07/27 18:49:21 by amamian           #+#    #+#             */
+/*   Updated: 2021/08/19 22:07:44 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_freematrix(char **matrix)
+/*
+ * free dynamic memory allocated for a dynamic array
+ */
+void	ft_darrclear(t_darr *darr)
 {
-	int	i;
+	size_t	i;
 
-	i = ft_matrixlen(matrix) - 1;
-	while (i >= 0)
-		free((matrix)[i--]);
-	free(matrix);
+	i = 0;
+	while (i < darr->len)
+		free(darr->ptr[i++]);
+	free(darr->ptr);
+	free(darr);
 }
