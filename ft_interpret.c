@@ -182,7 +182,6 @@ void	ft_interpret(char *line)
 		return ;
 	}
 
-
 	g_data.prcs = g_data.cmds - ft_isbuiltin(commands[0].args[0]);
 	g_data.family = ft_calloc(g_data.prcs, sizeof(pid_t));
 	i = 0;

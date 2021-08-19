@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/02 19:36:44 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/19 22:18:54 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/19 22:30:36 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ typedef struct s_list
  *   ft_darrnew
  *   ft_darrpushback
  *   ft_darrclear
+ *   ft_darrerase
  */
 typedef struct s_darr
 {

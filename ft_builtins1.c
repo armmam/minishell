@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-// can this command ever exit with status=1?
 int	ft_echo(t_cmd *cmd)
 {
 	char	**arg;

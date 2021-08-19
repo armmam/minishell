@@ -192,3 +192,58 @@ Keep track of the number of quotes with `s_quotes` and `d_quotes`. Then, if `'` 
 
 </p>
 </details>
+
+<details>
+<summary>Comments to ft_refineline</summary>
+<p>
+
+```
+$HOME -> /Users/arman
+'$HOME' -> $HOME
+"$HOME" -> /Users/arman
+$HOMEE -> (nothing)
+$HOMEE'andthen'$HOME -> andthen/Users/arman
+$HOMEE 'andthen' $HOME -> andthen /Users/arman
+$$ -> current pid (e.g. 23298)
+$ -> $
+$$$ -> 23298$
+$$$$ -> 2329823298
+
+valid chars that env var can
+                             -consist of and can begin with: upper/lowercase letters, underscores
+                             -consist of                   : numbers
+
+Double expansions do not take place:
+bash-3.2$ tar_tar='$tur'
+bash-3.2$ echo $tar_tar
+$tur
+
+If heredoc is non-quoted, then env vars inside of it are ALWAYS expanded, no matter whether they themselves are quoted or not:
+bash-3.2$ cat << END
+> $HOME
+> END
+/Users/arman
+bash-3.2$ cat << END
+> "$HOME"
+> END
+"/Users/arman"
+bash-3.2$ cat << END
+> '$HOME'
+> END
+'/Users/arman'
+```
+
+</p>
+</details>
+
+<details>
+<summary>Comments to ft_tokenize</summary>
+<p>
+
+```
+// anything in double parentheses is not executed and its return status is set to false (e.g. `((pwd)) && ls` doesn't print out anything)
+//
+// execution stops as soon as the global state is true or false (e.g. `pwd || ls` only executes `pwd`, `((pwd)) && ls` doesn't print out anything)
+```
+</p>
+</details>

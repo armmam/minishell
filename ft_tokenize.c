@@ -14,40 +14,6 @@ int		ft_envlen(char *line)
 
 // takes a string and substitutes every environ variable encountered. frees the original string, allocates memory
 // u can use ft_getenv to get the needed var
-//
-// $HOME -> /Users/arman
-// '$HOME' -> $HOME
-// "$HOME" -> /Users/arman
-// $HOMEE -> (nothing)
-// $HOMEE'andthen'$HOME -> andthen/Users/arman
-// $HOMEE 'andthen' $HOME -> andthen /Users/arman
-// $$ -> current pid (e.g. 23298)
-// $ -> $
-// $$$ -> 23298$
-// $$$$ -> 2329823298
-//
-// valid chars that env var can
-//                              -consist of and can begin with: upper/lowercase letters, underscores
-//                              -consist of                   : numbers
-//
-// Double expansions do not take place:
-// bash-3.2$ tar_tar='$tur'
-// bash-3.2$ echo $tar_tar
-// $tur
-//
-// If heredoc is non-quoted, then env vars inside of it are ALWAYS expanded, no matter whether they themselves are quoted or not:
-// bash-3.2$ cat << END
-// > $HOME
-// > END
-// /Users/arman
-// bash-3.2$ cat << END
-// > "$HOME"
-// > END
-// "/Users/arman"
-// bash-3.2$ cat << END
-// > '$HOME'
-// > END
-// '/Users/arman'
 char	*ft_refineline(char *line)
 {
 	char	*ptr, *prefix, *postfix, *env, *val;
@@ -165,10 +131,6 @@ int		ft_extracttoken(const char *line, char **token)
 // PLEASE MERGE THIS ONE WITH ft_parsecommands SO YOU'RE ABLE TO CORRECTLY
 // REMOVE ()S AND SET RESPECTIVE COMMAND'S cond FIELD.
 // removes ""s, ()s and other trash, uses ft_refineline on the arguments of commands
-//
-// anything in double parentheses is not executed and its return status is set to false (e.g. `((pwd)) && ls` doesn't print out anything)
-//
-// execution stops as soon as the global state is true or false (e.g. `pwd || ls` only executes `pwd`, `((pwd)) && ls` doesn't print out anything)
 char	**ft_tokenize(const char *line)
 {
 	size_t	i;
