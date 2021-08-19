@@ -12,12 +12,89 @@ int		ft_envlen(char *line)
 	return (i);
 }
 
+// takes a string and substitutes every environ variable encountered. frees the original string, allocates memory
+// u can use ft_getenv to get the needed var
+//
+// $HOME -> /Users/arman
+// '$HOME' -> $HOME
+// "$HOME" -> /Users/arman
+// $HOMEE -> (nothing)
+// $HOMEE'andthen'$HOME -> andthen/Users/arman
+// $HOMEE 'andthen' $HOME -> andthen /Users/arman
+// $$ -> current pid (e.g. 23298)
+// $ -> $
+// $$$ -> 23298$
+// $$$$ -> 2329823298
+//
+// valid chars that env var can
+//                              -consist of and can begin with: upper/lowercase letters, underscores
+//                              -consist of                   : numbers
+//
+// Double expansions do not take place:
+// bash-3.2$ tar_tar='$tur'
+// bash-3.2$ echo $tar_tar
+// $tur
+//
+// If heredoc is non-quoted, then env vars inside of it are ALWAYS expanded, no matter whether they themselves are quoted or not:
+// bash-3.2$ cat << END
+// > $HOME
+// > END
+// /Users/arman
+// bash-3.2$ cat << END
+// > "$HOME"
+// > END
+// "/Users/arman"
+// bash-3.2$ cat << END
+// > '$HOME'
+// > END
+// '/Users/arman'
+char	*ft_refineline(char *line)
+{
+	char	*ptr, *prefix, *postfix, *env, *val;
+	int		env_len;
+
+	if (!line)
+		return (NULL);
+	ptr = line;
+	while ((ptr = ft_strchr(ptr, '$')))
+	{
+		if ((env_len = ft_envlen(ptr + 1)))
+		{
+			env = ft_substr(ptr, 1, env_len);
+			val = ft_getenv(env);
+			free(env);
+			prefix = ft_substr(line, 0, ptr - line);
+			postfix = ft_strdup(ptr + env_len + 1);
+		}
+		else if (*(ptr + 1) == '?')
+		{
+			val = ft_itoa(g_data.status); // statuses cannot be greater than MAX_INT, right?
+			prefix = ft_substr(line, 0, ptr - line);
+			postfix = ft_strdup(ptr + 2);
+		}
+		else // just a regular dollar sign, do nothing
+		{
+			ptr++;
+			continue ;
+		}
+		ptr = val ? ft_strjoin3(prefix, val, postfix) : ft_strjoin(prefix, postfix); // this block of code will only execute if $HOME or $?
+		free(line);
+		line = ptr;
+		ptr += ft_strlen(prefix) + ft_strlen(val); // to avoid double expansion
+		if (val)
+			free(val);
+		free(prefix);
+		free(postfix);
+	}
+	return (line);
+}
+
 /*
  * this function replaces two lines in ft_extracttoken:
  * tmp = ft_substr(line, i, j - i + 1);
  * *token = ft_strjoinsafe(token, &tmp);
 */
-void	ft_appendtoken(char **token, char *new, size_t len)
+void	ft_appendtoken(char **token, const char *new, size_t len)
 {
 	char	*tmp;
 
@@ -38,18 +115,22 @@ int		ft_extracttoken(const char *line, char **token)
 	j = 0; // index of the current char
 	tmp = NULL;
 	*token = ft_strdup("");
-	while (ft_isspace(line[j++]))
+	while (ft_isspace(line[j]))
+	{
+		j++;
 		i++;
+	}
 	while (!ft_isspace(line[j]) && line[j])
 	{
 		if ((line[j] == '<' || line[j] == '>') && (j != i || (*token)[0] != '\0')) // encountered </> but also need to add something encountered before to `token` OR already added something to `token`
 		{
 			ft_appendtoken(token, &line[i], j - i); // append whatever has not been appended yet
-			return (j); // </> will be included in the next call to this function, not this one
+			return (j + 1); // </> will be included in the next call to this function, not this one
 		}
 		else if (line[j] == '<' || line[j] == '>') // encountered </> and haven't added anything to `token` yet
 		{ // here we assume that i == j
-			if ((line[j] == '<' && line[j + 1] == '<') || (line[j] == '>' && line[j + 1] == '>'))
+			//if ((line[j] == '<' && line[j + 1] == '<') || (line[j] == '>' && line[j + 1] == '>'))
+			if (!ft_strncmp(&line[j], "<<", 2) || !ft_strncmp(&line[j], ">>", 2))
 				j++;
 			ft_appendtoken(token, &line[i], j - i + 1);
 			return (j + 1);
@@ -103,81 +184,4 @@ char	**ft_tokenize(const char *line)
 	}
 	ft_dmtxpushback(tokens, NULL); // null-terminate the matrix
 	return (tokens->ptr);
-}
-
-// takes a string and substitutes every environ variable encountered. frees the original string, allocates memory
-// u can use ft_getenv to get the needed var
-//
-// $HOME -> /Users/arman
-// '$HOME' -> $HOME
-// "$HOME" -> /Users/arman
-// $HOMEE -> (nothing)
-// $HOMEE'andthen'$HOME -> andthen/Users/arman
-// $HOMEE 'andthen' $HOME -> andthen /Users/arman
-// $$ -> current pid (e.g. 23298)
-// $ -> $
-// $$$ -> 23298$
-// $$$$ -> 2329823298
-//
-// valid chars that env var can
-//                              -consist of and can begin with: upper/lowercase letters, underscores
-//                              -consist of                   : numbers
-//
-// Double expansions do not take place:
-// bash-3.2$ tar_tar='$tur'
-// bash-3.2$ echo $tar_tar
-// $tur
-//
-// If heredoc is non-quoted, then env vars inside of it are ALWAYS expanded, no matter whether they themselves are quoted or not:
-// bash-3.2$ cat << END
-// > $HOME
-// > END
-// /Users/arman
-// bash-3.2$ cat << END
-// > "$HOME"
-// > END
-// "/Users/arman"
-// bash-3.2$ cat << END
-// > '$HOME'
-// > END
-// '/Users/arman'
-char	*ft_refineline(char *line)
-{
-	char	*ptr, *prefix, *postfix, *env, *val;
-	int		env_len;
-
-	if (!line)
-		return (NULL);
-	ptr = line;
-	while (ptr = ft_strchr(ptr, '$'))
-	{
-		if ((env_len = ft_envlen(ptr + 1)))
-		{
-			env = ft_substr(ptr, 1, env_len);
-			val = ft_getenv(env);
-			free(env);
-			prefix = ft_substr(line, 0, ptr - line);
-			postfix = ft_strdup(ptr + env_len + 1);
-		}
-		else if (*(ptr + 1) == '?')
-		{
-			val = ft_itoa(g_data.status); // statuses cannot be greater than MAX_INT, right?
-			prefix = ft_substr(line, 0, ptr - line);
-			postfix = ft_strdup(ptr + 2);
-		}
-		else // just a regular dollar sign, do nothing
-		{
-			ptr++;
-			continue ;
-		}
-		ptr = val ? ft_strjoin3(prefix, val, postfix) : ft_strjoin(prefix, postfix); // this block of code will only execute if $HOME or $?
-		free(line);
-		line = ptr;
-		ptr += ft_strlen(prefix) + ft_strlen(val); // to avoid double expansion
-		if (val)
-			free(val);
-		free(prefix);
-		free(postfix);
-	}
-	return (line);
 }
