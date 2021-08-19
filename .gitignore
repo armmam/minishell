@@ -1,2 +1,7 @@
+# C
+*.o
+*.a
+a.out
+
 # VSCode
 .vscode
