@@ -91,4 +91,7 @@ void	ft_abort(t_cmd *cmd);
 char	**ft_tokenize(const char *line);
 int		ft_isbuiltin(char *builtin);
 
+// remove these after done with testing
+int		ft_extracttoken(const char *line, char **token);
+
 #endif
