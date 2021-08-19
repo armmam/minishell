@@ -174,6 +174,7 @@ char	**ft_tokenize(const char *line)
 	size_t	i;
 	char	*token;
 	t_darr	*tokens;
+	char	**ret;
 
 	tokens = ft_darrnew(0);
 	i = 0;
@@ -183,5 +184,7 @@ char	**ft_tokenize(const char *line)
 		ft_darrpushback(tokens, token);
 	}
 	ft_darrpushback(tokens, NULL); // null-terminate the matrix
-	return (tokens->ptr);
+	ret = tokens->ptr;
+	free(tokens);
+	return (ret);
 }

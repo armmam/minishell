@@ -125,6 +125,7 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 	}
 	ft_darrpushback(args, NULL);
 	cmd->args = args->ptr;
+	free(args);
 	return (args);
 }
 
