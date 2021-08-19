@@ -98,6 +98,7 @@ int	ft_pwd(t_cmd *cmd)
 	return (0);
 }
 
+// not used anywhere anymore
 void	ft_addmatrixrow(char ***matrix, char *row)
 {
 	int		i;
@@ -118,6 +119,7 @@ void	ft_addmatrixrow(char ***matrix, char *row)
 	matrix = &newmatrix;
 }
 
+// not used anywhere anymore
 void	ft_removematrixrow(char ***matrix, char *row)
 {
 	int		i;
@@ -267,7 +269,7 @@ int	ft_unset(t_cmd *cmd)
 			}
 			if (ft_isdefined(cmd->args[i]))
 			{
-				ft_removematrixrow(&g_data.env, cmd->args[i]);
+				ft_darrerase(g_data.env, cmd->args[i]);
 				ret = 0;
 			}
 			i++;
