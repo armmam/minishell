@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/02 19:36:44 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/19 22:30:36 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/20 22:07:22 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 # include <unistd.h>
 # include <fcntl.h>
 # include <sys/wait.h>
+# include <stdbool.h>
+# include <limits.h>
 
 typedef struct s_list
 {
@@ -44,7 +46,7 @@ typedef struct s_darr
 	size_t	cap;
 }				t_darr;
 
-int				ft_strlen(char *str);
+size_t			ft_strlen(const char *s);
 int				ft_isdigitstr(char *str);
 int				ft_isspace(char c);
 int				ft_isdigit(int c);
@@ -60,10 +62,10 @@ void			*ft_memmove(void *str1, const void *str2, size_t n);
 void			*ft_memchr(const void *str, int c, size_t n);
 int				ft_memcmp(const void *str1, const void *str2, size_t n);
 size_t			ft_strlcpy(char *dest, const char *src, size_t dsize);
-size_t			ft_strlcat(char *dest, char *src, size_t size);
+size_t			ft_strlcat(char *dst, const char *src, size_t dstsize);
 char			*ft_strchr(const char *s, int c);
 char			*ft_strrchr(const char *str, int c);
-char			*ft_strnstr(char *str, char *to_find, size_t n);
+char			*ft_strnstr(const char *haystack, const char *needle, size_t len);
 int				ft_strcmp(const char *s1, const char *s2);
 int				ft_strncmp(const char *str1, const char *str2, size_t n);
 int				ft_toupper(int c);
