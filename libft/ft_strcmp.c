@@ -6,18 +6,18 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/18 18:09:43 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/18 18:13:31 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/20 13:59:27 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_cmpchar(char c1, char c2)
+static int	ft_cmpchar(char c1, char c2)
 {
 	return ((unsigned char)c1 - (unsigned char)c2);
 }
 
-int	ft_strcmp(const char *s1, const char *s2)
+int			ft_strcmp(const char *s1, const char *s2)
 {
 	size_t	i;
 
