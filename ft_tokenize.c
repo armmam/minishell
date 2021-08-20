@@ -47,8 +47,6 @@ char	*ft_refineline(char *line)
 		free(line);
 		line = ptr;
 		ptr += ft_strlen(prefix) + ft_strlen(val); // to avoid double expansion
-		if (val)
-			free(val);
 		free(prefix);
 		free(postfix);
 	}
@@ -56,15 +54,18 @@ char	*ft_refineline(char *line)
 }
 
 /*
- * this function replaces two lines in ft_extracttoken:
- * tmp = ft_substr(line, i, j - i + 1);
- * *token = ft_strjoinsafe(token, &tmp);
+ * allocates first `len` chars of string `new`,
+ * expands its contents if `expand` is set to 1,
+ * appends this string to `token`
+ * and clears up all intermediary allocations
 */
-void	ft_appendtoken(char **token, const char *new, size_t len)
+void	ft_appendtoken(char **token, const char *new, size_t len, int expand)
 {
 	char	*tmp;
 
 	tmp = ft_substr(new, 0, len);
+	if (expand)
+		tmp = ft_refineline(tmp);
 	*token = ft_strjoinsafe(token, &tmp);
 }
 
@@ -74,11 +75,12 @@ void	ft_appendtoken(char **token, const char *new, size_t len)
  */
 int		ft_extracttoken(const char *line, char **token)
 {
-	size_t	i, j;
+	size_t	i, j, expand;
 	char	*tmp, *match;
 
 	i = 0; // index of the first char in the part of token about to be appended to `token`
 	j = 0; // index of the current char
+	expand = 1; // flag for expansion; 1 by default, 0 if single quotes encountered
 	tmp = NULL;
 	*token = ft_strdup("");
 	while (ft_isspace(line[j]))
@@ -90,7 +92,7 @@ int		ft_extracttoken(const char *line, char **token)
 	{
 		if ((line[j] == '<' || line[j] == '>') && (j != i || (*token)[0] != '\0')) // encountered </> but also need to add something encountered before to `token` OR already added something to `token`
 		{
-			ft_appendtoken(token, &line[i], j - i); // append whatever has not been appended yet
+			ft_appendtoken(token, &line[i], j - i, expand); // append whatever has not been appended yet
 			return (j + 1); // </> will be included in the next call to this function, not this one
 		}
 		else if (line[j] == '<' || line[j] == '>') // encountered </> and haven't added anything to `token` yet
@@ -98,25 +100,25 @@ int		ft_extracttoken(const char *line, char **token)
 			//if ((line[j] == '<' && line[j + 1] == '<') || (line[j] == '>' && line[j + 1] == '>'))
 			if (!ft_strncmp(&line[j], "<<", 2) || !ft_strncmp(&line[j], ">>", 2))
 				j++;
-			ft_appendtoken(token, &line[i], j - i + 1);
+			ft_appendtoken(token, &line[i], j - i + 1, expand);
 			return (j + 1);
 		}
 		if (line[j] != '\'' && line[j] != '\"' && !ft_isspace(line[j + 1]) && line[j + 1]) // no weird stuff is about to be encountered
 			 ;
 		else if (ft_isspace(line[j + 1]) || !line[j + 1]) // space or \0 is about to be encountered, append the last part of token to `token`
-			ft_appendtoken(token, &line[i], j - i + 1);
+			ft_appendtoken(token, &line[i], j - i + 1, expand);
 		else // a quote has been encountered (and it's not the very last char in `line`)
 		{
 			tmp = ft_strchr(&line[j + 1], line[j]); // try to find a closing quote
 			if (tmp) // found a closing quote
 			{
-				ft_appendtoken(token, &line[i], j - i); // first safe everything (that was not already saved) up to the quote (not including) into `token`
+				ft_appendtoken(token, &line[i], j - i, expand); // first safe everything (that was not already saved) up to the quote (not including) into `token`
 				i = j + 1; // update the beginning of the part of token about to be appended to `token` (set it to the first char after the opening quote)
 				j = (tmp - 1) - line; // index of the char before the closing quote
-				tmp = ft_substr(line, i, j - i + 1); // extract everything between quotes
-				if (line[j + 1] == '\"') // if a double quote has been encountered
-					tmp = ft_refineline(tmp); // then expand environment variables
-				*token = ft_strjoinsafe(token, &tmp); // append everything between quotes to `token`
+				if (line[j + 1] == '\'') // if a single quote has been encountered
+					expand = 0; // no expansion for this part of the token
+				ft_appendtoken(token, &line[i], j - i + 1, expand); // extract everything between quotes, expand environment variables if double quotes, append everything between quotes to `token`
+				expand = 1; // expand next parts of the token by default
 				i = j + 2; // index of the char after the closing quote
 				j = i;
 				continue ;
