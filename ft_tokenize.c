@@ -105,7 +105,7 @@ int		ft_extracttoken(const char *line, char **token)
 		}
 		if (line[j] != '\'' && line[j] != '\"' && !ft_isspace(line[j + 1]) && line[j + 1]) // no weird stuff is about to be encountered
 			 ;
-		else if (ft_isspace(line[j + 1]) || !line[j + 1]) // space or \0 is about to be encountered, append the last part of token to `token`
+		else if ((ft_isspace(line[j + 1]) && line[j] != '\'' && line[j] != '\"') || !line[j + 1]) // space or \0 is about to be encountered, append the last part of token to `token`
 			ft_appendtoken(token, &line[i], j - i + 1, expand);
 		else // a quote has been encountered (and it's not the very last char in `line`)
 		{
