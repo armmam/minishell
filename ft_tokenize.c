@@ -47,8 +47,6 @@ char	*ft_refineline(char *line)
 		free(line);
 		line = ptr;
 		ptr += ft_strlen(prefix) + ft_strlen(val); // to avoid double expansion
-		if (val)
-			free(val);
 		free(prefix);
 		free(postfix);
 	}
