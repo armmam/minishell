@@ -36,7 +36,13 @@ void	test_extracttoken(void)
 
 void	test_tokenize(void)
 {
-	t_darr	*expected;
+	t_darr	*env, *expected;
+
+	// Set up environ variables
+	env = ft_darrnew(10);
+	ft_darrpushback(env, ft_strdup("HOME=/Users/amamian"));
+
+	ft_inheritenviron(env->ptr);
 
 	expected = ft_darrnew(10);
 	ft_darrpushback(expected, ft_strdup("<<"));
@@ -54,5 +60,18 @@ void	test_tokenize(void)
 	TEST_ASSERT_EQUAL_STRING_ARRAY(expected->ptr, ft_tokenize("| |||"), 2);
 	TEST_ASSERT_EQUAL_STRING_ARRAY(expected->ptr, ft_tokenize("  \t  | |||"), 2);
 	ft_darrclear(expected);
+	
+	expected = ft_darrnew(10);
+	ft_darrpushback(expected, ft_strdup("echo"));
+	ft_darrpushback(expected, ft_strdup("/Users/amamian"));
+	TEST_ASSERT_EQUAL_STRING_ARRAY(expected->ptr, ft_tokenize("echo $HOME"), 2);
+	ft_darrclear(expected);
 
+	expected = ft_darrnew(10);
+	ft_darrpushback(expected, ft_strdup("echo"));
+	ft_darrpushback(expected, ft_strdup("/Users/amamian/Users/amamian"));
+	TEST_ASSERT_EQUAL_STRING_ARRAY(expected->ptr, ft_tokenize("echo $HOME$HOME"), 2);
+	ft_darrclear(expected);
 }
+
+// "echo $HOME"
