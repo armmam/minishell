@@ -99,7 +99,7 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 	// printf("TOKENS RECEIVED (dereferenced) %p\n", *tokens);
 	args = ft_darrnew(0);
 	err = 0;
-	while (tokens && *tokens && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
+	while (*tokens && ft_strcmp(*tokens, "|")) // haven't run out of tokens and haven't encountered a pipe
 	{
 		// printf("TOKENS IN ft_extractarguments %p\n", tokens);
 		// printf("TOKEN:|%s| at %p, its address is %p\n", *tokens, *tokens, tokens);
@@ -122,11 +122,18 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 		tokens++;
 		// printf("TOKEN IS NOW at %p, its address is %p\n", *tokens, tokens);
 	}
+	if (*tokens && !ft_strcmp(*tokens, "|") && ft_strcmp(*(tokens + 1), "|")) // if the current one is `|` and the next one is not
+		tokens++;
+	else if (*tokens && !ft_strcmp(*tokens, "|") && !ft_strcmp(*(tokens + 1), "|")) // if both the current and the next ones are `|`
+	{
+		ft_error(*tokens, "syntax error");
+		return (NULL);
+	}
 	ft_darrpushback(args, NULL);
 	cmd->args = args->ptr;
 	free(args);
-	// printf("RETURNING ARGS\n");
-	return (args->ptr);
+	// printf("RETURNING TOKENS\n");
+	return (tokens);
 }
 
 t_cmd	*ft_parsecommands(char **tokens)
@@ -138,6 +145,11 @@ t_cmd	*ft_parsecommands(char **tokens)
 
 	commands = ft_calloc(g_data.cmds, sizeof(t_cmd));
 	i = 0;
+	if (!ft_strcmp(tokens[i], "|"))
+	{
+		ft_error(tokens[i], "syntax error");
+		return NULL;
+	}
 	while (i < g_data.cmds)
 	{
 		commands[i].in = 0;
