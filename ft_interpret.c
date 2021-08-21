@@ -5,19 +5,14 @@ int	ft_cmds(char **tokens)
 	int	i;
 	int	count;
 
-	if (!tokens)
+	if (!tokens || !(*tokens))
 		return (0);
 	count = 1;
 	i = 0;
+	printf("ABOUT TO START COUNTING\n");
 	while (tokens[i])
 	{
 		if (tokens[i][0] == '|' && tokens[i][1] == '\0')
-			count++;
-		if (tokens[i][0] == '&' && tokens[i][1] == '&'
-			&& tokens[i][2] == '\0')
-			count++;
-		if (tokens[i][0] == '|' && tokens[i][1] == '|'
-			&& tokens[i][2] == '\0')
 			count++;
 		i++;
 	}
@@ -25,27 +20,24 @@ int	ft_cmds(char **tokens)
 }
 
 /*
- * frees commands and close FDs
+ * frees commands
  */
-void	ft_freecomands(t_cmd **cmds)
+void	ft_freecomands(t_cmd *cmds)
 {
-	t_cmd	*ptr;
+	int	i;
 
-	ptr = *cmds;
-	while (ptr)
+	i = 0;
+	while (i < g_data.cmds)
 	{
-		if ((ptr)->in != 0)
-			close((ptr)->in);
-		if ((ptr)->out != 1 && (ptr)->out != 0)
-			close((ptr)->out);
-		if ((ptr)->heredoc)
-			free((ptr)->heredoc);
-		if ((ptr)->args)
-			ft_freematrix((ptr)->args);
-		ptr++;
+		if (cmds[i].heredoc)
+			free(cmds[i].heredoc);
+		printf("FREED HEREDOC\n");
+		if (cmds[i].args)
+			ft_freematrix(cmds[i].args);
+		printf("FREED ARGS\n");
+		i++;
 	}
-	free((*cmds));
-	*cmds = NULL;
+	free(cmds);
 }
 
 /*
@@ -54,14 +46,15 @@ void	ft_freecomands(t_cmd **cmds)
 int		ft_parseheredoc(char ***tokens, char **heredoc)
 {
 	(*tokens)++;
-	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // << is the last token in the command
+	if (*tokens == NULL || ((*tokens)[0][0] == '|' && (*tokens)[0][1] == '\0')) // << is the last token in the command
 	{
 		ft_error(*(*tokens - sizeof(char *)), "syntax error");
-		return (NULL);
+		return (1);
 	}
 	if (*heredoc) // if already encountered any heredocs
 		free(*heredoc); // then free memory allocated for it
 	*heredoc = ft_strdup(**tokens);
+	return (0);
 }
 
 /*
@@ -72,9 +65,9 @@ int		ft_parsefiletoken(char ***tokens, int *cmd_fd, int open_flag)
 	int		fd;
 
 	(*tokens)++;
-	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // </>>/> is the last token in the command
+	if (*tokens == NULL || ((*tokens)[0][0] == '|' && (*tokens)[0][1] == '\0')) // </>>/> is the last token in the command
 	{
-		ft_error(*(*tokens - sizeof(char *)), "syntax error");
+		ft_error(*(*tokens - 1), "syntax error");
 		return (1);
 	}
 	if (*cmd_fd != 0) // if already encoutered </>>/> before for this command
@@ -102,16 +95,20 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 	int		err;
 	t_darr	*args;
 
+	printf("TOKENS RECEIVED %p\n", tokens);
+	printf("TOKENS RECEIVED (dereferenced) %p\n", *tokens);
 	args = ft_darrnew(0);
 	err = 0;
-	while (*tokens != NULL && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
+	while (tokens && *tokens && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
 	{
+		printf("TOKENS IN ft_extractarguments %p\n", tokens);
+		printf("TOKEN:|%s| at %p, its address is %p\n", *tokens, *tokens, tokens);
 		if (!ft_strcmp(*tokens, "<<"))  // if encountered <<
 			err = ft_parseheredoc(&tokens, &(cmd->heredoc));
 		else if (!ft_strcmp(*tokens, ">"))  // if encoutered >
-			err = ft_parsefiletoken(&tokens, &(cmd->out), O_WRONLY|O_CREAT);
+			err = ft_parsefiletoken(&tokens, &(cmd->out), O_WRONLY | O_CREAT);
 		else if (!ft_strcmp(*tokens, ">>"))  // if encoutered >>
-			err = ft_parsefiletoken(&tokens, &(cmd->out), O_APPEND|O_CREAT);
+			err = ft_parsefiletoken(&tokens, &(cmd->out), O_APPEND | O_CREAT);
 		else if (!ft_strcmp(*tokens, "<"))  // if encoutered <
 			err = ft_parsefiletoken(&tokens, &(cmd->in), O_RDONLY);
 		else // encountered an arg
@@ -121,30 +118,35 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 			ft_darrclear(args);
 			return (NULL);
 		}
+		printf("ENDED READING TOKEN AT %p\n", *tokens);
 		tokens++;
+		printf("TOKEN IS NOW at %p, its address is %p\n", *tokens, tokens);
 	}
 	ft_darrpushback(args, NULL);
 	cmd->args = args->ptr;
 	free(args);
-	return (args);
+	printf("RETURNING ARGS\n");
+	return (args->ptr);
 }
 
 t_cmd	*ft_parsecommands(char **tokens)
 {
+	//tokens = 0;
 	int		i;
 	t_cmd	*commands;
 	int		pipefd[2];
 
-	commands = ft_calloc(g_data.cmds + 1, sizeof(t_cmd)); // +1 so that the array of `t_cmd`s is null-terminated
+	commands = malloc(g_data.cmds * sizeof(t_cmd));
 	i = 0;
 	while (i < g_data.cmds)
 	{
 		commands[i].in = 0;
 		commands[i].out = 1;
 		commands[i].i = i;
+		printf("TOKEN IN ft_parsecommands %p\n", tokens);
 		if (!(tokens = ft_extractarguments(&commands[i], tokens))) // error while parsing tokens
 		{
-			ft_freecomands(&commands); // free commands and close FDs
+			ft_freecomands(commands); // free commands and close FDs
 			return (NULL);
 		}
 		if (i)
@@ -175,19 +177,31 @@ void	ft_interpret(char *line)
 	// TAKE CARE OF THIS COMMENT BLOCK AND UNCOMMENT IT
 	// ! treatment of special characters is needed !
 	tokens = ft_tokenize(line);
+	int x = 0;
+
+	printf("tokens originally: %p\n", tokens);
+	printf("tokens originally (dereferenced): %p\n", *tokens);
+	while (tokens[x])
+	{
+		printf("token%d:|%s| at %p, its address is %p\n", x, tokens[x], tokens[x], &tokens[x]);
+		x++;
+	}
+	printf("token%d:|%s| at %p, its address is %p\n", x, tokens[x], tokens[x], &tokens[x]);
+	
 	g_data.cmds = ft_cmds(tokens);
+	printf("COUNTED CMDS\n");
 	if (!(commands = ft_parsecommands(tokens)))
 	{
 		ft_freematrix(tokens);
 		return ;
 	}
-
 	g_data.prcs = g_data.cmds - ft_isbuiltin(commands[0].args[0]);
 	g_data.family = ft_calloc(g_data.prcs, sizeof(pid_t));
 	i = 0;
 	j = 0;
 	while (i < g_data.cmds)
 	{
+		// this has to be tested separately
 		if (g_data.cmds == 1 && ft_isbuiltin(commands[0].args[0]))
 			ft_exec(&commands[i]);
 		else
@@ -199,26 +213,33 @@ void	ft_interpret(char *line)
 			else if (g_data.family[j] < 0)
 			{
 				perror("minishell");
-				while (--j >= 0)
-					kill(g_data.family[j], SIGINT);
 				break ;
 			}
+			waitpid(g_data.family[i], &g_data.status, 0);
+			if (commands[i].out != 1)
+				close(commands[i].out);
+			if (commands[i].in != 0 && commands[i].in != 1)
+				close(commands[i].in);
 			j++;
 		}
 		i++;
 	}
 	i = 0;
-	while (i < g_data.prcs)
-		waitpid(g_data.family[i++], &g_data.status, 0);
+	// while (i < g_data.prcs)
+	// 	waitpid(g_data.family[i++], &g_data.status, 0);
 	
 	// free stuff
+	
 	ft_freematrix(tokens);
+	printf("FREED TOKENS\n");
 	ft_freecomands(commands); // also closes FDs
+	printf("FREED COMMANDS\n");
 	if (g_data.family)
 	{
 		free(g_data.family);
 		g_data.family = NULL;
 	}
+	printf("FREED FAMILY\n");
 }
 
 int	ft_isbuiltin(char *builtin)
@@ -278,38 +299,17 @@ int		ft_isquoted(char *str, char c)
 	return (0);
 }
 
-void	ft_abort(t_cmd *cmd)
-{
-	int	i;
-
-	i = cmd->i + 1;
-	while (i < g_data.prcs)
-		kill(g_data.family[i++], SIGINT);
-	if (cmd->cond == or)
-		exit(0);
-	else
-		exit(1);
-}
-
 void	ft_exec(t_cmd *cmd)
 {
 	int		i;
 	char	*temp;
 	char	*newpath;
 	char	**paths;
-	int		status;
 
-	// wait for the previous one
-	if (cmd->i)
-	{
-		waitpid(g_data.family[cmd->i - 1], &status, 0);
-		if ((status && cmd->cond == and) || (!status && cmd->cond == or))
-			ft_abort(cmd);
-	}
 	// associating fds
 	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
 		if (dup2(cmd->in, 0) == -1 || dup2(cmd->out, 1) == -1)
-			ft_abort(cmd);
+			exit(errno);
 	// receiving heredoc (<<)
 	if (cmd->heredoc)
 	{
@@ -338,7 +338,7 @@ void	ft_exec(t_cmd *cmd)
 	// exec
 	if (cmd->args[0][0] == '/')
 	{
-		execve(cmd->args[0], cmd->args, g_data.env) == -1;
+		execve(cmd->args[0], cmd->args, g_data.env->ptr);
 		ft_error(cmd->args[0], "No such file or directory");
 	}
 	else
@@ -355,7 +355,7 @@ void	ft_exec(t_cmd *cmd)
 					temp = ft_strjoin(paths[i], "/");
 					newpath = ft_strjoin(temp, cmd->args[0]);
 					free(temp);
-					execve(newpath, cmd->args, g_data.env);
+					execve(newpath, cmd->args, g_data.env->ptr);
 					free(newpath);
 					i++;
 				}

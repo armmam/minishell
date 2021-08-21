@@ -76,7 +76,7 @@ void	ft_appendtoken(char **token, const char *new, size_t len, int expand)
 int		ft_extracttoken(const char *line, char **token)
 {
 	size_t	i, j, expand;
-	char	*tmp, *match;
+	char	*tmp;
 
 	i = 0; // index of the first char in the part of token about to be appended to `token`
 	j = 0; // index of the current char

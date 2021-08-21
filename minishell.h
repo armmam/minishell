@@ -36,13 +36,6 @@ enum	e_builtins
 	__exit	
 };
 
-enum	e_operators
-{
-	and,
-	or,
-	none
-};
-
 typedef struct s_cmd
 {
 	// index (to wait and abort properly)
@@ -90,5 +83,6 @@ int		ft_env(t_cmd *cmd);
 void	ft_abort(t_cmd *cmd);
 char	**ft_tokenize(const char *line);
 int		ft_isbuiltin(char *builtin);
+char	*ft_refineline(char *line);
 
 #endif
