@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:13:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/19 22:07:56 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/21 17:37:42 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void			ft_darrpushback(t_darr *darr, char *item)
 	size_t	new_cap;
 	char	**new_ptr;
 
-	if (!darr || !item)
+	if (!darr)
 		return ;
 	/*
 	 * replace the underlying array with one with more capacity if darr->ptr
