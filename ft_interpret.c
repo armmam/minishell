@@ -143,6 +143,8 @@ t_cmd	*ft_parsecommands(char **tokens)
 	t_cmd	*commands;
 	int		pipefd[2];
 
+	if (!tokens || !(*tokens))
+		return (NULL);
 	commands = ft_calloc(g_data.cmds, sizeof(t_cmd));
 	i = 0;
 	if (!ft_strcmp(tokens[i], "|"))
