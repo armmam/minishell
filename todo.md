@@ -1,3 +1,15 @@
+## Piping
+
+```
+bash-3.2$ | wc
+bash: syntax error near unexpected token `|'
+```
+
+```
+bash-3.2$ ls | | wc
+bash: syntax error near unexpected token `|'
+```
+
 ## ft_tokenize
 The naïve approach: use space symbols as delimiters while treating several successive space symbols as one delimiter
 
