@@ -136,6 +136,8 @@ t_cmd	*ft_parsecommands(char **tokens)
 	t_cmd	*commands;
 	int		pipefd[2];
 
+	if (!tokens || !(*tokens))
+		return (NULL);
 	commands = ft_calloc(g_data.cmds, sizeof(t_cmd));
 	i = 0;
 	while (i < g_data.cmds)
@@ -187,7 +189,7 @@ void	ft_interpret(char *line)
 		x++;
 	}
 	printf("token%d:|%s| at %p, its address is %p\n", x, tokens[x], tokens[x], &tokens[x]);
-	
+
 	g_data.cmds = ft_cmds(tokens);
 	printf("COUNTED CMDS\n");
 	if (!(commands = ft_parsecommands(tokens)))
