@@ -3,35 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/12/16 23:47:04 by aisraely          #+#    #+#             */
-/*   Updated: 2020/12/17 15:26:34 by aisraely         ###   ########.fr       */
+/*   Created: 2021/04/16 20:22:12 by amamian           #+#    #+#             */
+/*   Updated: 2021/08/20 22:04:58 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int	ft_atoi(const char *str)
+int			ft_atoi(const char *str)
 {
-	long	result;
-	int		minus;
+	unsigned long long	ret;
+	bool				neg;
 
-	minus = 1;
+	ret = 0;
 	while (ft_isspace(*str))
 		str++;
-	if (*str == '-' || *str == '+')
-	{
-		if (*str == '-')
-			minus *= -1;
+	if ((neg = (*str == '-')) || *str == '+')
 		str++;
-	}
-	result = 0;
+	ret = 0;
 	while (ft_isdigit(*str))
-	{
-		result *= 10;
-		result += (*str) - '0';
-		str++;
-	}
-	return (result * minus);
+		ret = ret * 10 + (*str++ - '0');
+	if (ret > LONG_MAX && !neg)
+		return (-1);
+	if (ret > LONG_MAX - 1 && neg)
+		return (0);
+	return (neg ? -ret : ret);
 }

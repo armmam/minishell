@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/14 14:44:22 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/03 09:25:41 by amamian          ###   ########.fr       */
+/*   Updated: 2021/04/20 16:24:36 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 char	*ft_strchr(const char *s, int c)
 {
-	while (1)
+	while (true)
 	{
 		if (*s == (char)c)
 			return ((char *)(s));
