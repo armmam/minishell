@@ -25,6 +25,8 @@
 # include <curses.h>
 # include <term.h>
 
+int	parentid;
+
 enum	e_builtins
 {
 	__echo = 1,

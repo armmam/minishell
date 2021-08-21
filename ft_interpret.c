@@ -9,7 +9,7 @@ int	ft_cmds(char **tokens)
 		return (0);
 	count = 1;
 	i = 0;
-	printf("ABOUT TO START COUNTING\n");
+	// printf("ABOUT TO START COUNTING\n");
 	while (tokens[i])
 	{
 		if (tokens[i][0] == '|' && tokens[i][1] == '\0')
@@ -31,10 +31,10 @@ void	ft_freecomands(t_cmd *cmds)
 	{
 		if (cmds[i].heredoc)
 			free(cmds[i].heredoc);
-		printf("FREED HEREDOC\n");
+		// printf("FREED HEREDOC\n");
 		if (cmds[i].args)
 			ft_freematrix(cmds[i].args);
-		printf("FREED ARGS\n");
+		// printf("FREED ARGS\n");
 		i++;
 	}
 	free(cmds);
@@ -95,14 +95,14 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 	int		err;
 	t_darr	*args;
 
-	printf("TOKENS RECEIVED %p\n", tokens);
-	printf("TOKENS RECEIVED (dereferenced) %p\n", *tokens);
+	// printf("TOKENS RECEIVED %p\n", tokens);
+	// printf("TOKENS RECEIVED (dereferenced) %p\n", *tokens);
 	args = ft_darrnew(0);
 	err = 0;
-	while (tokens && *tokens && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
+	while (*tokens && ft_strcmp(*tokens, "|")) // haven't run out of tokens and haven't encountered a pipe
 	{
-		printf("TOKENS IN ft_extractarguments %p\n", tokens);
-		printf("TOKEN:|%s| at %p, its address is %p\n", *tokens, *tokens, tokens);
+		// printf("TOKENS IN ft_extractarguments %p\n", tokens);
+		// printf("TOKEN:|%s| at %p, its address is %p\n", *tokens, *tokens, tokens);
 		if (!ft_strcmp(*tokens, "<<"))  // if encountered <<
 			err = ft_parseheredoc(&tokens, &(cmd->heredoc));
 		else if (!ft_strcmp(*tokens, ">"))  // if encoutered >
@@ -118,15 +118,22 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 			ft_darrclear(args);
 			return (NULL);
 		}
-		printf("ENDED READING TOKEN AT %p\n", *tokens);
+		// printf("ENDED READING TOKEN AT %p\n", *tokens);
 		tokens++;
-		printf("TOKEN IS NOW at %p, its address is %p\n", *tokens, tokens);
+		// printf("TOKEN IS NOW at %p, its address is %p\n", *tokens, tokens);
+	}
+	if (*tokens && !ft_strcmp(*tokens, "|") && ft_strcmp(*(tokens + 1), "|")) // if the current one is `|` and the next one is not
+		tokens++;
+	else if (*tokens && !ft_strcmp(*tokens, "|") && !ft_strcmp(*(tokens + 1), "|")) // if both the current and the next ones are `|`
+	{
+		ft_error(*tokens, "syntax error");
+		return (NULL);
 	}
 	ft_darrpushback(args, NULL);
 	cmd->args = args->ptr;
 	free(args);
-	printf("RETURNING ARGS\n");
-	return (args->ptr);
+	// printf("RETURNING TOKENS\n");
+	return (tokens);
 }
 
 t_cmd	*ft_parsecommands(char **tokens)
@@ -140,12 +147,17 @@ t_cmd	*ft_parsecommands(char **tokens)
 		return (NULL);
 	commands = ft_calloc(g_data.cmds, sizeof(t_cmd));
 	i = 0;
+	if (!ft_strcmp(tokens[i], "|"))
+	{
+		ft_error(tokens[i], "syntax error");
+		return NULL;
+	}
 	while (i < g_data.cmds)
 	{
 		commands[i].in = 0;
 		commands[i].out = 1;
 		commands[i].i = i;
-		printf("TOKEN IN ft_parsecommands %p\n", tokens);
+		// printf("TOKEN IN ft_parsecommands %p\n", tokens);
 		if (!(tokens = ft_extractarguments(&commands[i], tokens))) // error while parsing tokens
 		{
 			ft_freecomands(commands); // free commands and close FDs
@@ -154,6 +166,7 @@ t_cmd	*ft_parsecommands(char **tokens)
 		if (i)
 		{
 			pipe(pipefd);
+			printf("CREATED A PIPE WITH FD'S %d AND %d\n", pipefd[0], pipefd[1]);
 			if (commands[i - 1].out != 1)
 				close(pipefd[1]);
 			else
@@ -179,19 +192,19 @@ void	ft_interpret(char *line)
 	// TAKE CARE OF THIS COMMENT BLOCK AND UNCOMMENT IT
 	// ! treatment of special characters is needed !
 	tokens = ft_tokenize(line);
-	int x = 0;
+	// int x = 0;
 
-	printf("tokens originally: %p\n", tokens);
-	printf("tokens originally (dereferenced): %p\n", *tokens);
-	while (tokens[x])
-	{
-		printf("token%d:|%s| at %p, its address is %p\n", x, tokens[x], tokens[x], &tokens[x]);
-		x++;
-	}
-	printf("token%d:|%s| at %p, its address is %p\n", x, tokens[x], tokens[x], &tokens[x]);
-
+	// printf("tokens originally: %p\n", tokens);
+	// printf("tokens originally (dereferenced): %p\n", *tokens);
+	// while (tokens[x])
+	// {
+	// 	printf("token%d:|%s| at %p, its address is %p\n", x, tokens[x], tokens[x], &tokens[x]);
+	// 	x++;
+	// }
+	// printf("token%d:|%s| at %p, its address is %p\n", x, tokens[x], tokens[x], &tokens[x]);
+	
 	g_data.cmds = ft_cmds(tokens);
-	printf("COUNTED CMDS\n");
+	// printf("COUNTED CMDS\n");
 	if (!(commands = ft_parsecommands(tokens)))
 	{
 		ft_freematrix(tokens);
@@ -210,6 +223,19 @@ void	ft_interpret(char *line)
 		{
 			// spinning out child processes
 			g_data.family[j] = fork();
+			if (parentid != getpid())
+			{
+				printf("self%d; parent%d\n", getpid(), getppid());
+				printf("command %d info at %p: in%d, out%d\n", i, &commands[i], commands[i].in, commands[i].out);
+				printf("printing cmd'sS args:\n");
+				int iter = 0;
+				while (commands[i].args[iter])
+				{
+					printf("%i:%s\n", iter, commands[i].args[iter]);
+					iter++;
+				}
+				printf("\n");
+			}
 			if (g_data.family[j] == 0) // child process
 				ft_exec(&commands[i]); // child process will exit here
 			else if (g_data.family[j] < 0)
@@ -232,16 +258,16 @@ void	ft_interpret(char *line)
 	
 	// free stuff
 	
-	ft_freematrix(tokens);
-	printf("FREED TOKENS\n");
+	// ft_freematrix(tokens);
+	// printf("FREED TOKENS\n");
 	ft_freecomands(commands); // also closes FDs
-	printf("FREED COMMANDS\n");
+	// printf("FREED COMMANDS\n");
 	if (g_data.family)
 	{
 		free(g_data.family);
 		g_data.family = NULL;
 	}
-	printf("FREED FAMILY\n");
+	// printf("FREED FAMILY\n");
 }
 
 int	ft_isbuiltin(char *builtin)
@@ -308,10 +334,17 @@ void	ft_exec(t_cmd *cmd)
 	char	*newpath;
 	char	**paths;
 
+	printf("INSIDE FT_EXEC: self%d; parent%d\n", getpid(), getppid());
+
 	// associating fds
 	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
-		if (dup2(cmd->in, 0) == -1 || dup2(cmd->out, 1) == -1)
+	{
+		int dupin = dup2(cmd->in, 0);
+		int dupout = dup2(cmd->out, 1);
+		dprintf(2, "cmd.in is %d and cmd.out is %d\n", cmd->in, cmd->out);
+		if (dupin == -1 || dupout == -1)
 			exit(errno);
+	}
 	// receiving heredoc (<<)
 	if (cmd->heredoc)
 	{
