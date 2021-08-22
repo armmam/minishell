@@ -60,9 +60,9 @@ int		ft_parseheredoc(char ***tokens, char **heredoc)
 /*
  * returns 0 upon success, 1 upon failure
  */
-int		ft_parsefiletoken(char ***tokens, int *cmd_fd, int open_flag)
+int		ft_parsefiletoken(char ***tokens, int *cmd_fd, char dir, int open_flag)
 {
-	int		fd;
+	int	fd;
 
 	(*tokens)++;
 	if (*tokens == NULL || ((*tokens)[0][0] == '|' && (*tokens)[0][1] == '\0')) // </>>/> is the last token in the command
@@ -70,9 +70,9 @@ int		ft_parsefiletoken(char ***tokens, int *cmd_fd, int open_flag)
 		ft_error(*(*tokens - 1), "syntax error");
 		return (1);
 	}
-	if (*cmd_fd != 0) // if already encoutered </>>/> before for this command
+	if ((dir == '>' && *cmd_fd != 1) || (dir == '<' && *cmd_fd != 0)) // if already encoutered </>>/> before for this command
 		close(*cmd_fd);
-	if ((fd = open(**tokens, open_flag)) == -1)
+	if ((fd = open(**tokens, open_flag, 0644)) == -1)
 	{
 		perror("minishell");
 		return (1);
@@ -106,11 +106,11 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 		if (!ft_strcmp(*tokens, "<<"))  // if encountered <<
 			err = ft_parseheredoc(&tokens, &(cmd->heredoc));
 		else if (!ft_strcmp(*tokens, ">"))  // if encoutered >
-			err = ft_parsefiletoken(&tokens, &(cmd->out), O_WRONLY | O_CREAT);
+			err = ft_parsefiletoken(&tokens, &(cmd->out), '>', O_WRONLY | O_CREAT);
 		else if (!ft_strcmp(*tokens, ">>"))  // if encoutered >>
-			err = ft_parsefiletoken(&tokens, &(cmd->out), O_APPEND | O_CREAT);
+			err = ft_parsefiletoken(&tokens, &(cmd->out), '>', O_APPEND | O_CREAT);
 		else if (!ft_strcmp(*tokens, "<"))  // if encoutered <
-			err = ft_parsefiletoken(&tokens, &(cmd->in), O_RDONLY);
+			err = ft_parsefiletoken(&tokens, &(cmd->in), '<', O_RDONLY);
 		else // encountered an arg
 			ft_darrpushback(args, ft_strdup(*tokens));
 		if (err)
@@ -138,7 +138,6 @@ char	**ft_extractarguments(t_cmd *cmd, char **tokens)
 
 t_cmd	*ft_parsecommands(char **tokens)
 {
-	//tokens = 0;
 	int		i;
 	t_cmd	*commands;
 	int		pipefd[2];
@@ -166,7 +165,7 @@ t_cmd	*ft_parsecommands(char **tokens)
 		if (i)
 		{
 			pipe(pipefd);
-			printf("CREATED A PIPE WITH FD'S %d AND %d\n", pipefd[0], pipefd[1]);
+			//printf("CREATED A PIPE WITH FD'S %d AND %d\n", pipefd[0], pipefd[1]);
 			if (commands[i - 1].out != 1)
 				close(pipefd[1]);
 			else
@@ -225,9 +224,9 @@ void	ft_interpret(char *line)
 			g_data.family[j] = fork();
 			if (parentid != getpid())
 			{
-				printf("self%d; parent%d\n", getpid(), getppid());
-				printf("command %d info at %p: in%d, out%d\n", i, &commands[i], commands[i].in, commands[i].out);
-				printf("printing cmd'sS args:\n");
+				dprintf(2, "self%d; parent%d\n", getpid(), getppid());
+				dprintf(2, "command %d info at %p: in%d, out%d\n", i, &commands[i], commands[i].in, commands[i].out);
+				dprintf(2, "printing cmd's args:\n");
 				int iter = 0;
 				while (commands[i].args[iter])
 				{
@@ -401,7 +400,8 @@ void	ft_exec(t_cmd *cmd)
 				ft_error(cmd->args[0], "No such file or directory");
 		}
 	}
-	exit(1);
+	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
+		exit(1);
 }
 
 void	ft_error(char *name, char *desc)
