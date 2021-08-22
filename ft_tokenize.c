@@ -130,7 +130,7 @@ int		ft_extracttoken(const char *line, char **token)
 	return (j);
 }
 
-// PLEASE MERGE THIS ONE WITH ft_parsecommands SO YOU'RE ABLE TO CORRECTLY
+// PLEASE MERGE THIS ONE WITH ft_parse_commands SO YOU'RE ABLE TO CORRECTLY
 // REMOVE ()S AND SET RESPECTIVE COMMAND'S cond FIELD.
 // removes ""s, ()s and other trash, uses ft_refineline on the arguments of commands
 char	**ft_tokenize(const char *line)

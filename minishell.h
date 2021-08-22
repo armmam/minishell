@@ -86,5 +86,8 @@ void	ft_abort(t_cmd *cmd);
 char	**ft_tokenize(const char *line);
 int		ft_isbuiltin(char *builtin);
 char	*ft_refineline(char *line);
+t_cmd	*ft_parse_commands(char **tokens);
+void	ft_free_commands(t_cmd *cmds, char **tokens);
+int		ft_isquoted(char *str, char c);
 
 #endif

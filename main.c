@@ -6,7 +6,6 @@ void	ft_reprompt(int arg)
 	ft_putstr_fd("\nminishell$ ", 1);
 }
 
-
 int	main(int argc, char **argv, char **environ)
 {
 	char			*line;
