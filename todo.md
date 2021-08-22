@@ -1,3 +1,58 @@
+## Several heredocs
+
+<details>
+<summary>Several heredocs</summary>
+<p>
+
+```
+bash-3.2$ << 1 << 2 cat
+> blah
+> and
+> 1
+> then
+> now
+> 2
+then
+now
+```
+
+```
+bash-3.2$ << 1 << 2 cat
+> blah
+> and
+> 2
+>
+```
+
+```
+bash-3.2$ << 1 << 2 << 3 cat
+> and
+> then
+> 2
+> one day
+> 3
+> you
+> 1
+> find
+> 2
+> ten
+> years
+> 2
+> have
+> got
+> behind
+> 3
+ten
+years
+2
+have
+got
+behind
+```
+
+</p>
+</details>
+
 ## Piping
 
 ```
@@ -9,6 +64,10 @@ bash: syntax error near unexpected token `|'
 bash-3.2$ ls | | wc
 bash: syntax error near unexpected token `|'
 ```
+
+## Opening files
+
+check permissions: they should be `644`.
 
 ## ft_tokenize
 The naïve approach: use space symbols as delimiters while treating several successive space symbols as one delimiter
