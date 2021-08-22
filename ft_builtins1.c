@@ -90,10 +90,10 @@ int	ft_pwd(t_cmd *cmd)
 {
 	char	*pwd;
 
-	pwd = NULL;
-	getcwd(pwd, 0);
+	pwd = getcwd(NULL, 0);
 	ft_putstr_fd(pwd, cmd->out);
 	ft_putstr_fd("\n", cmd->out);
+	free(pwd);
 	return (0);
 }
 
