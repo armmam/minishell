@@ -12,6 +12,8 @@ void	ft_receive_heredoc(t_cmd *cmd)
 	if (cmd->heredoc)
 	{
 		pipe(pipefd);
+		if (cmd->in != 0)
+			close(cmd->in);
 		cmd->in = pipefd[0];
 		if (ft_isquoted(cmd->heredoc, '\'') || ft_isquoted(cmd->heredoc, '\"'))
 		{
@@ -47,7 +49,8 @@ void	ft_exec(t_cmd *cmd)
 	char	**paths;
 
 	printf("INSIDE FT_EXEC: self%d; parent%d\n", getpid(), getppid());
-
+	// receiving heredoc (<<)
+	ft_receive_heredoc(cmd);
 	// associating fds
 	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
 	{
@@ -57,8 +60,6 @@ void	ft_exec(t_cmd *cmd)
 		if (dupin == -1 || dupout == -1)
 			exit(EXIT_FAILURE);
 	}
-	// receiving heredoc (<<)
-	ft_receive_heredoc(cmd);
 	// exec
 	if (cmd->args[0][0] == '/')
 	{
