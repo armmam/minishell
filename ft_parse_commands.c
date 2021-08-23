@@ -116,16 +116,15 @@ t_cmd	*ft_parse_commands(char **tokens)
 		commands[i].in = 0;
 		commands[i].out = 1;
 		commands[i].i = i;
-		// printf("TOKEN IN ft_parse_commands %p\n", tokens);
 		if (!(tokens = ft_extract_arguments(&commands[i], tokens))) // error while parsing tokens
 		{
-			ft_free_commands(commands, tokens); // free commands and close FDs
+			ft_free_commands(commands, tokens); // free commands
 			return (NULL);
 		}
 		if (i)
 		{
 			pipe(pipefd);
-			//printf("CREATED A PIPE WITH FD'S %d AND %d\n", pipefd[0], pipefd[1]);
+			printf("CREATED A PIPE WITH FD'S %d AND %d\n", pipefd[0], pipefd[1]);
 			if (commands[i - 1].out != 1)
 				close(pipefd[1]);
 			else

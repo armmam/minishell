@@ -9,7 +9,6 @@ int	ft_count_commands(char **tokens)
 		return (0);
 	count = 1;
 	i = 0;
-	// printf("ABOUT TO START COUNTING\n");
 	while (tokens[i])
 	{
 		if (tokens[i][0] == '|' && tokens[i][1] == '\0')
@@ -50,13 +49,55 @@ void	ft_free_commands(t_cmd *cmds, char **tokens)
 	}
 }
 
+t_cmd	*ft_find_command(pid_t pid, t_cmd *commands)
+{
+	int	i;
+
+	i = 0;
+	while (i < g_data.cmds)
+	{
+		if (g_data.family[i] == pid)
+			return (&commands[i]);
+		i++;
+	}
+	return (NULL);
+}
+
+void	ft_block_main_process(t_cmd *commands)
+{
+	int		i;
+	t_cmd	*selected;
+	pid_t	terminated;
+
+	i = 0;
+	while (i < g_data.cmds)
+	{
+		terminated = waitpid(-1, &g_data.status, 0);
+		printf("TERMINATED %d\n", terminated);
+		selected = ft_find_command(terminated, commands);
+		printf("CMD IS AT %p\n", selected);
+		if (selected)
+		{
+			if (selected->out != 1)
+			{
+				printf("CLOSED %d\n", selected->out);
+				close(selected->out);
+			}
+			if (selected->in != 0 && selected->in != 1)
+			{
+				printf("CLOSED %d\n", selected->in);
+				close(selected->in);
+			}
+		}
+		i++;
+	}
+}
+
 void	ft_interpret(char *line)
 {
 	int		i;
-	int		j;
 	t_cmd	*commands;
 	char	**tokens;
-
 
 	// TAKE CARE OF THIS COMMENT BLOCK AND UNCOMMENT IT
 	// ! treatment of special characters is needed !
@@ -74,24 +115,24 @@ void	ft_interpret(char *line)
 	
 	g_data.cmds = ft_count_commands(tokens);
 	// printf("COUNTED CMDS\n");
-	if (!(commands = ft_parse_commands(tokens)))
+	commands = ft_parse_commands(tokens);
+	if (!commands)
 	{
 		ft_freematrix(tokens);
 		return ;
 	}
-	g_data.prcs = g_data.cmds - ft_isbuiltin(commands[0].args[0]);
-	g_data.family = ft_calloc(g_data.prcs, sizeof(pid_t));
-	i = 0;
-	j = 0;
-	while (i < g_data.cmds)
+	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
+	if (g_data.cmds == 1 && ft_isbuiltin(commands[0].args[0]))
+		ft_exec(&commands[0]);
+	else
 	{
-		// this has to be tested separately
-		if (g_data.cmds == 1 && ft_isbuiltin(commands[0].args[0]))
-			ft_exec(&commands[i]);
-		else
+		i = 0;
+		while (i < g_data.cmds)
 		{
 			// spinning out child processes
-			g_data.family[j] = fork();
+			g_data.family[i] = fork();
+			if (parentid == getpid())
+				printf("CREATED %d\n", g_data.family[i]);
 			if (parentid != getpid())
 			{
 				dprintf(2, "self%d; parent%d\n", getpid(), getppid());
@@ -105,22 +146,13 @@ void	ft_interpret(char *line)
 				}
 				printf("\n");
 			}
-			if (g_data.family[j] == 0) // child process
+			if (g_data.family[i] == 0) // child process
 				ft_exec(&commands[i]); // child process will exit here
-			else if (g_data.family[j] < 0)
-			{
-				perror("minishell");
-				break ;
-			}
-			waitpid(g_data.family[i], &g_data.status, 0);
-			if (commands[i].out != 1)
-				close(commands[i].out);
-			if (commands[i].in != 0 && commands[i].in != 1)
-				close(commands[i].in);
-			j++;
+			i++;
 		}
-		i++;
 	}
+	if (!(g_data.cmds == 1 && ft_isbuiltin(commands[0].args[0])))
+		ft_block_main_process(commands);
 	ft_free_commands(commands, tokens);
 }
 

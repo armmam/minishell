@@ -50,7 +50,7 @@ void	ft_exec(t_cmd *cmd)
 
 	printf("INSIDE FT_EXEC: self%d; parent%d\n", getpid(), getppid());
 	// receiving heredoc (<<)
-	ft_receive_heredoc(cmd);
+	// ft_receive_heredoc(cmd);
 	// associating fds
 	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
 	{
@@ -91,7 +91,6 @@ void	ft_exec(t_cmd *cmd)
 				ft_error(cmd->args[0], "No such file or directory");
 		}
 	}
-	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
+	if (!(g_data.cmds == 1 && ft_isbuiltin(cmd->args[0])))
 		exit(1);
-	// printf("LEAVING FT_EXEC\n");
 }
