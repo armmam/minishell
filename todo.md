@@ -1,3 +1,56 @@
+# Annihilation list
+
+## Basic tests with child processes
+
+```
+bash-3.2$ export ARG=ee
+bash-3.2$ echo $ARG
+ee
+```
+```
+bash-3.2$ echo blah | export ABC=abc
+bash-3.2$ echo $ABC
+```
+```
+bash-3.2$ ls | exit
+```
+
+## Heredocs with inputs from files
+
+```
+bash-3.2$ echo "hiiii hellloooo worldecho hello" > 1
+bash-3.2$ <1 grep << hey hiiii
+> asadadasdasd
+> asdadasdasd
+> hiiii THIS WAS INSIDE THE HEREDOC!!!!
+> hey
+hiiii THIS WAS INSIDE THE HEREDOC!!!!
+```
+
+## Heredocs with no commands
+
+```
+bash-3.2$ << v | cat
+> asdasd
+> asfasf
+> v
+```
+
+```
+bash-3.2$ << 1 << 2 | cat
+> skdfj
+> 1
+> djkflsl
+> sdkf
+> 2
+```
+
+```
+bash-3.2$ echo shine | << v | cat
+> sdkfl
+> v
+```
+
 ## Several heredocs
 
 <details>
@@ -48,6 +101,20 @@ years
 have
 got
 behind
+```
+
+```
+bash-3.2$ << hey cat > TEST | << hello grep hey
+> djaisdaisjdasd
+> hello
+> asdasdasd
+> hey
+> now we talkin
+> heyooo
+> hey!!
+> hello
+heyooo
+hey!!
 ```
 
 </p>
