@@ -48,7 +48,7 @@ typedef struct s_cmd
 	int		in;
 	int		out;
 	// array of heredocs (<<). if absent, please make it NULL
-	char	*heredoc;
+	t_darr	*heredoc;
 }				t_cmd;
 
 typedef struct s_env

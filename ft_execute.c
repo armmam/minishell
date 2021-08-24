@@ -1,45 +1,45 @@
 #include "minishell.h"
 
-void	ft_receive_heredoc(t_cmd *cmd)
-{
-	int		pipefd[2];
-	int		refined;
-	char	*stopword;
-	char	*temp;
+// void	ft_receive_heredoc(t_cmd *cmd)
+// {
+// 	int		pipefd[2];
+// 	int		refined;
+// 	char	*stopword;
+// 	char	*temp;
 
-	refined = 1;
-	stopword = cmd->heredoc;
-	if (cmd->heredoc)
-	{
-		pipe(pipefd);
-		if (cmd->in != 0)
-			close(cmd->in);
-		cmd->in = pipefd[0];
-		if (ft_isquoted(cmd->heredoc, '\'') || ft_isquoted(cmd->heredoc, '\"'))
-		{
-			stopword[ft_strlen(stopword) - 1] = '\0';
-			stopword++;
-			refined = 0;
-		}
-		printf("HEREDOC IS |%s| (refined=%d)\n", cmd->heredoc, refined);
-		while (1)
-		{
-			temp = readline("> ");
-			if (!ft_strcmp(temp, stopword))
-			{
-				free(temp);
-				printf("BROKE\n");
-				close(pipefd[1]);
-				break ;
-			}
-			if (refined)
-				temp = ft_refineline(temp);
-			ft_putstr_fd(temp, pipefd[1]);
-			ft_putstr_fd("\n", pipefd[1]);
-			free(temp);
-		}
-	}
-}
+// 	refined = 1;
+// 	stopword = cmd->heredoc;
+// 	if (cmd->heredoc)
+// 	{
+// 		pipe(pipefd);
+// 		if (cmd->in != 0)
+// 			close(cmd->in);
+// 		cmd->in = pipefd[0];
+// 		if (ft_isquoted(cmd->heredoc, '\'') || ft_isquoted(cmd->heredoc, '\"'))
+// 		{
+// 			stopword[ft_strlen(stopword) - 1] = '\0';
+// 			stopword++;
+// 			refined = 0;
+// 		}
+// 		printf("HEREDOC IS |%s| (refined=%d)\n", cmd->heredoc, refined);
+// 		while (1)
+// 		{
+// 			temp = readline("> ");
+// 			if (!ft_strcmp(temp, stopword))
+// 			{
+// 				free(temp);
+// 				printf("BROKE\n");
+// 				close(pipefd[1]);
+// 				break ;
+// 			}
+// 			if (refined)
+// 				temp = ft_refineline(temp);
+// 			ft_putstr_fd(temp, pipefd[1]);
+// 			ft_putstr_fd("\n", pipefd[1]);
+// 			free(temp);
+// 		}
+// 	}
+// }
 
 void	ft_close_descriptors(void)
 {

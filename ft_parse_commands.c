@@ -3,7 +3,7 @@
 /*
  * returns 0 upon success, 1 upon failure
  */
-int		ft_parseheredoc(char ***tokens, char **heredoc)
+int		ft_parseheredoc(char ***tokens, t_cmd *cmd)
 {
 	(*tokens)++;
 	if (*tokens == NULL || ((*tokens)[0][0] == '|' && (*tokens)[0][1] == '\0')) // << is the last token in the command
@@ -11,9 +11,9 @@ int		ft_parseheredoc(char ***tokens, char **heredoc)
 		ft_error(*(*tokens - sizeof(char *)), "syntax error");
 		return (1);
 	}
-	if (*heredoc) // if already encountered any heredocs
-		free(*heredoc); // then free memory allocated for it
-	*heredoc = ft_strdup(**tokens);
+	if (!cmd->heredoc) // if have not encountered any heredocs before
+		cmd->heredoc = ft_darrnew(0);
+	ft_darrpushback(cmd->heredoc, ft_strdup(**tokens));
 	return (0);
 }
 
@@ -64,7 +64,7 @@ char	**ft_extract_arguments(t_cmd *cmd, char **tokens)
 		// printf("TOKENS IN ft_extract_arguments %p\n", tokens);
 		// printf("TOKEN:|%s| at %p, its address is %p\n", *tokens, *tokens, tokens);
 		if (!ft_strcmp(*tokens, "<<"))  // if encountered <<
-			err = ft_parseheredoc(&tokens, &(cmd->heredoc));
+			err = ft_parseheredoc(&tokens, cmd);
 		else if (!ft_strcmp(*tokens, ">"))  // if encoutered >
 			err = ft_parsefiletoken(&tokens, &(cmd->out), '>', O_WRONLY | O_CREAT);
 		else if (!ft_strcmp(*tokens, ">>"))  // if encoutered >>
@@ -134,6 +134,38 @@ t_cmd	*ft_parse_commands(char **tokens)
 			else
 				commands[i].in = pipefd[0];
 		}
+		if (commands[i].heredoc)
+		{
+			size_t j = 0;
+			while (j < commands[i].heredoc->len)
+			{
+				int	refined = 0;
+				char	*heredoc, *temp;
+				if (ft_isquoted(commands[i].heredoc->ptr[j], '\''))
+				{
+					heredoc = commands[i].heredoc->ptr[j] + 1;
+					heredoc[ft_strlen(heredoc) - 1] = '\0';
+					refined = 1;
+				} else
+					heredoc = commands[i].heredoc->ptr[j];
+				j++;
+				while (1)
+				{
+					temp = readline("> ");
+					if (!ft_strcmp(temp, heredoc))
+					{
+						free(temp);
+						break ;
+					}
+					if (refined)
+						temp = ft_refineline(temp);
+					ft_putstr_fd(temp, commands[i].in);
+					ft_putstr_fd("\n", commands[i].in);
+					free(temp);
+				}
+			}
+		}
+
 		i++;
 	}
 	return (commands);

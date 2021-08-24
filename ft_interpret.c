@@ -29,7 +29,8 @@ void	ft_free_commands(t_cmd *cmds, char **tokens)
 	while (i < g_data.cmds)
 	{
 		if (cmds[i].heredoc)
-			free(cmds[i].heredoc);
+			ft_darrclear(cmds[i].heredoc);
+			//free(cmds[i].heredoc);
 		// printf("FREED HEREDOC\n");
 		if (cmds[i].args)
 			ft_freematrix(cmds[i].args);
