@@ -101,6 +101,8 @@ void	ft_interpret(char *line)
 	char	**tokens;
 
 	tokens = ft_tokenize(line);
+	if (!tokens)
+		return ;
 	g_data.cmds = ft_count_commands(tokens);
 	g_data.commands = ft_parse_commands(tokens);
 	if (!g_data.commands)

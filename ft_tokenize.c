@@ -73,7 +73,7 @@ void	ft_appendtoken(char **token, const char *new, size_t len, int expand)
  * assigns the first token in `line` to `token`
  * returns the index of the first char in `line` after `token`
  */
-int		ft_extracttoken(const char *line, char **token)
+int		ft_extracttoken(const char *line, char **token, char *token_prev)
 {
 	size_t	i, j, expand;
 	char	*tmp;
@@ -97,7 +97,6 @@ int		ft_extracttoken(const char *line, char **token)
 		}
 		else if (line[j] == '<' || line[j] == '>') // encountered </> and haven't added anything to `token` yet
 		{ // here we assume that i == j
-			//if ((line[j] == '<' && line[j + 1] == '<') || (line[j] == '>' && line[j + 1] == '>'))
 			if (!ft_strncmp(&line[j], "<<", 2) || !ft_strncmp(&line[j], ">>", 2))
 				j++;
 			ft_appendtoken(token, &line[i], j - i + 1, expand);
@@ -140,11 +139,14 @@ char	**ft_tokenize(const char *line)
 	t_darr	*tokens;
 	char	**ret;
 
-	tokens = ft_darrnew(0);
 	i = 0;
+	if (line)
+		tokens = ft_darrnew(0);
+	else
+		return (NULL);
 	while (line[i])
 	{
-		i += ft_extracttoken(&line[i], &token);
+		i += ft_extracttoken(&line[i], &token, tokens->ptr[tokens->len - 1]);
 		ft_darrpushback(tokens, token);
 	}
 	ft_darrpushback(tokens, NULL); // null-terminate the matrix
