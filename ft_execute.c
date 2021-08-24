@@ -2,19 +2,31 @@
 
 void	ft_receive_heredoc(t_cmd *cmd)
 {
+	int	pipefd[2];
+	int	refined;
+	char	*heredoc;
+	char	*temp;
+
 	if (cmd->heredoc)
 	{
+		if (cmd->in != 0)
+		{
+			pipe(pipefd);
+			close(cmd->in);
+			cmd->in = pipefd[0];
+		}
 		size_t j = 0;
 		while (j < cmd->heredoc->len)
 		{
-			int	refined = 0;
-			char	*heredoc, *temp;
-			if (ft_isquoted(cmd->heredoc->ptr[j], '\''))
+			refined = 1;
+			if (!ft_isquoted(cmd->heredoc->ptr[j], '\''))
+				refined = 0;
+			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') || ft_isquoted(cmd->heredoc->ptr[j], '\"'))
 			{
-				heredoc = cmd->heredoc->ptr[j] + 1; // if any of the quotes
+				heredoc = cmd->heredoc->ptr[j] + 1;
 				heredoc[ft_strlen(heredoc) - 1] = '\0';
-				refined = 1; // only if not `'`
-			} else
+			}
+			else
 				heredoc = cmd->heredoc->ptr[j];
 			j++;
 			while (1)
@@ -23,14 +35,16 @@ void	ft_receive_heredoc(t_cmd *cmd)
 				if (!ft_strcmp(temp, heredoc))
 				{
 					free(temp);
+					if (j == cmd->heredoc->len)
+						close(pipefd[1]);
 					break ;
 				}
 				if (refined)
 					temp = ft_refineline(temp);
-				if (cmd->heredoc->len > 1 && j == cmd->heredoc->len) // we're waiting for the last heredoc
+				if (j == cmd->heredoc->len) // we're waiting for the last heredoc
 				{
-					ft_putstr_fd(temp, cmd->in);
-					ft_putstr_fd("\n", cmd->in);
+					ft_putstr_fd(temp, pipefd[1]);
+					ft_putstr_fd("\n", pipefd[1]);
 				}
 				free(temp);
 			}
