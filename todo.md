@@ -1,5 +1,13 @@
 # Annihilation list
 
+## `cd`
+
+```
+bash-3.2$ cd ../../../../../../../../../../../../../../
+bash-3.2$ pwd
+/
+```
+
 ## Basic tests with child processes
 
 ```
