@@ -83,7 +83,7 @@ void	ft_block_main_process(t_cmd *commands)
 				printf("CLOSED %d\n", selected->out);
 				close(selected->out);
 			}
-			if (selected->in != 0 && selected->in != 1)
+			if (selected->in != 0)
 			{
 				printf("CLOSED %d\n", selected->in);
 				close(selected->in);
@@ -96,34 +96,20 @@ void	ft_block_main_process(t_cmd *commands)
 void	ft_interpret(char *line)
 {
 	int		i;
-	t_cmd	*commands;
 	char	**tokens;
 
-	// TAKE CARE OF THIS COMMENT BLOCK AND UNCOMMENT IT
-	// ! treatment of special characters is needed !
 	tokens = ft_tokenize(line);
-	// int x = 0;
-
-	// printf("tokens originally: %p\n", tokens);
-	// printf("tokens originally (dereferenced): %p\n", *tokens);
-	// while (tokens[x])
-	// {
-	// 	printf("token%d:|%s| at %p, its address is %p\n", x, tokens[x], tokens[x], &tokens[x]);
-	// 	x++;
-	// }
-	// printf("token%d:|%s| at %p, its address is %p\n", x, tokens[x], tokens[x], &tokens[x]);
-	
 	g_data.cmds = ft_count_commands(tokens);
-	// printf("COUNTED CMDS\n");
-	commands = ft_parse_commands(tokens);
-	if (!commands)
+	g_data.commands = ft_parse_commands(tokens);
+	if (!g_data.commands)
 	{
 		ft_freematrix(tokens);
 		return ;
 	}
 	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
-	if (g_data.cmds == 1 && ft_isbuiltin(commands[0].args[0]))
-		ft_exec(&commands[0]);
+	
+	if (g_data.cmds == 1 && ft_isbuiltin(g_data.commands[0].args[0]))
+		ft_exec(&g_data.commands[0]);
 	else
 	{
 		i = 0;
@@ -136,24 +122,24 @@ void	ft_interpret(char *line)
 			if (parentid != getpid())
 			{
 				dprintf(2, "self%d; parent%d\n", getpid(), getppid());
-				dprintf(2, "command %d info at %p: in%d, out%d\n", i, &commands[i], commands[i].in, commands[i].out);
+				dprintf(2, "command %d info at %p: in%d, out%d\n", i, &g_data.commands[i], g_data.commands[i].in, g_data.commands[i].out);
 				dprintf(2, "printing cmd's args:\n");
 				int iter = 0;
-				while (commands[i].args[iter])
+				while (g_data.commands[i].args[iter])
 				{
-					printf("%i:%s\n", iter, commands[i].args[iter]);
+					printf("%i:%s\n", iter, g_data.commands[i].args[iter]);
 					iter++;
 				}
 				printf("\n");
 			}
 			if (g_data.family[i] == 0) // child process
-				ft_exec(&commands[i]); // child process will exit here
+				ft_exec(&g_data.commands[i]); // child process will exit here
 			i++;
 		}
 	}
-	if (!(g_data.cmds == 1 && ft_isbuiltin(commands[0].args[0])))
-		ft_block_main_process(commands);
-	ft_free_commands(commands, tokens);
+	if (!(g_data.cmds == 1 && ft_isbuiltin(g_data.commands[0].args[0])))
+		ft_block_main_process(g_data.commands);
+	ft_free_commands(g_data.commands, tokens);
 }
 
 int	ft_isbuiltin(char *builtin)

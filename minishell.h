@@ -47,7 +47,7 @@ typedef struct s_cmd
 	// last stdin, stdout for a command (open not the last ones with TRUNC if it's not >>; open with APPEND if >>)
 	int		in;
 	int		out;
-	// heredoc (for <<). if absent, please make it NULL
+	// array of heredocs (<<). if absent, please make it NULL
 	char	*heredoc;
 }				t_cmd;
 
@@ -55,6 +55,8 @@ typedef struct s_env
 {
 	// number of commands in the current minishell session
 	int		cmds;
+	// the commands themselves, in form of a data structure containing info
+	t_cmd	*commands;
 	// array of pids of launched processes
 	pid_t	*family;
 	// env vars of the current minishell session
