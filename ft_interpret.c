@@ -73,7 +73,8 @@ void	ft_block_main_process(t_cmd *commands)
 	while (i < g_data.cmds)
 	{
 		terminated = waitpid(-1, &g_data.status, 0);
-		printf("TERMINATED %d\n", terminated);
+		g_data.status = WEXITSTATUS(g_data.status);
+		printf("TERMINATED %d WITH EXIT STATUS %d\n", terminated, g_data.status);
 		selected = ft_find_command(terminated, commands);
 		printf("CMD IS AT %p\n", selected);
 		if (selected)
