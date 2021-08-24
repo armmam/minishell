@@ -9,17 +9,15 @@ void	ft_receive_heredoc(t_cmd *cmd)
 
 	if (cmd->heredoc)
 	{
+		pipe(pipefd);
 		if (cmd->in != 0)
-		{
-			pipe(pipefd);
 			close(cmd->in);
-			cmd->in = pipefd[0];
-		}
+		cmd->in = pipefd[0];
 		size_t j = 0;
 		while (j < cmd->heredoc->len)
 		{
 			refined = 1;
-			if (!ft_isquoted(cmd->heredoc->ptr[j], '\''))
+			if (ft_isquoted(cmd->heredoc->ptr[j], '\''))
 				refined = 0;
 			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') || ft_isquoted(cmd->heredoc->ptr[j], '\"'))
 			{
