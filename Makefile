@@ -13,8 +13,8 @@ ifeq ($$(whoami), aisraely)
 	LDFLAGS		= -L/iSCSI/.brew/opt/readline/lib
 	CPPFLAGS	= -I/iSCSI/.brew/opt/readline/include
 else
-	LDFLAGS		= -L~/.brew/opt/readline/lib
-	CPPFLAGS	= -I~/.brew/opt/readline/include
+	LDFLAGS		= -L/Users/amamian/.brew/opt/readline/lib
+	CPPFLAGS	= -I/Users/amamian/.brew/opt/readline/include
 endif
 
 all: $(NAME)
