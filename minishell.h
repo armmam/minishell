@@ -98,5 +98,6 @@ void	ft_configure_terminal(void);
 void	ft_reprompt(int sig);
 void	ft_reset_terminal(void);
 void	ft_suppress_output(void);
+void	ft_receive_heredoc(t_cmd *cmd);
 
 #endif

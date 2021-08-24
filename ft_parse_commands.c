@@ -134,37 +134,7 @@ t_cmd	*ft_parse_commands(char **tokens)
 			else
 				commands[i].in = pipefd[0];
 		}
-		if (commands[i].heredoc)
-		{
-			size_t j = 0;
-			while (j < commands[i].heredoc->len)
-			{
-				int	refined = 0;
-				char	*heredoc, *temp;
-				if (ft_isquoted(commands[i].heredoc->ptr[j], '\''))
-				{
-					heredoc = commands[i].heredoc->ptr[j] + 1; // if any of the quotes
-					heredoc[ft_strlen(heredoc) - 1] = '\0';
-					refined = 1; // only if not `'`
-				} else
-					heredoc = commands[i].heredoc->ptr[j];
-				j++;
-				while (1)
-				{
-					temp = readline("> ");
-					if (!ft_strcmp(temp, heredoc))
-					{
-						free(temp);
-						break ;
-					}
-					if (refined)
-						temp = ft_refineline(temp);
-					ft_putstr_fd(temp, commands[i].in);
-					ft_putstr_fd("\n", commands[i].in);
-					free(temp);
-				}
-			}
-		}
+		ft_receive_heredoc(&commands[i]);
 
 		i++;
 	}
