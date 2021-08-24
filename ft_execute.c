@@ -17,7 +17,8 @@ void	ft_receive_heredoc(t_cmd *cmd)
 		while (j < cmd->heredoc->len)
 		{
 			refined = 1;
-			if (ft_isquoted(cmd->heredoc->ptr[j], '\''))
+			//printf("J FOR HEREDOC IS %zu, LEN IS %zu AND HEREDOC IS %s\n", j, cmd->heredoc->len, cmd->heredoc->ptr[j]);
+			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') && j == cmd->heredoc->len - 1)
 				refined = 0;
 			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') || ft_isquoted(cmd->heredoc->ptr[j], '\"'))
 			{
