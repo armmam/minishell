@@ -143,9 +143,9 @@ t_cmd	*ft_parse_commands(char **tokens)
 				char	*heredoc, *temp;
 				if (ft_isquoted(commands[i].heredoc->ptr[j], '\''))
 				{
-					heredoc = commands[i].heredoc->ptr[j] + 1;
+					heredoc = commands[i].heredoc->ptr[j] + 1; // if any of the quotes
 					heredoc[ft_strlen(heredoc) - 1] = '\0';
-					refined = 1;
+					refined = 1; // only if not `'`
 				} else
 					heredoc = commands[i].heredoc->ptr[j];
 				j++;
