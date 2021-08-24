@@ -86,7 +86,6 @@ void	ft_traverse_binaries(t_cmd *cmd)
 void	ft_exec(t_cmd *cmd)
 {
 	printf("INSIDE FT_EXEC: self%d; parent%d\n", getpid(), getppid());
-
 	// associating fds
 	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
 	{

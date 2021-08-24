@@ -1,19 +1,13 @@
 #include "minishell.h"
 
-void	ft_reprompt(int arg)
-{
-	(void)arg;
-	ft_putstr_fd("\nminishell$ ", 1);
-}
-
 int	main(int argc, char **argv, char **environ)
 {
-	char			*line;
+	char	*line;
 
 	(void)argc;
 	(void)argv;
-	ft_inheritenviron(environ);
-	// signal(SIGINT, &ft_reprompt);
+	ft_inherit_environment(environ);
+	ft_configure_terminal();
 	parentid = getpid();
 	printf("SHELL PROCESS PID IS %d\n", getpid());
 	g_data.status = 0;

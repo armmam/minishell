@@ -104,50 +104,6 @@ int	ft_pwd(t_cmd *cmd)
 	return (0);
 }
 
-// // not used anywhere anymore
-// void	ft_addmatrixrow(char ***matrix, char *row)
-// {
-// 	int		i;
-// 	char	**newmatrix;
-
-// 	if (!matrix || !(*matrix))
-// 		return ;
-// 	newmatrix = ft_calloc(ft_matrixlen(*matrix) + 2, sizeof(char *));
-// 	i = 0;
-// 	while (i < ft_matrixlen(*matrix))
-// 	{
-// 		newmatrix[i] = (*matrix)[i];
-// 		i++;
-// 	}
-// 	newmatrix[i] = row;
-// 	newmatrix[i + 1] = NULL;
-// 	ft_freematrix(matrix);
-// 	matrix = &newmatrix;
-// }
-
-// // not used anywhere anymore
-// void	ft_removematrixrow(char ***matrix, char *row)
-// {
-// 	int		i;
-// 	int		j;
-// 	char	**newmatrix;
-
-// 	if (!matrix || !(*matrix))
-// 		return ;
-// 	newmatrix = ft_calloc(ft_matrixlen(*matrix), sizeof(char *));
-// 	i = 0;
-// 	j = 0;
-// 	while (i < ft_matrixlen(*matrix))
-// 	{
-// 		if (ft_strncmp(row, (*matrix)[i], ft_strlen(row))) // typo: their lengths have to be equal also
-// 			newmatrix[i] = (*matrix)[j++];
-// 		i++;
-// 	}
-// 	newmatrix[i] = NULL;
-// 	ft_freematrix(matrix);
-// 	matrix = &newmatrix;
-// }
-
 void	ft_print_environment(int fd)
 {
 	int	i;
