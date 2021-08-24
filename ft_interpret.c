@@ -107,7 +107,6 @@ void	ft_interpret(char *line)
 		return ;
 	}
 	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
-	
 	if (g_data.cmds == 1 && ft_isbuiltin(g_data.commands[0].args[0]))
 		ft_exec(&g_data.commands[0]);
 	else
@@ -199,11 +198,12 @@ int		ft_isquoted(char *str, char c)
 	return (0);
 }
 
-void	ft_error(char *name, char *desc)
+int	ft_error(char *name, char *desc)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(name, 2);
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(desc, 2);
 	ft_putstr_fd("\n", 2);
+	return (1);
 }

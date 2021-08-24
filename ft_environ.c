@@ -14,23 +14,23 @@ void	ft_inheritenviron(char **environ)
 	g_data.env->ptr[i] = NULL;
 }
 
-char	*ft_getenv(const char *name)
+char	*ft_getenv_full(const char *name)
 {
 	int		i;
-	char	*var;
 
 	i = 0;
-	if (ft_strrchr(name, '='))
+	if (!ft_isvalididentifier(name))
 		return (NULL);
 	while (g_data.env->ptr[i])
 	{
 		if (!ft_strncmp(g_data.env->ptr[i], name, ft_strlen((char *) name)))
-		{
-			var = g_data.env->ptr[i];
-			var += ft_strlen((char *) name) + 1;
-			return (var);
-		}
+			return (g_data.env->ptr[i]);
 		i++;
 	}
 	return (NULL);
+}
+
+char	*ft_getenv(const char *name)
+{
+	return (ft_getenv_full(name) + ft_strlen((char *) name) + 1);
 }

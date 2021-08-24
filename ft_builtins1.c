@@ -1,5 +1,12 @@
 #include "minishell.h"
 
+int	ft_abs(int nb)
+{
+	if (nb < 0)
+		return (-nb);
+	return (nb);
+}
+
 int	ft_echo(t_cmd *cmd)
 {
 	char	**arg;
@@ -31,18 +38,18 @@ int	ft_echo(t_cmd *cmd)
 void	ft_refreshpwds(char *oldpwd)
 {
 	t_cmd	export;
-	char	**exportargs;
 	char	*pwd;
 
-	exportargs = ft_calloc(3, sizeof(char *));
-	export.args = exportargs;
-	pwd = NULL;
-	getcwd(pwd, 0);
+	pwd = getcwd(NULL, 0);
+	export.args = ft_calloc(3, sizeof(char *));
 	export.args[1] = ft_strjoin("PWD=", pwd);
-	export.args[2] = NULL;
 	ft_export(&export);
+	ft_freematrix(export.args);
+	free(pwd);
+	export.args = ft_calloc(3, sizeof(char *));
 	export.args[1] = ft_strjoin("OLDPWD=", oldpwd);
 	ft_export(&export);
+	ft_freematrix(export.args);
 }
 
 int	ft_cd(t_cmd *cmd)
@@ -51,14 +58,13 @@ int	ft_cd(t_cmd *cmd)
 	char	*oldpwd;
 
 	status = 1;
-	oldpwd = NULL;
-	getcwd(oldpwd, 0);
+	oldpwd = getcwd(NULL, 0);
 	if (ft_matrixlen(cmd->args) == 1)
 	{
 		if (ft_getenv("HOME"))
-			status = chdir(ft_getenv("HOME"));
+			status = ft_abs(chdir(ft_getenv("HOME")));
 		else
-			ft_error("cd", "HOME not set");
+			status = ft_error("cd", "HOME not set");
 	}
 	else
 	{
@@ -66,7 +72,7 @@ int	ft_cd(t_cmd *cmd)
 		{
 			if (ft_getenv("OLDPWD"))
 			{
-				status = chdir(ft_getenv("OLDPWD"));
+				status = ft_abs(chdir(ft_getenv("OLDPWD")));
 				if (!status)
 				{
 					ft_putstr_fd(oldpwd, cmd->out);
@@ -74,15 +80,16 @@ int	ft_cd(t_cmd *cmd)
 				}
 			}
 			else
-				ft_error("cd", "OLDPWD not set");
+				status = ft_error("cd", "OLDPWD not set");
 		}
 		else
-			status = chdir(cmd->args[1]);
+			status = ft_abs(chdir(cmd->args[1]));
 	}
 	if (!status)
 		ft_refreshpwds(oldpwd);
 	else
-		ft_error("cd", "No such file or directory");
+		status = ft_error("cd", "No such file or directory\n");
+	free(oldpwd);
 	return (status);
 }
 
@@ -141,7 +148,7 @@ int	ft_pwd(t_cmd *cmd)
 // 	matrix = &newmatrix;
 // }
 
-void	ft_printenvironment(int fd)
+void	ft_print_environment(int fd)
 {
 	int	i;
 	int	j;
@@ -168,64 +175,102 @@ void	ft_printenvironment(int fd)
 	}
 }
 
-char	*ft_isdefined(char *variable)
+/*
+ * takes in a declaration; returns 1 if it is already defined,
+ * 0 otherwise 
+ */
+char	*ft_isdefined(char *decl)
 {
-	int		i;
-	char	*name;
 	char	*ret;
+	char	*name;
 
-	i = 0;
-	while (variable[i] && variable[i] != '=')
-		i++;
-	name = ft_calloc(i + 1, sizeof(char));
-	i = 0;
-	while (variable[i] && variable[i] != '=')
-	{
-		name[i] = variable[i];
-		i++;
-	}
-	name[i] = '\0';
+	name = ft_separate_identifier(decl);
 	ret = ft_getenv(name);
 	free(name);
 	return (ret);	
 }
 
-int	ft_isvalididentifier(char *variable)
+/*
+ * goes through a string and checks whether
+ * it's a valid identifier. returns 1 if it is,
+ * 0 otherwise
+ */
+int	ft_isvalididentifier(const char *name)
 {
 	int	i;
 
 	i = 0;
-	if (!(ft_isalpha(variable[i]) || variable[i] == '_'))
+	if (!name)
 		return (0);
-	while (variable[i] && variable[i] != '=')
+	if (!(ft_isalpha(name[i]) || name[i] == '_') || name[i] == '=')
+		return (0);
+	i++;
+	while (name[i])
 	{
-		if (!(ft_isalnum(variable[i]) || variable[i] == '_'))
+		if (!(ft_isalnum(name[i]) || name[i] == '_') || name[i] == '=')
 			return (0);
 		i++;
 	}
 	return (1);
 }
 
+/*
+ * checks whether a declaration's varname is valid
+ */
+int	ft_isvaliddeclaration(char *decl)
+{
+	int		ret;
+	char	*name;
+
+	name = ft_separate_identifier(decl);
+	ret = ft_isvalididentifier(name);
+	free(name);
+	return (ret);
+}
+
+/*
+ * takes a declaration string, separates
+ * the identifier before the first '='
+ * and returns it. must be freed later
+ */
+char	*ft_separate_identifier(char *decl)
+{
+	int		i;
+	char	*name;
+	
+	i = 0;
+	while (decl[i] && decl[i] != '=')
+		i++;
+	name = ft_calloc(i + 1, sizeof(char));
+	i = 0;
+	while (decl[i] && decl[i] != '=')
+	{
+		name[i] = decl[i];
+		i++;
+	}
+	name[i] = '\0';
+	return (name);
+}
+
 int	ft_export(t_cmd *cmd)
 {
 	int		i;
-	t_cmd	unset;
-	char	**unsetargs;
 	int		ret;
+	t_cmd	unset;
 
 	ret = 0;
 	if (ft_matrixlen(cmd->args) == 1)
-		ft_printenvironment(cmd->out);
+		ft_print_environment(cmd->out);
 	else
 	{
 		i = 1;
 		while (cmd->args[i])
 		{
-			if (ft_isvalididentifier(cmd->args[i]))
+			if (!ft_isvaliddeclaration(cmd->args[i]))
 			{
 				ft_putstr_fd("minishell: export: `", 2);
 				ft_putstr_fd(cmd->args[i++], 2);
-				ft_putstr_fd("': not a valid identifier", 2);
+				ft_putstr_fd("': not a valid identifier\n", 2);
 				ret = 1;
 				continue ;
 			}
@@ -233,11 +278,10 @@ int	ft_export(t_cmd *cmd)
 				ft_darrpushback(g_data.env, cmd->args[i]);
 			else							// if present, overwrite
 			{
-				unsetargs = ft_calloc(3, sizeof(char *));
-				unsetargs[1] = cmd->args[i];
-				unsetargs[2] = NULL;
-				unset.args = unsetargs;
-				ft_unset(&unset);
+				unset.args = ft_calloc(3, sizeof(char *));
+				unset.args[1] = cmd->args[i];
+				ret = ft_unset(&unset);
+				ft_freematrix(unset.args);
 				ft_darrpushback(g_data.env, cmd->args[i]);
 				ret = 0;
 			}
@@ -258,21 +302,23 @@ int	ft_unset(t_cmd *cmd)
 		i = 1;
 		while (cmd->args[i])
 		{
-			if (ft_isvalididentifier(cmd->args[i]))
+			if (!ft_isvalididentifier(cmd->args[i]))
 			{
 				ft_putstr_fd("minishell: unset: `", 2);
 				ft_putstr_fd(cmd->args[i++], 2);
-				ft_putstr_fd("': not a valid identifier", 2);
+				ft_putstr_fd("': not a valid identifier\n", 2);
 				ret = 1;
 				continue ;
 			}
 			if (ft_isdefined(cmd->args[i]))
 			{
-				ft_darrerase(g_data.env, cmd->args[i]);
+				printf("ERASED |%s|\n", cmd->args[i]);
+				printf("getenvfull returned |%s|\n", ft_getenv_full(cmd->args[i]));
+				ft_darrerase(g_data.env, ft_getenv_full(cmd->args[i]));
 				ret = 0;
 			}
 			i++;
 		}
 	}
-	return (ret);	
+	return (ret);
 }

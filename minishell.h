@@ -70,7 +70,7 @@ t_env	g_data;
 void	ft_inheritenviron(char **environ);
 void	ft_interpret(char *line);
 char	*ft_getenv(const char *name);
-void	ft_error(char *name, char *desc);
+int		ft_error(char *name, char *desc);
 void	ft_exec(t_cmd *cmd);
 int		ft_execbuiltin(t_cmd *cmd);
 int		ft_convertbuiltin(char *builtin);
@@ -87,5 +87,8 @@ char	*ft_refineline(char *line);
 t_cmd	*ft_parse_commands(char **tokens);
 void	ft_free_commands(t_cmd *cmds, char **tokens);
 int		ft_isquoted(char *str, char c);
+int		ft_isvalididentifier(const char *variable);
+char	*ft_separate_identifier(char *decl);
+char	*ft_getenv_full(const char *name);
 
 #endif

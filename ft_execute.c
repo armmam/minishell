@@ -106,5 +106,9 @@ void	ft_exec(t_cmd *cmd)
 	else
 		ft_traverse_binaries(cmd);
 	if (!(g_data.cmds == 1 && ft_isbuiltin(cmd->args[0])))
+	{
+		if (ft_isbuiltin(cmd->args[0]))
+			exit(g_data.status);
 		exit(127);
+	}
 }
