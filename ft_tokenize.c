@@ -73,7 +73,7 @@ void	ft_appendtoken(char **token, const char *new, size_t len, int expand)
  * assigns the first token in `line` to `token`
  * returns the index of the first char in `line` after `token`
  */
-int		ft_extracttoken(const char *line, char **token, char *token_prev)
+int		ft_extract_token(const char *line, char **token)
 {
 	size_t	i, j, expand;
 	char	*tmp;
@@ -146,7 +146,7 @@ char	**ft_tokenize(const char *line)
 		return (NULL);
 	while (line[i])
 	{
-		i += ft_extracttoken(&line[i], &token, tokens->ptr[tokens->len - 1]);
+		i += ft_extract_token(&line[i], &token);
 		ft_darrpushback(tokens, token);
 	}
 	ft_darrpushback(tokens, NULL); // null-terminate the matrix

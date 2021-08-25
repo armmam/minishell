@@ -35,7 +35,7 @@ int	ft_echo(t_cmd *cmd)
 	return (0);
 }
 
-void	ft_refreshpwds(char *oldpwd)
+void	ft_refresh_pwds(char *oldpwd)
 {
 	t_cmd	export;
 	char	*pwd;
@@ -86,7 +86,7 @@ int	ft_cd(t_cmd *cmd)
 			status = ft_abs(chdir(cmd->args[1]));
 	}
 	if (!status)
-		ft_refreshpwds(oldpwd);
+		ft_refresh_pwds(oldpwd);
 	else
 		status = ft_error("cd", "No such file or directory\n");
 	free(oldpwd);
@@ -235,10 +235,10 @@ int	ft_export(t_cmd *cmd)
 			else							// if present, overwrite
 			{
 				unset.args = ft_calloc(3, sizeof(char *));
-				unset.args[1] = cmd->args[i];
+				unset.args[1] = ft_separate_identifier(cmd->args[i]);
 				ret = ft_unset(&unset);
-				ft_freematrix(unset.args);
 				ft_darrpushback(g_data.env, cmd->args[i]);
+				ft_freematrix(unset.args);
 				ret = 0;
 			}
 			i++;
@@ -268,8 +268,6 @@ int	ft_unset(t_cmd *cmd)
 			}
 			if (ft_isdefined(cmd->args[i]))
 			{
-				printf("ERASED |%s|\n", cmd->args[i]);
-				printf("getenvfull returned |%s|\n", ft_getenv_full(cmd->args[i]));
 				ft_darrerase(g_data.env, ft_getenv_full(cmd->args[i]));
 				ret = 0;
 			}

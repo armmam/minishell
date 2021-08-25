@@ -3,8 +3,7 @@ NAME		= minishell
 SRCS		= $(wildcard *.c)
 OBJS		= $(SRCS:.c=.o)
 LIBFT		= libft/libft.a
-CC			= gcc
-FLAGS		= -Wall -Werror -Wextra
+CC			= gcc -Wall -Werror -Wextra -g
 RM			= rm -rf
 
 # ATTENTION! These flags are machine-specific. Edit them so that they point
@@ -20,7 +19,7 @@ endif
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
-	@$(CC) $(FLAGS) $(OBJS) -o $(NAME) $(LIBFT) -lreadline $(LDFLAGS) $(CPPFLAGS)
+	@$(CC) $(OBJS) -o $(NAME) $(LIBFT) -lreadline $(LDFLAGS) $(CPPFLAGS)
 
 $(LIBFT):
 	@make all -C ./libft --silent

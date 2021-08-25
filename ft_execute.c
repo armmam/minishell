@@ -1,5 +1,44 @@
 #include "minishell.h"
 
+int	ft_execbuiltin(t_cmd *cmd)
+{
+	int	ret;
+
+	if (parentid == getpid())
+	{
+		dprintf(2, "command info in MAIN process: in%d, out%d\n", cmd->in, cmd->out);
+		dprintf(2, "printing cmd's args:\n");
+		int iter = 0;
+		while (cmd->args[iter])
+		{
+			printf("%i:%s\n", iter, cmd->args[iter]);
+			iter++;
+		}
+		printf("\n");
+	}
+	ret = ft_convertbuiltin(cmd->args[0]);
+	if (ret == __echo)
+		g_data.status = ft_echo(cmd);
+	else if (ret == __cd)
+		g_data.status = ft_cd(cmd);
+	else if (ret == __pwd)
+		g_data.status = ft_pwd(cmd);
+	else if (ret == __export)
+		g_data.status = ft_export(cmd);
+	else if (ret == __unset)
+		g_data.status = ft_unset(cmd);
+	else if (ret == __env)
+		g_data.status = ft_env(cmd);
+	else if (ret == __exit)
+	{
+		ft_putstr_fd("exit\n", 2);
+		exit(0);
+	}
+	if (ret)
+		return (0);
+	return (-1);
+}
+
 void	ft_receive_heredoc(t_cmd *cmd)
 {
 	int	pipefd[2];

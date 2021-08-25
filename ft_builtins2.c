@@ -19,5 +19,5 @@ int	ft_env(t_cmd *cmd)
 		}
 		i++;
 	}
-	return (1);
+	return (0);
 }

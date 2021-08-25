@@ -3,7 +3,6 @@
 int	main(int argc, char **argv, char **environ)
 {
 	char	*line;
-	t_cmd	ctrld;
 
 	(void)argc;
 	(void)argv;
