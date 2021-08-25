@@ -2,41 +2,51 @@
 
 void	ft_receive_heredoc(t_cmd *cmd)
 {
-	int		pipefd[2];
-	int		refined;
-	char	*stopword;
+	int	pipefd[2];
+	int	refined;
+	char	*heredoc;
 	char	*temp;
 
-	refined = 1;
-	stopword = cmd->heredoc;
 	if (cmd->heredoc)
 	{
 		pipe(pipefd);
 		if (cmd->in != 0)
 			close(cmd->in);
 		cmd->in = pipefd[0];
-		if (ft_isquoted(cmd->heredoc, '\'') || ft_isquoted(cmd->heredoc, '\"'))
+		size_t j = 0;
+		while (j < cmd->heredoc->len)
 		{
-			stopword[ft_strlen(stopword) - 1] = '\0';
-			stopword++;
-			refined = 0;
-		}
-		printf("HEREDOC IS |%s| (refined=%d)\n", cmd->heredoc, refined);
-		while (1)
-		{
-			temp = readline("> ");
-			if (!ft_strcmp(temp, stopword))
+			refined = 1;
+			//printf("J FOR HEREDOC IS %zu, LEN IS %zu AND HEREDOC IS %s\n", j, cmd->heredoc->len, cmd->heredoc->ptr[j]);
+			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') && j == cmd->heredoc->len - 1)
+				refined = 0;
+			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') || ft_isquoted(cmd->heredoc->ptr[j], '\"'))
 			{
-				free(temp);
-				printf("BROKE\n");
-				close(pipefd[1]);
-				break ;
+				heredoc = cmd->heredoc->ptr[j] + 1;
+				heredoc[ft_strlen(heredoc) - 1] = '\0';
 			}
-			if (refined)
-				temp = ft_refineline(temp);
-			ft_putstr_fd(temp, pipefd[1]);
-			ft_putstr_fd("\n", pipefd[1]);
-			free(temp);
+			else
+				heredoc = cmd->heredoc->ptr[j];
+			j++;
+			while (1)
+			{
+				temp = readline("> ");
+				if (!ft_strcmp(temp, heredoc))
+				{
+					free(temp);
+					if (j == cmd->heredoc->len)
+						close(pipefd[1]);
+					break ;
+				}
+				if (refined)
+					temp = ft_refineline(temp);
+				if (j == cmd->heredoc->len) // we're waiting for the last heredoc
+				{
+					ft_putstr_fd(temp, pipefd[1]);
+					ft_putstr_fd("\n", pipefd[1]);
+				}
+				free(temp);
+			}
 		}
 	}
 }

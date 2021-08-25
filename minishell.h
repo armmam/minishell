@@ -50,7 +50,7 @@ typedef struct s_cmd
 	int		in;
 	int		out;
 	// array of heredocs (<<). if absent, please make it NULL
-	char	*heredoc;
+	t_darr	*heredoc;
 }				t_cmd;
 
 typedef struct s_env
@@ -98,5 +98,6 @@ void	ft_configure_terminal(void);
 void	ft_reprompt(int sig);
 void	ft_reset_terminal(void);
 void	ft_suppress_output(void);
+void	ft_receive_heredoc(t_cmd *cmd);
 
 #endif
