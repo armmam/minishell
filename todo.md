@@ -168,6 +168,11 @@ bash-3.2$ ls
 blah   and   this.txt
 ```
 
+```
+bash-3.2$ Isaac grep " a "
+bash: Isaac: command not found
+```
+
 </p>
 </details>
 
