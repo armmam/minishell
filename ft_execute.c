@@ -74,6 +74,7 @@ void	ft_traverse_binaries(t_cmd *cmd)
 
 	if (ft_execbuiltin(cmd) == -1)
 	{
+		execve(cmd->args[0], cmd->args, g_data.env->ptr);	// for binaries not in bin
 		if (ft_getenv("PATH"))
 		{
 			paths = ft_split(ft_getenv("PATH"), ':');

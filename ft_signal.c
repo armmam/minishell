@@ -14,31 +14,35 @@ void	ft_do_nothing(int sig)
 {
 	(void)sig;
 	ft_suppress_output();
+	rl_on_new_line();
+	rl_redisplay();
 }
 
-void	ft_configure_terminal(void)
+void	ft_define_signals(void)
 {
-	if (tcgetattr(0, &g_data.settings))
-		perror("minishell: tcsetattr");
 	signal(SIGINT, ft_reprompt);
 	signal(SIGQUIT, ft_do_nothing);
+}
+
+void	ft_default_signals(void)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+}
+
+void	ft_ignore_signals(void)
+{
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	ft_suppress_output(void)
 {
 	struct termios	new_settings;
 
-	new_settings = g_data.settings;
+	if (tcgetattr(0, &new_settings))
+		perror("minishell: tcsetattr");
 	new_settings.c_lflag &= ~ECHOCTL;
 	if (tcsetattr(0, 0, &new_settings))
-		perror("minishell: tcsetattr");
-}
-
-void	ft_reset_terminal(void)
-{
-	int	ret;
-
-	ret = tcsetattr(0, 0, &g_data.settings);
-	if (ret)
 		perror("minishell: tcsetattr");
 }

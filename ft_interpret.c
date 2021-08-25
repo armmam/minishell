@@ -30,11 +30,8 @@ void	ft_free_commands(t_cmd *cmds, char **tokens)
 	{
 		if (cmds[i].heredoc)
 			ft_darrclear(cmds[i].heredoc);
-			//free(cmds[i].heredoc);
-		// printf("FREED HEREDOC\n");
 		if (cmds[i].args)
 			ft_freematrix(cmds[i].args);
-		// printf("FREED ARGS\n");
 		i++;
 	}
 	free(cmds);
@@ -74,10 +71,13 @@ void	ft_block_main_process(t_cmd *commands)
 	while (i < g_data.cmds)
 	{
 		terminated = waitpid(-1, &g_data.status, 0);
-		g_data.status = WEXITSTATUS(g_data.status);
+		//printf("WEXITSTATUS:%d, WTERMSIG:%d, G_DATA.STATUS:%d\n", WEXITSTATUS(g_data.status), WTERMSIG(g_data.status), g_data.status);
+		if (!WTERMSIG(g_data.status))
+			g_data.status = WEXITSTATUS(g_data.status);
+		else
+			g_data.status = WTERMSIG(g_data.status) + 128;
 		printf("TERMINATED %d WITH EXIT STATUS %d\n", terminated, g_data.status);
 		selected = ft_find_command(terminated, commands);
-		printf("CMD IS AT %p\n", selected);
 		if (selected)
 		{
 			if (selected->out != 1)
@@ -140,8 +140,10 @@ void	ft_interpret(char *line)
 			i++;
 		}
 	}
+	ft_ignore_signals();	// this is done so that...
 	if (!(g_data.cmds == 1 && ft_isbuiltin(g_data.commands[0].args[0])))
 		ft_block_main_process(g_data.commands);
+	ft_define_signals();	// no thing such as "double signal" occurs
 	ft_free_commands(g_data.commands, tokens);
 }
 
@@ -189,7 +191,10 @@ int	ft_execbuiltin(t_cmd *cmd)
 	else if (ret == __env)
 		g_data.status = ft_env(cmd);
 	else if (ret == __exit)
+	{
+		ft_putstr_fd("exit\n", 2);
 		exit(0);
+	}
 	if (ret)
 		return (0);
 	return (-1);

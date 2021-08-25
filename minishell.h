@@ -56,17 +56,15 @@ typedef struct s_cmd
 typedef struct s_env
 {
 	// number of commands in the current minishell session
-	int				cmds;
+	int		cmds;
 	// the commands themselves, in form of a data structure containing info
-	t_cmd			*commands;
+	t_cmd	*commands;
 	// array of pids of launched processes
-	pid_t			*family;
+	pid_t	*family;
 	// env vars of the current minishell session
-	t_darr			*env;
+	t_darr	*env;
 	// status of the process that was the latest of terminate
-	int				status;
-	// initial settings of the terminal
-	struct termios	settings;
+	int		status;
 }				t_env;
 
 t_env	g_data;
@@ -94,7 +92,9 @@ int		ft_isquoted(char *str, char c);
 int		ft_isvalididentifier(const char *variable);
 char	*ft_separate_identifier(char *decl);
 char	*ft_getenv_full(const char *name);
-void	ft_configure_terminal(void);
+void	ft_define_signals(void);
+void	ft_default_signals(void);
+void	ft_ignore_signals(void);
 void	ft_reprompt(int sig);
 void	ft_reset_terminal(void);
 void	ft_suppress_output(void);
