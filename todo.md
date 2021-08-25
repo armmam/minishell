@@ -1,5 +1,11 @@
 # Annihilation list
 
+## Recursive minishell call
+
+```
+minishell$ ./minishell
+```
+
 ## Exit status and signals
 
 `WEXITSTATUS()` macro should be used to retrieve the true exit status
