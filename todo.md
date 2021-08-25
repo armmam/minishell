@@ -1,5 +1,13 @@
 # Annihilation list
 
+## Exit status and signals
+
+`WEXITSTATUS()` macro should be used to retrieve the true exit status
+
+if the process exits due to a signal, then the exit status must be `WTERMSIG(g_data.status) + 128`
+
+`sleep 10 | sleep 10 | sleep 10` followed by a `Ctrl-\`
+
 ## `cd`
 
 ```
