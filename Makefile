@@ -8,12 +8,17 @@ RM			= rm -rf
 
 # ATTENTION! These flags are machine-specific. Edit them so that they point
 # to the location of your `readline` library.
-ifeq ($$(whoami), arman)
-	LDFLAGS		= -L~/.brew/opt/readline/lib
-	CPPFLAGS	= -I~/.brew/opt/readline/include
-else
+USER = $(shell whoami)
+ifeq ($(USER), aisraely)
 	LDFLAGS		= -L/iSCSI/.brew/opt/readline/lib
 	CPPFLAGS	= -I/iSCSI/.brew/opt/readline/include
+else ifeq ($(USER), arman)
+	LDFLAGS		= -L/Users/arman/.brew/opt/readline/lib
+	CPPFLAGS	= -I/Users/arman/.brew/opt/readline/include
+else ifeq ($(USER), amamian)
+	LDFLAGS		= -L/Users/amamian/.brew/opt/readline/lib
+	CPPFLAGS	= -I/Users/amamian/.brew/opt/readline/include
+else
 endif
 
 all: $(NAME)
