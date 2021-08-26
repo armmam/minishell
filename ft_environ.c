@@ -11,7 +11,6 @@ void	ft_inherit_environment(char **environ)
 		ft_darrpushback(g_data.env, ft_strdup(environ[i]));
 		i++;
 	}
-	g_data.env->ptr[i] = NULL;
 }
 
 char	*ft_getenv_full(const char *name)
