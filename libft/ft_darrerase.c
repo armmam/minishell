@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/18 17:43:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/19 22:07:45 by amamian          ###   ########.fr       */
+/*   Updated: 2021/08/26 17:07:11 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ void	ft_darrerase(t_darr *darr, char *item)
 			while (!ft_strcmp(darr->ptr[j], item))
 			{
 				free(darr->ptr[j]);
+				darr->ptr[j] = NULL;
 				j++;
 			}
 		}
