@@ -8,7 +8,8 @@ void	ft_inherit_environment(char **environ)
 	i = 0;
 	while (environ[i])
 	{
-		ft_darrpushback(g_data.env, ft_strdup(environ[i]));
+		if (ft_strncmp(environ[i], "OLDPWD=", ft_strlen("OLDPWD=")))
+			ft_darrpushback(g_data.env, ft_strdup(environ[i]));
 		i++;
 	}
 }
@@ -17,17 +18,26 @@ char	*ft_getenv_full(const char *name)
 {
 	int		i;
 	int		name_len;
+	char	*identifier;
 
 	i = 0;
-	if (!ft_isvalididentifier(name))
+	identifier = ft_separate_identifier((char *) name);
+	if (!ft_isvalididentifier(identifier))
+	{
+		free(identifier);
 		return (NULL);
+	}
 	while (g_data.env->ptr[i])
 	{
-		name_len = ft_strlen((char *) name);
-		if (!ft_strncmp(g_data.env->ptr[i], name, name_len) && (g_data.env->ptr[i][name_len] == '=' || g_data.env->ptr[i][name_len] == '\0'))
+		name_len = ft_strlen(identifier);
+		if (!ft_strncmp(g_data.env->ptr[i], identifier, name_len) && (g_data.env->ptr[i][name_len] == '=' || g_data.env->ptr[i][name_len] == '\0'))
+		{
+			free(identifier);
 			return (g_data.env->ptr[i]);
+		}
 		i++;
 	}
+	free(identifier);
 	return (NULL);
 }
 

@@ -109,7 +109,7 @@ t_cmd	*ft_parse_commands(char **tokens)
 	if (!ft_strcmp(tokens[i], "|"))
 	{
 		ft_error(tokens[i], "syntax error");
-		return NULL;
+		return (NULL);
 	}
 	while (i < g_data.cmds)
 	{

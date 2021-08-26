@@ -64,32 +64,29 @@ t_cmd	*ft_find_command(pid_t pid, t_cmd *commands)
 void	ft_block_main_process(t_cmd *commands)
 {
 	int		i;
+	int		returned;
 	t_cmd	*selected;
 	pid_t	terminated;
 
 	i = 0;
 	while (i < g_data.cmds)
 	{
-		terminated = waitpid(-1, &g_data.status, 0);
-		printf("WEXITSTATUS:%d, WTERMSIG:%d, G_DATA.STATUS:%d\n", WEXITSTATUS(g_data.status), WTERMSIG(g_data.status), g_data.status);
-		if (!WTERMSIG(g_data.status))
-			g_data.status = WEXITSTATUS(g_data.status);
-		else
-			g_data.status = WTERMSIG(g_data.status) + 128;
-		printf("TERMINATED %d WITH EXIT STATUS %d\n", terminated, g_data.status);
+		terminated = waitpid(-1, &returned, 0);
+		printf("%d EXITED; WEXITSTATUS:%d, WTERMSIG:%d, G_DATA.STATUS:%d\n", terminated, WEXITSTATUS(returned), WTERMSIG(returned), returned);
+		if (terminated == g_data.family[g_data.cmds - 1])	// save only the LAST one's
+		{
+			if (!WTERMSIG(returned))
+				g_data.status = WEXITSTATUS(returned);
+			else
+				g_data.status = WTERMSIG(returned) + 128;			
+		}
 		selected = ft_find_command(terminated, commands);
 		if (selected)
 		{
 			if (selected->out != 1)
-			{
-				printf("CLOSED %d\n", selected->out);
 				close(selected->out);
-			}
 			if (selected->in != 0)
-			{
-				printf("CLOSED %d\n", selected->in);
 				close(selected->in);
-			}
 		}
 		i++;
 	}

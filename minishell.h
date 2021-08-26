@@ -90,6 +90,7 @@ t_cmd	*ft_parse_commands(char **tokens);
 void	ft_free_commands(t_cmd *cmds, char **tokens);
 int		ft_isquoted(char *str, char c);
 int		ft_isvalididentifier(const char *variable);
+int		ft_isvaliddeclaration(char *decl);
 char	*ft_separate_identifier(char *decl);
 char	*ft_getenv_full(const char *name);
 void	ft_define_signals(void);

@@ -65,7 +65,7 @@ int	ft_cd(t_cmd *cmd)
 		if (ft_getenv("HOME"))
 			status = ft_abs(chdir(ft_getenv("HOME")));
 		else
-			status = ft_error("cd", "HOME not set");
+			return (ft_error("cd", "HOME not set"));
 	}
 	else
 	{
@@ -81,7 +81,7 @@ int	ft_cd(t_cmd *cmd)
 				}
 			}
 			else
-				status = ft_error("cd", "OLDPWD not set");
+				return (ft_error("cd", "OLDPWD not set"));
 		}
 		else
 			status = ft_abs(chdir(cmd->args[1]));
@@ -143,7 +143,9 @@ char	*ft_isdefined(char *decl)
 	char	*name;
 
 	name = ft_separate_identifier(decl);
+	printf("NAME INSIDE ft_isdefined() IS %s\n", name);
 	ret = ft_getenv(name);
+	printf("GETENV IS AT %p\n", ret);
 	free(name);
 	return (ret);
 }
@@ -206,7 +208,6 @@ char	*ft_separate_identifier(char *decl)
 		name[i] = decl[i];
 		i++;
 	}
-	name[i] = '\0';
 	return (name);
 }
 
@@ -231,14 +232,10 @@ int	ft_export(t_cmd *cmd)
 				ret = 1;
 				continue ;
 			}
-			if (!ft_isdefined(cmd->args[i])) 	// not present, just add
-				ft_darrpushback(g_data.env, ft_strdup(cmd->args[i]));
-			else							// if present, overwrite
-			{
+			if (ft_isdefined(cmd->args[i]))
 				ft_darrerase(g_data.env, ft_getenv_full(cmd->args[i]));
-				ft_darrpushback(g_data.env, ft_strdup(cmd->args[i]));
-				ret = 0;
-			}
+			ft_darrpushback(g_data.env, ft_strdup(cmd->args[i]));
+			ret = 0;
 			i++;
 		}
 	}
