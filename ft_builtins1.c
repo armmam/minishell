@@ -126,8 +126,9 @@ void	ft_print_environment(int fd)
 			ft_putstr_fd("\"", fd);
 			while (g_data.env->ptr[i][j])
 				ft_putchar_fd(g_data.env->ptr[i][j++], fd);
-			ft_putstr_fd("\"\n", fd);
+			ft_putstr_fd("\"", fd);
 		}
+		ft_putstr_fd("\n", fd);
 		i++;
 	}
 }
