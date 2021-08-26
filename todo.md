@@ -1,5 +1,13 @@
 # Annihilation list
 
+## Exports
+
+```
+bash-3.2$ export ll=11
+bash-3.2$ export ll=11
+bash-3.2$ export ll=11
+```
+
 ## Recursive minishell call
 
 ```
