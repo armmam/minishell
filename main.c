@@ -22,7 +22,8 @@ int	main(int argc, char **argv, char **environ)
 			return (EXIT_SUCCESS);
 		}
 		ft_interpret(line);
-		add_history(line);
+		if (ft_strcmp(line, ""))
+			add_history(line);
 		free(line);
 	}
 	return (EXIT_SUCCESS);
