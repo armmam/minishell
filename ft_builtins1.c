@@ -137,7 +137,7 @@ void	ft_print_environment(int fd)
  * takes in a declaration; returns 1 if it is already defined,
  * 0 otherwise 
  */
-int	ft_isdefined(char *decl)
+char	*ft_isdefined(char *decl)
 {
 	char	*ret;
 	char	*name;
@@ -145,9 +145,7 @@ int	ft_isdefined(char *decl)
 	name = ft_separate_identifier(decl);
 	ret = ft_getenv(name);
 	free(name);
-	if (ret)
-		return (1);
-	return (0);
+	return (ret);
 }
 
 /*
@@ -216,7 +214,6 @@ int	ft_export(t_cmd *cmd)
 {
 	int		i;
 	int		ret;
-	t_cmd	unset;
 
 	ret = 0;
 	if (ft_matrixlen(cmd->args) == 1)
@@ -238,12 +235,8 @@ int	ft_export(t_cmd *cmd)
 				ft_darrpushback(g_data.env, ft_strdup(cmd->args[i]));
 			else							// if present, overwrite
 			{
-				ft_bzero(&unset, sizeof(unset));
-				unset.args = ft_calloc(3, sizeof(char *));
-				unset.args[1] = ft_separate_identifier(cmd->args[i]);
-				ret = ft_unset(&unset);
+				ft_darrerase(g_data.env, ft_getenv_full(cmd->args[i]));
 				ft_darrpushback(g_data.env, ft_strdup(cmd->args[i]));
-				ft_freematrix(unset.args);
 				ret = 0;
 			}
 			i++;
