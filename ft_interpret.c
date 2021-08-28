@@ -99,7 +99,7 @@ void	ft_block_main_process(t_cmd *commands)
 		i++;
 	}
 	if (g_data.status == 131)
-		ft_putstr_fd("Quit: 3\n", 1);
+		ft_putstr_fd("^\\Quit: 3\n", 1);
 }
 
 void	ft_interpret(char *line)

@@ -13,7 +13,6 @@ void	ft_receive_heredoc(t_cmd *cmd, int k, int *write_ends)
 		while (j < cmd->heredoc->len)
 		{
 			refined = 1;
-			//printf("J FOR HEREDOC IS %zu, LEN IS %zu AND HEREDOC IS %s\n", j, cmd->heredoc->len, cmd->heredoc->ptr[j]);
 			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') && j == cmd->heredoc->len - 1)
 				refined = 0;
 			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') || ft_isquoted(cmd->heredoc->ptr[j], '\"'))
@@ -48,10 +47,10 @@ void	ft_receive_heredoc(t_cmd *cmd, int k, int *write_ends)
 }
 
 /*
- * returns the number of heredocs for a malloc(), to save the write-ends
+ * returns the number of heredocs, saves the write-ends
  * of the heredoc
  */
-void	ft_save_write_ends(int *write_ends)
+int	ft_save_write_ends(int **write_ends)
 {
 	int	i;
 	int	j;
@@ -63,7 +62,7 @@ void	ft_save_write_ends(int *write_ends)
 	while (i < g_data.cmds)
 		if (g_data.commands[i++].heredoc)
 			count++;
-	write_ends = malloc(count * sizeof(int *));
+	*write_ends = malloc(count * sizeof(int *));
 	i = 0;
 	j = 0;
 	while (i < g_data.cmds)
@@ -74,10 +73,11 @@ void	ft_save_write_ends(int *write_ends)
 			if (g_data.commands[i].in != 0)
 				close(g_data.commands[i].in);
 			g_data.commands[i].in = pipefd[0];
-			write_ends[j++] = pipefd[1];
+			(*write_ends)[j++] = pipefd[1];
 		}
 		i++;
 	}
+	return (count);
 }
 
 /*
@@ -88,26 +88,29 @@ void	ft_save_write_ends(int *write_ends)
 int	ft_launch_heredoc(void)
 {
 	int	i;
-	int	k;
+	int	heredocs;
 	int	*write_ends;
 	int	heredoc_pid;
 	int	heredoc_status;
 
 	write_ends = NULL;
-	ft_save_write_ends(write_ends);
+	heredocs = ft_save_write_ends(&write_ends);
 	if (!write_ends)
 		return (0);
 	ft_ignore_signals();
 	heredoc_pid = fork();
+	i = 0;
+	while (heredoc_pid && i < heredocs)
+		close(write_ends[i++]);
+	heredocs = 0;
 	if (heredoc_pid == 0) // heredoc code section
 	{
 		ft_heredoc_signals();
 		i = 0;
-		k = 0;
 		while (i < g_data.cmds)
 		{
 			if (g_data.commands[i].heredoc)
-				ft_receive_heredoc(&g_data.commands[i], k++, write_ends);
+				ft_receive_heredoc(&g_data.commands[i], heredocs++, write_ends);
 			i++;
 		}
 		exit(0);
@@ -116,6 +119,10 @@ int	ft_launch_heredoc(void)
 	free(write_ends);
 	ft_define_signals();
 	if (WTERMSIG(heredoc_status))
+	{
+		g_data.status = 1;
+		ft_putstr_fd("\n", 1);
 		return (1);
+	}
 	return (0);
 }
