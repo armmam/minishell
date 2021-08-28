@@ -39,57 +39,6 @@ int	ft_execbuiltin(t_cmd *cmd)
 	return (-1);
 }
 
-void	ft_receive_heredoc(t_cmd *cmd)
-{
-	int	pipefd[2];
-	int	refined;
-	char	*heredoc;
-	char	*temp;
-
-	if (cmd->heredoc)
-	{
-		pipe(pipefd);
-		if (cmd->in != 0)
-			close(cmd->in);
-		cmd->in = pipefd[0];
-		size_t j = 0;
-		while (j < cmd->heredoc->len)
-		{
-			refined = 1;
-			//printf("J FOR HEREDOC IS %zu, LEN IS %zu AND HEREDOC IS %s\n", j, cmd->heredoc->len, cmd->heredoc->ptr[j]);
-			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') && j == cmd->heredoc->len - 1)
-				refined = 0;
-			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') || ft_isquoted(cmd->heredoc->ptr[j], '\"'))
-			{
-				heredoc = cmd->heredoc->ptr[j] + 1;
-				heredoc[ft_strlen(heredoc) - 1] = '\0';
-			}
-			else
-				heredoc = cmd->heredoc->ptr[j];
-			j++;
-			while (1)
-			{
-				temp = readline("> ");
-				if (!ft_strcmp(temp, heredoc))
-				{
-					free(temp);
-					if (j == cmd->heredoc->len)
-						close(pipefd[1]);
-					break ;
-				}
-				if (refined)
-					temp = ft_refineline(temp);
-				if (j == cmd->heredoc->len) // we're waiting for the last heredoc
-				{
-					ft_putstr_fd(temp, pipefd[1]);
-					ft_putstr_fd("\n", pipefd[1]);
-				}
-				free(temp);
-			}
-		}
-	}
-}
-
 void	ft_close_descriptors(void)
 {
 	int	i;
@@ -126,7 +75,7 @@ void	ft_traverse_binaries(t_cmd *cmd)
 				i++;
 			}
 			ft_freematrix(paths);
-			ft_error(cmd->args[0], "No such command found");
+			ft_error(cmd->args[0], "command not found");
 		}
 		else
 			ft_error(cmd->args[0], "No such file or directory");
@@ -135,7 +84,8 @@ void	ft_traverse_binaries(t_cmd *cmd)
 
 void	ft_exec(t_cmd *cmd)
 {
-	printf("INSIDE FT_EXEC: self%d; parent%d\n", getpid(), getppid());
+	// printf("INSIDE FT_EXEC: self%d; parent%d\n", getpid(), getppid());
+	dprintf(2, "in:%d out:%d\n", cmd->in, cmd->out);
 	// associating fds
 	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
 	{
@@ -145,6 +95,8 @@ void	ft_exec(t_cmd *cmd)
 			exit(1);
 		}
 		ft_close_descriptors();
+		if (ft_isbuiltin(cmd->args[0]))
+			cmd->out = 1;
 	}
 	// exec
 	if (cmd->args[0][0] == '/')

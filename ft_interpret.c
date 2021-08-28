@@ -26,15 +26,23 @@ void	ft_free_commands(t_cmd *cmds, char **tokens)
 	int	i;
 
 	i = 0;
-	while (i < g_data.cmds)
+	if (cmds)
 	{
-		if (cmds[i].heredoc)
-			ft_darrclear(cmds[i].heredoc);
-		if (cmds[i].args)
-			ft_freematrix(cmds[i].args);
-		i++;
+		while (i < g_data.cmds)
+		{
+			if (cmds[i].in != 0)
+				close(cmds[i].in);
+			if (cmds[i].out != 1)
+				close(cmds[i].out);
+			if (cmds[i].heredoc)
+				ft_darrclear(cmds[i].heredoc);
+			if (cmds[i].args)
+				ft_freematrix(cmds[i].args);
+			i++;
+		}
+		free(cmds);
+		cmds = NULL;
 	}
-	free(cmds);
 	if (g_data.family)
 	{
 		free(g_data.family);
@@ -72,13 +80,13 @@ void	ft_block_main_process(t_cmd *commands)
 	while (i < g_data.cmds)
 	{
 		terminated = waitpid(-1, &returned, 0);
-		printf("%d EXITED; WEXITSTATUS:%d, WTERMSIG:%d, G_DATA.STATUS:%d\n", terminated, WEXITSTATUS(returned), WTERMSIG(returned), returned);
+		// printf("%d EXITED; WEXITSTATUS:%d, WTERMSIG:%d, G_DATA.STATUS:%d\n", terminated, WEXITSTATUS(returned), WTERMSIG(returned), returned);
 		if (terminated == g_data.family[g_data.cmds - 1])	// save only the LAST one's
 		{
 			if (!WTERMSIG(returned))
 				g_data.status = WEXITSTATUS(returned);
 			else
-				g_data.status = WTERMSIG(returned) + 128;			
+				g_data.status = WTERMSIG(returned) + 128;
 		}
 		selected = ft_find_command(terminated, commands);
 		if (selected)
@@ -104,9 +112,9 @@ void	ft_interpret(char *line)
 		return ;
 	g_data.cmds = ft_count_commands(tokens);
 	g_data.commands = ft_parse_commands(tokens);
-	if (!g_data.commands)
+	if (!g_data.commands || ft_launch_heredoc())
 	{
-		ft_freematrix(tokens);
+		ft_free_commands(g_data.commands, tokens);
 		return ;
 	}
 	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
@@ -119,21 +127,21 @@ void	ft_interpret(char *line)
 		{
 			// spinning out child processes
 			g_data.family[i] = fork();
-			if (parentid == getpid())
-				printf("CREATED %d\n", g_data.family[i]);
-			if (parentid != getpid())
-			{
-				dprintf(2, "self%d; parent%d\n", getpid(), getppid());
-				dprintf(2, "command %d info at %p: in%d, out%d\n", i, &g_data.commands[i], g_data.commands[i].in, g_data.commands[i].out);
-				dprintf(2, "printing cmd's args:\n");
-				int iter = 0;
-				while (g_data.commands[i].args[iter])
-				{
-					printf("%i:%s\n", iter, g_data.commands[i].args[iter]);
-					iter++;
-				}
-				printf("\n");
-			}
+			// if (parentid == getpid())
+			// 	printf("CREATED %d\n", g_data.family[i]);
+			// if (parentid != getpid())
+			// {
+			// 	dprintf(2, "self%d; parent%d\n", getpid(), getppid());
+			// 	dprintf(2, "command %d info at %p: in%d, out%d\n", i, &g_data.commands[i], g_data.commands[i].in, g_data.commands[i].out);
+			// 	dprintf(2, "printing cmd's args:\n");
+			// 	int iter = 0;
+			// 	while (g_data.commands[i].args[iter])
+			// 	{
+			// 		printf("%i:%s\n", iter, g_data.commands[i].args[iter]);
+			// 		iter++;
+			// 	}
+			// 	printf("\n");
+			// }
 			if (g_data.family[i] == 0) // child process
 				ft_exec(&g_data.commands[i]); // child process will exit here
 			i++;

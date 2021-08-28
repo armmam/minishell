@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: aisraely <aisraely@student.42.fr>          +#+  +:+       +#+         #
+#    By: aisraely <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/26 17:06:08 by aisraely          #+#    #+#              #
-#    Updated: 2021/08/20 21:45:31 by aisraely         ###   ########.fr        #
+#    Updated: 2021/08/27 16:05:24 by aisraely         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,11 +24,10 @@ AR			= ar csr
 	@${CC} ${CFLAGS} -c $< -o ${<:.c=.o}
 
 $(NAME): ${OBJS}
-	@${AR} libft.a ${OBJS}
+	@${AR} ${NAME} ${OBJS}
 
 bonus: ${BONUS_OBJS}
-	@${AR} libft.a ${BONUS_OBJS}
-
+	@${AR} ${NAME} ${BONUS_OBJS}
 
 all: ${NAME}
 

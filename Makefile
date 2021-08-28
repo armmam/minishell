@@ -5,10 +5,9 @@ OBJS		= $(SRCS:.c=.o)
 LIBFT		= libft/libft.a
 CC			= gcc -Wall -Werror -Wextra -g
 RM			= rm -rf
-
 # ATTENTION! These flags are machine-specific. Edit them so that they point
 # to the location of your `readline` library.
-USER = $(shell whoami)
+USER		= $(shell whoami)
 ifeq ($(USER), aisraely)
 	LDFLAGS		= -L/iSCSI/.brew/opt/readline/lib
 	CPPFLAGS	= -I/iSCSI/.brew/opt/readline/include
@@ -32,6 +31,9 @@ $(LIBFT):
 clean:
 	@$(RM) $(OBJS)
 	@make clean -C ./libft --silent
+
+norme:
+	@norminette -R CheckForbiddenSourceHeader *.c *.h
 
 fclean: clean
 	@$(RM) $(NAME)

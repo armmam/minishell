@@ -30,6 +30,12 @@ void	ft_ignore_signals(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
+void	ft_heredoc_signals(void)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, ft_do_nothing);
+}
+
 void	ft_suppress_output(void)
 {
 	struct termios	new_settings;

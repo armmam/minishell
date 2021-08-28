@@ -55,14 +55,10 @@ char	**ft_extract_arguments(t_cmd *cmd, char **tokens)
 	int		err;
 	t_darr	*args;
 
-	// printf("TOKENS RECEIVED %p\n", tokens);
-	// printf("TOKENS RECEIVED (dereferenced) %p\n", *tokens);
 	args = ft_darrnew(0);
 	err = 0;
 	while (*tokens && ft_strcmp(*tokens, "|")) // haven't run out of tokens and haven't encountered a pipe
 	{
-		// printf("TOKENS IN ft_extract_arguments %p\n", tokens);
-		// printf("TOKEN:|%s| at %p, its address is %p\n", *tokens, *tokens, tokens);
 		if (!ft_strcmp(*tokens, "<<"))  // if encountered <<
 			err = ft_parseheredoc(&tokens, cmd);
 		else if (!ft_strcmp(*tokens, ">"))  // if encoutered >
@@ -134,8 +130,6 @@ t_cmd	*ft_parse_commands(char **tokens)
 			else
 				commands[i].in = pipefd[0];
 		}
-		ft_receive_heredoc(&commands[i]);
-
 		i++;
 	}
 	return (commands);
