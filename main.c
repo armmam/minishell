@@ -9,8 +9,8 @@ int	main(int argc, char **argv, char **environ)
 	ft_inherit_environment(environ);
 	ft_define_signals();
 	//
-	parentid = getpid();
-	printf("SHELL PROCESS PID IS %d\n", getpid());
+	// parentid = getpid();
+	// printf("SHELL PROCESS PID IS %d\n", getpid());
 	//
 	g_data.status = 0;
 	while (1)

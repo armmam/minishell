@@ -120,7 +120,7 @@ t_cmd	*ft_parse_commands(char **tokens)
 		if (i)
 		{
 			pipe(pipefd);
-			printf("CREATED A PIPE WITH FD'S %d AND %d\n", pipefd[0], pipefd[1]);
+			//printf("CREATED A PIPE WITH FD'S %d AND %d\n", pipefd[0], pipefd[1]);
 			if (commands[i - 1].out != 1)
 				close(pipefd[1]);
 			else
