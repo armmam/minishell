@@ -9,6 +9,17 @@ bash-3.2$ << hi
 bash-3.2$
 ```
 
+```
+bash-3.2$ << hi | ls
+> $HOME
+> hi
+Makefile                ft_builtins2.c          ft_heredoc.o            ft_tokenize.c           minishell
+README.md               ft_builtins2.o          ft_interpret.c          ft_tokenize.o           minishell.h
+a.out                   ft_environ.c            ft_interpret.o          libft                   test
+ft_builtins1.c          ft_environ.o            ft_parse_commands.o     main.c                  tests.md
+ft_builtins1.o          ft_execute.o            ft_signal.o             main.o                  todo.md
+```
+
 ## echo and wc
 
 ```
