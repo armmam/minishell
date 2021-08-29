@@ -1,5 +1,9 @@
 # Annihilation list
 
+## OLDPWD
+
+$OLDPWD shouldn't be inherited! immediately entering minishell and running cd - should result in OLDPWD not set prompt
+
 ## Exports
 
 ```
