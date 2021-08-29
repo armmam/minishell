@@ -73,7 +73,7 @@ void	ft_appendtoken(char **token, const char *new, size_t len, int expand)
  * assigns the first token in `line` to `token`
  * returns the index of the first char in `line` after `token`
  */
-int		ft_extract_token(const char *line, char **token)
+int		ft_extract_token(const char *line, char **token, char **quote)
 {
 	size_t	i, j, expand;
 	char	*tmp;
@@ -83,6 +83,7 @@ int		ft_extract_token(const char *line, char **token)
 	expand = 1; // flag for expansion; 1 by default, 0 if single quotes encountered
 	tmp = NULL;
 	*token = ft_strdup("");
+	*quote = ft_strdup("");
 	while (ft_isspace(line[j]))
 	{
 		j++;
@@ -111,6 +112,9 @@ int		ft_extract_token(const char *line, char **token)
 			tmp = ft_strchr(&line[j + 1], line[j]); // try to find a closing quote
 			if (tmp) // found a closing quote
 			{
+				if (!*quote)
+					ft_appendtoken(quote, ft_strdup("\'"), 1, 0);
+					// *quote = ft_strjoinsafe(quote, ft_strdup("\'"));
 				ft_appendtoken(token, &line[i], j - i, expand); // first safe everything (that was not already saved) up to the quote (not including) into `token`
 				i = j + 1; // update the beginning of the part of token about to be appended to `token` (set it to the first char after the opening quote)
 				j = (tmp - 1) - line; // index of the char before the closing quote
@@ -132,25 +136,30 @@ int		ft_extract_token(const char *line, char **token)
 // PLEASE MERGE THIS ONE WITH ft_parse_commands SO YOU'RE ABLE TO CORRECTLY
 // REMOVE ()S AND SET RESPECTIVE COMMAND'S cond FIELD.
 // removes ""s, ()s and other trash, uses ft_refineline on the arguments of commands
-char	**ft_tokenize(const char *line)
+t_tokens	ft_tokenize(const char *line)
 {
 	size_t	i;
 	char	*token;
-	t_darr	*tokens;
-	char	**ret;
+	char	*quote;
+	// t_darr	*tokens;
+	// t_darr	*quotes;
+	t_tokens	ret;
 
 	i = 0;
 	if (line)
-		tokens = ft_darrnew(0);
+	{
+		ret.tokens = ft_darrnew(0);
+		ret.quotes = ft_darrnew(0);
+	}
 	else
-		return (NULL);
+		return ((t_tokens) {.tokens = NULL, .quotes = NULL});
 	while (line[i])
 	{
-		i += ft_extract_token(&line[i], &token);
-		ft_darrpushback(tokens, token);
+		i += ft_extract_token(&line[i], &token, &quote);
+		ft_darrpushback(ret.tokens, token);
+		ft_darrpushback(ret.quotes, quote);
 	}
-	ft_darrpushback(tokens, NULL); // null-terminate the matrix
-	ret = tokens->ptr;
-	free(tokens);
+	ft_darrpushback(ret.tokens, NULL); // null-terminate the matrix
+	ft_darrpushback(ret.quotes, NULL); // null-terminate the matrix
 	return (ret);
 }

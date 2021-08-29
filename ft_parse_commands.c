@@ -3,36 +3,42 @@
 /*
  * returns 0 upon success, 1 upon failure
  */
-int		ft_parseheredoc(char ***tokens, t_cmd *cmd)
+int		ft_parseheredoc(char ***token, char ***quote, t_cmd *cmd)
 {
-	(*tokens)++;
-	if (*tokens == NULL || ((*tokens)[0][0] == '|' && (*tokens)[0][1] == '\0')) // << is the last token in the command
+	(*token)++;
+	if (*token == NULL || ((*token)[0][0] == '|' && (*token)[0][1] == '\0')) // << is the last token in the command
 	{
-		ft_error(*(*tokens - sizeof(char *)), "syntax error");
+		ft_error(*(*token - sizeof(char *)), "syntax error");
 		return (1);
 	}
 	if (!cmd->heredoc) // if have not encountered any heredocs before
 		cmd->heredoc = ft_darrnew(0);
-	ft_darrpushback(cmd->heredoc, ft_strdup(**tokens));
+	ft_darrpushback(cmd->heredoc, ft_strdup(**token));
+	if (!cmd->refine)
+		cmd->refine = ft_darrnew(0);
+	ft_darrpushback(cmd->refine, ft_strdup(**quote));
 	return (0);
 }
 
 /*
  * returns 0 upon success, 1 upon failure
  */
-int		ft_parsefiletoken(char ***tokens, int *cmd_fd, char dir, int open_flag)
+int		ft_parsefiletoken(char ***token, char ***quote, int *cmd_fd, int open_flag)
 {
 	int	fd;
+	char	dir;
 
-	(*tokens)++;
-	if (*tokens == NULL || ((*tokens)[0][0] == '|' && (*tokens)[0][1] == '\0')) // </>>/> is the last token in the command
+	dir = ***token;
+	(*token)++;
+	(*quote)++;
+	if (*token == NULL || ((*token)[0][0] == '|' && (*token)[0][1] == '\0')) // </>>/> is the last token in the command
 	{
-		ft_error(*(*tokens - 1), "syntax error");
+		ft_error(*(*token - 1), "syntax error");
 		return (1);
 	}
 	if ((dir == '>' && *cmd_fd != 1) || (dir == '<' && *cmd_fd != 0)) // if already encoutered </>>/> before for this command
 		close(*cmd_fd);
-	if ((fd = open(**tokens, open_flag, 0644)) == -1)
+	if ((fd = open(**token, open_flag, 0644)) == -1)
 	{
 		perror("minishell");
 		return (1);
@@ -50,39 +56,47 @@ int		ft_parsefiletoken(char ***tokens, int *cmd_fd, char dir, int open_flag)
 // parses 'heredoc' if applicable; else assigns NULL to it -- it's null because of ft_calloc
 //
 // returns a pointer to the next command in `tokens`
-char	**ft_extract_arguments(t_cmd *cmd, char **tokens)
+char	**ft_extract_arguments(t_cmd *cmd, t_tokens *tokens)
 {
 	int		err;
 	t_darr	*args;
+	char	**token;
+	char	**quote;
 
+	token = tokens->tokens->ptr;
+	quote = tokens->quotes->ptr;
 	args = ft_darrnew(0);
 	err = 0;
-	while (*tokens && ft_strcmp(*tokens, "|")) // haven't run out of tokens and haven't encountered a pipe
+	while (*token && ft_strcmp(*token, "|")) // haven't run out of tokens and haven't encountered a pipe
 	{
-		if (!ft_strcmp(*tokens, "<<"))  // if encountered <<
-			err = ft_parseheredoc(&tokens, cmd);
-		else if (!ft_strcmp(*tokens, ">"))  // if encoutered >
-			err = ft_parsefiletoken(&tokens, &(cmd->out), '>', O_WRONLY | O_CREAT);
-		else if (!ft_strcmp(*tokens, ">>"))  // if encoutered >>
-			err = ft_parsefiletoken(&tokens, &(cmd->out), '>', O_APPEND | O_WRONLY | O_CREAT);
-		else if (!ft_strcmp(*tokens, "<"))  // if encoutered <
-			err = ft_parsefiletoken(&tokens, &(cmd->in), '<', O_RDONLY);
+		if (!ft_strcmp(*token, "<<"))  // if encountered <<
+			err = ft_parseheredoc(&token, &quote, cmd);
+		else if (!ft_strcmp(*token, ">"))  // if encoutered >
+			err = ft_parsefiletoken(&token, &quote, &(cmd->out), O_WRONLY | O_CREAT);
+		else if (!ft_strcmp(*token, ">>"))  // if encoutered >>
+			err = ft_parsefiletoken(&token, &quote, &(cmd->out), O_APPEND | O_WRONLY | O_CREAT);
+		else if (!ft_strcmp(*token, "<"))  // if encoutered <
+			err = ft_parsefiletoken(&token, &quote, &(cmd->in), O_RDONLY);
 		else // encountered an arg
-			ft_darrpushback(args, ft_strdup(*tokens));
+			ft_darrpushback(args, ft_strdup(*token));
 		if (err)
 		{
 			ft_darrclear(args);
 			return (NULL);
 		}
 		// printf("ENDED READING TOKEN AT %p\n", *tokens);
-		tokens++;
+		token++;
+		quote++;
 		// printf("TOKEN IS NOW at %p, its address is %p\n", *tokens, tokens);
 	}
-	if (*tokens && !ft_strcmp(*tokens, "|") && ft_strcmp(*(tokens + 1), "|")) // if the current one is `|` and the next one is not
-		tokens++;
-	else if (*tokens && !ft_strcmp(*tokens, "|") && !ft_strcmp(*(tokens + 1), "|")) // if both the current and the next ones are `|`
+	if (*token && !ft_strcmp(*token, "|") && ft_strcmp(*(token + 1), "|")) // if the current one is `|` and the next one is not
 	{
-		ft_error(*tokens, "syntax error");
+		token++;
+		quote++;
+	}
+	else if (*token && !ft_strcmp(*token, "|") && !ft_strcmp(*(token + 1), "|")) // if both the current and the next ones are `|`
+	{
+		ft_error(*token, "syntax error");
 		return (NULL);
 	}
 	if (args->len > 0)
@@ -93,23 +107,29 @@ char	**ft_extract_arguments(t_cmd *cmd, char **tokens)
 	else
 		free(args->ptr);
 	free(args);
+	tokens->tokens->ptr = token;
+	tokens->quotes->ptr = quote;
+
 	// printf("RETURNING TOKENS\n");
-	return (tokens);
+	return (token);
 }
 
-t_cmd	*ft_parse_commands(char **tokens)
+t_cmd	*ft_parse_commands(t_tokens *tokens)
 {
 	int		i;
 	t_cmd	*commands;
 	int		pipefd[2];
+	t_tokens	token; // current token and quote
 
-	if (!tokens || !(*tokens))
+	if (!tokens || !tokens->tokens || !tokens->tokens->ptr || !*tokens->tokens->ptr)
 		return (NULL);
+	token.tokens = tokens->tokens;
+	token.quotes = tokens->tokens;
 	commands = ft_calloc(g_data.cmds, sizeof(t_cmd));
 	i = 0;
-	if (!ft_strcmp(tokens[i], "|"))
+	if (!ft_strcmp(token.tokens->ptr[i], "|"))
 	{
-		ft_error(tokens[i], "syntax error");
+		ft_error(token.tokens->ptr[i], "syntax error");
 		return (NULL);
 	}
 	while (i < g_data.cmds)
@@ -117,7 +137,7 @@ t_cmd	*ft_parse_commands(char **tokens)
 		commands[i].in = 0;
 		commands[i].out = 1;
 		commands[i].i = i;
-		if (!(tokens = ft_extract_arguments(&commands[i], tokens))) // error while parsing tokens
+		if (!(ft_extract_arguments(&commands[i], &token))) // error while parsing tokens
 		{
 			ft_free_commands(commands, tokens); // free commands
 			return (NULL);
