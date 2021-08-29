@@ -1,5 +1,21 @@
 # Annihilation list
 
+## heredoc
+
+```
+bash-3.2$ << hi
+> $HOME
+> hi
+bash-3.2$
+```
+
+## echo and wc
+
+```
+bash-3.2$ echo "1" | wc -c
+       2
+```	   
+
 ## OLDPWD
 
 $OLDPWD shouldn't be inherited! immediately entering minishell and running cd - should result in OLDPWD not set prompt
