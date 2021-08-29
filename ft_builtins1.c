@@ -27,9 +27,9 @@ int	ft_echo(t_cmd *cmd)
 	while (*arg)
 	{
 		ft_putstr_fd(*arg, cmd->out);
+		arg++;
 		if (*arg)
 			ft_putstr_fd(" ", cmd->out);
-		arg++;
 	}
 	if (nl)
 		ft_putstr_fd("\n", cmd->out);
