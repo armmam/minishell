@@ -20,6 +20,13 @@ ft_builtins1.c          ft_environ.o            ft_parse_commands.o     main.c  
 ft_builtins1.o          ft_execute.o            ft_signal.o             main.o                  todo.md
 ```
 
+```
+bash-3.2$ touch a | << hi cat
+>                           [PRESS CTRL+C HERE] 
+bash-3.2$ echo $?
+1
+```
+
 ## echo and wc
 
 ```
