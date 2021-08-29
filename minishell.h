@@ -98,9 +98,11 @@ void	ft_default_signals(void);
 void	ft_heredoc_signals(void);
 void	ft_ignore_signals(void);
 void	ft_reprompt(int sig);
-void	ft_reset_terminal(void);
+void	ft_do_nothing(int sig);
 void	ft_suppress_output(void);
+void	ft_get_interrupted(int sig);
 int		ft_launch_heredoc(void);
 void	ft_receive_heredoc(t_cmd *cmd, int j, int *write_ends);
+
 
 #endif

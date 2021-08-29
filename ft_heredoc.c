@@ -118,7 +118,7 @@ int	ft_launch_heredoc(void)
 	wait(&heredoc_status);
 	free(write_ends);
 	ft_define_signals();
-	if (WTERMSIG(heredoc_status))
+	if (WEXITSTATUS(heredoc_status) == 1)
 	{
 		g_data.status = 1;
 		ft_putstr_fd("\n", 1);

@@ -95,8 +95,7 @@ void	ft_exec(t_cmd *cmd)
 			exit(1);
 		}
 		ft_close_descriptors();
-		if (ft_isbuiltin(cmd->args[0]))
-			cmd->out = 1;
+		cmd->out = 1;
 	}
 	// exec
 	if (cmd->args[0][0] == '/')
