@@ -1,5 +1,70 @@
 # Annihilation list
 
+## heredocs with quotes
+
+```
+bash-3.2$ << hiand cat
+> $HOME
+> hiand
+/Users/arman
+```
+
+```
+bash-3.2$ << hi"and" cat
+> $HOME
+> hiand
+$HOME
+```
+
+```
+bash-3.2$ << 'hi'and cat
+> $HOME
+> hiand
+$HOME
+```
+
+```
+bash-3.2$ << 1 << "'2'" cat
+> and
+> the
+> 1
+> $HOME
+> 2
+> '2'
+$HOME
+2
+```
+
+```
+bash-3.2$ << 1 << and'then 'one cat
+> and
+> then
+> 1
+> one
+> andthen one
+one
+```
+
+```
+bash-3.2$ << 1 << "'2'" cat
+> and
+> then
+> 1
+> $HOME
+> one
+>
+```
+
+```
+bash-3.2$ << 1 << and'then 'one cat
+> and
+> then
+> 1
+> $HOME
+> andthen one
+$HOME
+```
+
 ## heredoc
 
 ```
