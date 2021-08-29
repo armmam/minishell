@@ -68,6 +68,11 @@ $HOME
 ## heredoc
 
 ```
+bash-3.2$ <<
+bash: syntax error near unexpected token `newline'
+bash-3.2$
+
+```
 bash-3.2$ << hi
 > $HOME
 > hi
