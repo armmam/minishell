@@ -118,37 +118,40 @@ void	ft_interpret(char *line)
 		return ;
 	}
 	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
-	if (g_data.cmds == 1 && ft_isbuiltin(g_data.commands[0].args[0]))
+	if (g_data.cmds == 1 && g_data.commands[0].args && ft_isbuiltin(g_data.commands[0].args[0]))
 		ft_exec(&g_data.commands[0]);
 	else
 	{
 		i = 0;
 		while (i < g_data.cmds)
 		{
-			// spinning out child processes
-			g_data.family[i] = fork();
-			// if (parentid == getpid())
-			// 	printf("CREATED %d\n", g_data.family[i]);
-			// if (parentid != getpid())
-			// {
-			// 	dprintf(2, "self%d; parent%d\n", getpid(), getppid());
-			// 	dprintf(2, "command %d info at %p: in%d, out%d\n", i, &g_data.commands[i], g_data.commands[i].in, g_data.commands[i].out);
-			// 	dprintf(2, "printing cmd's args:\n");
-			// 	int iter = 0;
-			// 	while (g_data.commands[i].args[iter])
-			// 	{
-			// 		printf("%i:%s\n", iter, g_data.commands[i].args[iter]);
-			// 		iter++;
-			// 	}
-			// 	printf("\n");
-			// }
-			if (g_data.family[i] == 0) // child process
-				ft_exec(&g_data.commands[i]); // child process will exit here
+			if (g_data.commands[i].args)
+			{
+				// spinning out child processes
+				g_data.family[i] = fork();
+				// if (parentid == getpid())
+				// 	printf("CREATED %d\n", g_data.family[i]);
+				// if (parentid != getpid())
+				// {
+				// 	dprintf(2, "self%d; parent%d\n", getpid(), getppid());
+				// 	dprintf(2, "command %d info at %p: in%d, out%d\n", i, &g_data.commands[i], g_data.commands[i].in, g_data.commands[i].out);
+				// 	dprintf(2, "printing cmd's args:\n");
+				// 	int iter = 0;
+				// 	while (g_data.commands[i].args[iter])
+				// 	{
+				// 		printf("%i:%s\n", iter, g_data.commands[i].args[iter]);
+				// 		iter++;
+				// 	}
+				// 	printf("\n");
+				// }
+				if (g_data.family[i] == 0) // child process
+					ft_exec(&g_data.commands[i]); // child process will exit here
+			}
 			i++;
 		}
 	}
 	ft_ignore_signals();	// this is done so that...
-	if (!(g_data.cmds == 1 && ft_isbuiltin(g_data.commands[0].args[0])))
+	if (!(g_data.cmds == 1 && g_data.commands[0].args && ft_isbuiltin(g_data.commands[0].args[0])))
 		ft_block_main_process(g_data.commands);
 	ft_define_signals();	// no thing such as "double signal" occurs
 	ft_free_commands(g_data.commands, tokens);

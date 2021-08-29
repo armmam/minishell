@@ -85,8 +85,13 @@ char	**ft_extract_arguments(t_cmd *cmd, char **tokens)
 		ft_error(*tokens, "syntax error");
 		return (NULL);
 	}
-	ft_darrpushback(args, NULL);
-	cmd->args = args->ptr;
+	if (args->len > 0)
+	{
+		ft_darrpushback(args, NULL);
+		cmd->args = args->ptr;
+	}
+	else
+		free(args->ptr);
 	free(args);
 	// printf("RETURNING TOKENS\n");
 	return (tokens);
