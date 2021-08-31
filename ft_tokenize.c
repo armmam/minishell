@@ -99,12 +99,12 @@ int		ft_extract_token(const char *line, char **token, char **quote)
 	}
 	while (!ft_isspace(line[j]) && line[j])
 	{
-		if ((line[j] == '<' || line[j] == '>') && (j != i || (*token)[0] != '\0')) // encountered </> but also need to add something encountered before to `token` OR already added something to `token`
+		if ((line[j] == '<' || line[j] == '>' || line[j] == '|') && (j != i || (*token)[0] != '\0')) // encountered </>/| but also need to add something encountered before `token` OR already added something to `token`
 		{
 			ft_appendtoken(token, &line[i], j - i, expand); // append whatever has not been appended yet
-			return (j + 1); // </> will be included in the next call to this function, not this one
+			return (j); // </> will be included in the next call to this function, not this one
 		}
-		else if (line[j] == '<' || line[j] == '>') // encountered </> and haven't added anything to `token` yet
+		else if (line[j] == '<' || line[j] == '>' || line[j] == '|') // encountered </>/| and haven't added anything to `token` yet
 		{ // here we assume that i == j
 			if (!ft_strncmp(&line[j], "<<", 2) || !ft_strncmp(&line[j], ">>", 2))
 				j++;

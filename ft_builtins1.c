@@ -14,7 +14,7 @@ int	ft_echo(t_cmd *cmd)
 
 	arg = (cmd->args) + 1;
 	nl = 1;
-	if (!ft_strcmp(*arg, "-n"))
+	if (*arg && !ft_strcmp(*arg, "-n"))
 	{
 		nl = 0;
 		arg++;
