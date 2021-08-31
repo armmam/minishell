@@ -82,12 +82,20 @@ int		ft_extract_token(const char *line, char **token, char **quote)
 	j = 0; // index of the current char
 	expand = 1; // flag for expansion; 1 by default, 0 if single quotes encountered
 	tmp = NULL;
-	*token = ft_strdup("");
-	*quote = ft_strdup("");
 	while (ft_isspace(line[j]))
 	{
 		j++;
 		i++;
+	}
+	if (line[j])
+	{
+		*token = ft_strdup("");
+		*quote = ft_strdup("");
+	}
+	else
+	{
+		*token = NULL;
+		*quote = NULL;
 	}
 	while (!ft_isspace(line[j]) && line[j])
 	{
@@ -157,8 +165,11 @@ t_tokens	*ft_tokenize(const char *line)
 	while (line[i])
 	{
 		i += ft_extract_token(&line[i], &token, &quote);
-		ft_darrpushback(ret->tokens, token);
-		ft_darrpushback(ret->quotes, quote);
+		if (token != NULL && quote != NULL)
+		{
+			ft_darrpushback(ret->tokens, token);
+			ft_darrpushback(ret->quotes, quote);
+		}
 	}
 	ft_darrpushback(ret->tokens, NULL); // null-terminate the matrix
 	ft_darrpushback(ret->quotes, NULL); // null-terminate the matrix
