@@ -1,6 +1,28 @@
 # Annihilation list
 
-## 
+## basic stuff
+
+```
+minishell$ echo>>4
+```
+
+```
+minishell$ echo >>5
+```
+
+```
+minishell$ echo 4|wc -l
+```
+
+```
+minishell$ echo "4 " |wc -l
+```
+
+```
+minishell$ < text.txt | cat
+```
+
+should quit immediately, cat should receive no input
 
 ## reading from and to the same file
 
