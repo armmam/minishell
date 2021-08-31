@@ -106,16 +106,16 @@ void	ft_block_main_process(t_cmd *commands)
 void	ft_interpret(char *line)
 {
 	int		i;
-	t_tokens	tokens;
+	t_tokens	*tokens;
 
 	tokens = ft_tokenize(line);
-	if (!tokens.tokens)
+	if (!tokens->tokens)
 		return ;
-	g_data.cmds = ft_count_commands(tokens.tokens->ptr);
-	g_data.commands = ft_parse_commands(&tokens);
+	g_data.cmds = ft_count_commands(tokens->tokens->ptr);
+	g_data.commands = ft_parse_commands(tokens);
 	if (!g_data.commands || ft_launch_heredoc())
 	{
-		ft_free_commands(g_data.commands, &tokens);
+		ft_free_commands(g_data.commands, tokens);
 		return ;
 	}
 	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
@@ -155,7 +155,7 @@ void	ft_interpret(char *line)
 	if (!(g_data.cmds == 1 && g_data.commands[0].args && ft_isbuiltin(g_data.commands[0].args[0])))
 		ft_block_main_process(g_data.commands);
 	ft_define_signals();	// no thing such as "double signal" occurs
-	ft_free_commands(g_data.commands, &tokens);
+	ft_free_commands(g_data.commands, tokens);
 }
 
 int	ft_isbuiltin(char *builtin)

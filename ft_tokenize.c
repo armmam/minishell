@@ -112,7 +112,7 @@ int		ft_extract_token(const char *line, char **token, char **quote)
 			tmp = ft_strchr(&line[j + 1], line[j]); // try to find a closing quote
 			if (tmp) // found a closing quote
 			{
-				if (!*quote)
+				if (!**quote)
 					ft_appendtoken(quote, ft_strdup("\'"), 1, 0);
 					// *quote = ft_strjoinsafe(quote, ft_strdup("\'"));
 				ft_appendtoken(token, &line[i], j - i, expand); // first safe everything (that was not already saved) up to the quote (not including) into `token`
@@ -136,30 +136,31 @@ int		ft_extract_token(const char *line, char **token, char **quote)
 // PLEASE MERGE THIS ONE WITH ft_parse_commands SO YOU'RE ABLE TO CORRECTLY
 // REMOVE ()S AND SET RESPECTIVE COMMAND'S cond FIELD.
 // removes ""s, ()s and other trash, uses ft_refineline on the arguments of commands
-t_tokens	ft_tokenize(const char *line)
+t_tokens	*ft_tokenize(const char *line)
 {
 	size_t	i;
 	char	*token;
 	char	*quote;
 	// t_darr	*tokens;
 	// t_darr	*quotes;
-	t_tokens	ret;
+	t_tokens	*ret;
 
+	ret = ft_calloc(1, sizeof(t_tokens));
 	i = 0;
 	if (line)
 	{
-		ret.tokens = ft_darrnew(0);
-		ret.quotes = ft_darrnew(0);
+		ret->tokens = ft_darrnew(0);
+		ret->quotes = ft_darrnew(0);
 	}
 	else
-		return ((t_tokens) {.tokens = NULL, .quotes = NULL});
+		return (NULL);
 	while (line[i])
 	{
 		i += ft_extract_token(&line[i], &token, &quote);
-		ft_darrpushback(ret.tokens, token);
-		ft_darrpushback(ret.quotes, quote);
+		ft_darrpushback(ret->tokens, token);
+		ft_darrpushback(ret->quotes, quote);
 	}
-	ft_darrpushback(ret.tokens, NULL); // null-terminate the matrix
-	ft_darrpushback(ret.quotes, NULL); // null-terminate the matrix
+	ft_darrpushback(ret->tokens, NULL); // null-terminate the matrix
+	ft_darrpushback(ret->quotes, NULL); // null-terminate the matrix
 	return (ret);
 }

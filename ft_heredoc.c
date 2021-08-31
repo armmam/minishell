@@ -13,7 +13,7 @@ void	ft_receive_heredoc(t_cmd *cmd, int k, int *write_ends)
 		while (j < cmd->heredoc->len)
 		{
 			refined = 1;
-			if (ft_strcmp(cmd->refine->ptr[j], "\'") && j == cmd->heredoc->len - 1)
+			if (!ft_strcmp(cmd->refine->ptr[j], "\'") && j == cmd->heredoc->len - 1)
 				refined = 0;
 			// if (ft_isquoted(cmd->heredoc->ptr[j], '\'') && j == cmd->heredoc->len - 1)
 			// if (ft_isquoted(cmd->heredoc->ptr[j], '\'') || ft_isquoted(cmd->heredoc->ptr[j], '\"'))
@@ -21,8 +21,7 @@ void	ft_receive_heredoc(t_cmd *cmd, int k, int *write_ends)
 			// 	heredoc = cmd->heredoc->ptr[j] + 1;
 			// 	heredoc[ft_strlen(heredoc) - 1] = '\0';
 			// }
-			else
-				heredoc = cmd->heredoc->ptr[j];
+			heredoc = cmd->heredoc->ptr[j];
 			j++;
 			while (1)
 			{
