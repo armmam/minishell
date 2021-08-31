@@ -94,7 +94,7 @@ t_tokens	*ft_tokenize(const char *line);
 int		ft_isbuiltin(char *builtin);
 char	*ft_refineline(char *line);
 t_cmd	*ft_parse_commands(t_tokens *tokens);
-void	ft_free_commands(t_cmd *cmds, t_tokens *tokens);
+void	ft_free_commands(t_cmd *cmds);
 int		ft_isquoted(char *str, char c);
 int		ft_isvalididentifier(const char *variable);
 int		ft_isvaliddeclaration(char *decl);

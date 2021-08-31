@@ -19,9 +19,9 @@ int	ft_count_commands(char **tokens)
 }
 
 /*
- * frees commands and tokens
+ * frees commands 
  */
-void	ft_free_commands(t_cmd *cmds, t_tokens *tokens)
+void	ft_free_commands(t_cmd *cmds)
 {
 	int	i;
 
@@ -50,10 +50,17 @@ void	ft_free_commands(t_cmd *cmds, t_tokens *tokens)
 		free(g_data.family);
 		g_data.family = NULL;
 	}
-	if (tokens->tokens)
-		ft_darrclear(tokens->tokens);
-	if (tokens->quotes)
-		ft_darrclear(tokens->quotes);
+}
+
+void	ft_free_tokens(t_tokens *tokens)
+{
+	if (tokens)
+	{
+		if (tokens->tokens)
+			ft_darrclear(tokens->tokens);
+		if (tokens->quotes)
+			ft_darrclear(tokens->quotes);
+	}
 }
 
 t_cmd	*ft_find_command(pid_t pid, t_cmd *commands)
@@ -115,7 +122,8 @@ void	ft_interpret(char *line)
 	g_data.commands = ft_parse_commands(tokens);
 	if (!g_data.commands || ft_launch_heredoc())
 	{
-		ft_free_commands(g_data.commands, tokens);
+		ft_free_commands(g_data.commands);
+		ft_free_tokens(tokens);
 		return ;
 	}
 	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
@@ -155,7 +163,8 @@ void	ft_interpret(char *line)
 	if (!(g_data.cmds == 1 && g_data.commands[0].args && ft_isbuiltin(g_data.commands[0].args[0])))
 		ft_block_main_process(g_data.commands);
 	ft_define_signals();	// no thing such as "double signal" occurs
-	ft_free_commands(g_data.commands, tokens);
+	ft_free_commands(g_data.commands);
+	ft_free_tokens(tokens);
 }
 
 int	ft_isbuiltin(char *builtin)

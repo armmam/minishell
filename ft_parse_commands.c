@@ -5,11 +5,17 @@
  */
 int		ft_parseheredoc(char ***token, char ***quote, t_cmd *cmd)
 {
+	char *error;
+
 	(*token)++;
 	(*quote)++;
-	if (*token == NULL || ((*token)[0][0] == '|' && (*token)[0][1] == '\0')) // << is the last token in the command
+	if (*token == NULL || **token == NULL || ((*token)[0][0] == '|' && (*token)[0][1] == '\0')) // << is the last token in the command
 	{
-		ft_error(*(*token - sizeof(char *)), "syntax error");
+		if (*token == NULL || **token == NULL)
+			error = "newline";
+		else
+			error = *(*token - 1);
+		ft_error(error, "syntax error");
 		return (1);
 	}
 	if (!cmd->heredoc) // if have not encountered any heredocs before
@@ -135,7 +141,7 @@ t_cmd	*ft_parse_commands(t_tokens *tokens)
 		commands[i].i = i;
 		if (!(ft_extract_arguments(&commands[i], &token, &quote))) // error while parsing tokens
 		{
-			ft_free_commands(commands, tokens); // free commands
+			ft_free_commands(commands); // free commands
 			return (NULL);
 		}
 		if (i)
