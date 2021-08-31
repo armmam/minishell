@@ -30,9 +30,9 @@ void	ft_free_commands(t_cmd *cmds)
 	{
 		while (i < g_data.cmds)
 		{
-			if (cmds[i].in != 0)
+			if (cmds[i].in != 0 && cmds[i].in != 1)
 				close(cmds[i].in);
-			if (cmds[i].out != 1)
+			if (cmds[i].out != 1 && cmds[i].out != 0)
 				close(cmds[i].out);
 			if (cmds[i].heredoc)
 				ft_darrclear(cmds[i].heredoc);
