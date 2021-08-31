@@ -26,7 +26,9 @@ void	ft_receive_heredoc(t_cmd *cmd, int k, int *write_ends)
 			while (1)
 			{
 				temp = readline("> ");
-				if (!ft_strcmp(temp, heredoc))
+				if (temp == NULL)
+					break ;
+				else if (!ft_strcmp(temp, heredoc))
 				{
 					free(temp);
 					if (j == cmd->heredoc->len)
