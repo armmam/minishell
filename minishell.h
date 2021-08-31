@@ -51,6 +51,7 @@ typedef struct s_cmd
 	int		out;
 	// array of heredocs (<<). if absent, please make it NULL
 	t_darr	*heredoc;
+	t_darr	*refine;
 }				t_cmd;
 
 typedef struct s_env
@@ -66,6 +67,12 @@ typedef struct s_env
 	// status of the process that was the latest of terminate
 	int		status;
 }				t_env;
+
+typedef struct s_tokens
+{
+	t_darr	*tokens;
+	t_darr	*quotes;
+}				t_tokens;
 
 t_env	g_data;
 
@@ -83,11 +90,11 @@ int		ft_export(t_cmd *cmd);
 int		ft_unset(t_cmd *cmd);
 int		ft_env(t_cmd *cmd);
 void	ft_abort(t_cmd *cmd);
-char	**ft_tokenize(const char *line);
+t_tokens	*ft_tokenize(const char *line);
 int		ft_isbuiltin(char *builtin);
 char	*ft_refineline(char *line);
-t_cmd	*ft_parse_commands(char **tokens);
-void	ft_free_commands(t_cmd *cmds, char **tokens);
+t_cmd	*ft_parse_commands(t_tokens *tokens);
+void	ft_free_commands(t_cmd *cmds);
 int		ft_isquoted(char *str, char c);
 int		ft_isvalididentifier(const char *variable);
 int		ft_isvaliddeclaration(char *decl);

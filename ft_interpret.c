@@ -19,9 +19,9 @@ int	ft_count_commands(char **tokens)
 }
 
 /*
- * frees commands and tokens
+ * frees commands 
  */
-void	ft_free_commands(t_cmd *cmds, char **tokens)
+void	ft_free_commands(t_cmd *cmds)
 {
 	int	i;
 
@@ -30,12 +30,14 @@ void	ft_free_commands(t_cmd *cmds, char **tokens)
 	{
 		while (i < g_data.cmds)
 		{
-			if (cmds[i].in != 0)
+			if (cmds[i].in != 0 && cmds[i].in != 1)
 				close(cmds[i].in);
-			if (cmds[i].out != 1)
+			if (cmds[i].out != 1 && cmds[i].out != 0)
 				close(cmds[i].out);
 			if (cmds[i].heredoc)
 				ft_darrclear(cmds[i].heredoc);
+			if (cmds[i].refine)
+				ft_darrclear(cmds[i].refine);
 			if (cmds[i].args)
 				ft_freematrix(cmds[i].args);
 			i++;
@@ -48,10 +50,16 @@ void	ft_free_commands(t_cmd *cmds, char **tokens)
 		free(g_data.family);
 		g_data.family = NULL;
 	}
+}
+
+void	ft_free_tokens(t_tokens *tokens)
+{
 	if (tokens)
 	{
-		ft_freematrix(tokens);
-		tokens = NULL;
+		if (tokens->tokens)
+			ft_darrclear(tokens->tokens);
+		if (tokens->quotes)
+			ft_darrclear(tokens->quotes);
 	}
 }
 
@@ -105,16 +113,17 @@ void	ft_block_main_process(t_cmd *commands)
 void	ft_interpret(char *line)
 {
 	int		i;
-	char	**tokens;
+	t_tokens	*tokens;
 
 	tokens = ft_tokenize(line);
-	if (!tokens)
+	if (!tokens->tokens)
 		return ;
-	g_data.cmds = ft_count_commands(tokens);
+	g_data.cmds = ft_count_commands(tokens->tokens->ptr);
 	g_data.commands = ft_parse_commands(tokens);
 	if (!g_data.commands || ft_launch_heredoc())
 	{
-		ft_free_commands(g_data.commands, tokens);
+		ft_free_commands(g_data.commands);
+		ft_free_tokens(tokens);
 		return ;
 	}
 	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
@@ -154,7 +163,8 @@ void	ft_interpret(char *line)
 	if (!(g_data.cmds == 1 && g_data.commands[0].args && ft_isbuiltin(g_data.commands[0].args[0])))
 		ft_block_main_process(g_data.commands);
 	ft_define_signals();	// no thing such as "double signal" occurs
-	ft_free_commands(g_data.commands, tokens);
+	ft_free_commands(g_data.commands);
+	ft_free_tokens(tokens);
 }
 
 int	ft_isbuiltin(char *builtin)

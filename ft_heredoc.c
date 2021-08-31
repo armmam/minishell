@@ -13,20 +13,22 @@ void	ft_receive_heredoc(t_cmd *cmd, int k, int *write_ends)
 		while (j < cmd->heredoc->len)
 		{
 			refined = 1;
-			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') && j == cmd->heredoc->len - 1)
+			if (!ft_strcmp(cmd->refine->ptr[j], "\'") && j == cmd->heredoc->len - 1)
 				refined = 0;
-			if (ft_isquoted(cmd->heredoc->ptr[j], '\'') || ft_isquoted(cmd->heredoc->ptr[j], '\"'))
-			{
-				heredoc = cmd->heredoc->ptr[j] + 1;
-				heredoc[ft_strlen(heredoc) - 1] = '\0';
-			}
-			else
-				heredoc = cmd->heredoc->ptr[j];
+			// if (ft_isquoted(cmd->heredoc->ptr[j], '\'') && j == cmd->heredoc->len - 1)
+			// if (ft_isquoted(cmd->heredoc->ptr[j], '\'') || ft_isquoted(cmd->heredoc->ptr[j], '\"'))
+			// {
+			// 	heredoc = cmd->heredoc->ptr[j] + 1;
+			// 	heredoc[ft_strlen(heredoc) - 1] = '\0';
+			// }
+			heredoc = cmd->heredoc->ptr[j];
 			j++;
 			while (1)
 			{
 				temp = readline("> ");
-				if (!ft_strcmp(temp, heredoc))
+				if (temp == NULL)
+					break ;
+				else if (!ft_strcmp(temp, heredoc))
 				{
 					free(temp);
 					if (j == cmd->heredoc->len)
