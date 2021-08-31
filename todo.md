@@ -1,5 +1,7 @@
 # Annihilation list
 
+## 
+
 ## reading from and to the same file
 
 ```
@@ -214,6 +216,9 @@ bash-3.2$ echo shine | << v | cat
 ```
 
 ## Several heredocs
+
+Ctrl-D-ing duing the receipt of a multiple heredoc shouldn't quit heredoc immediately; it must skip only one heredoc
+say if you have 5 heredocs then you can quit only by Ctrl-D-ing 5 times
 
 <details>
 <summary>Several heredocs</summary>
