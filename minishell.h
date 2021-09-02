@@ -3,6 +3,8 @@
 
 # include "./libft/libft.h"
 
+# define _SVID_SOURCE 1
+
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
@@ -25,6 +27,8 @@
 # include <curses.h>
 # include <term.h>
 
+int	parentid;
+
 enum	e_builtins
 {
 	__echo = 1,
@@ -36,13 +40,6 @@ enum	e_builtins
 	__exit	
 };
 
-enum	e_operators
-{
-	and,
-	or,
-	none
-};
-
 typedef struct s_cmd
 {
 	// index (to wait and abort properly)
@@ -52,18 +49,17 @@ typedef struct s_cmd
 	// last stdin, stdout for a command (open not the last ones with TRUNC if it's not >>; open with APPEND if >>)
 	int		in;
 	int		out;
-	// preceding operator (or, and or none)
-	int		cond;
-	// heredoc (for <<). if absent, please make it NULL
-	char	*heredoc;
+	// array of heredocs (<<). if absent, please make it NULL
+	t_darr	*heredoc;
+	t_darr	*refine;
 }				t_cmd;
 
 typedef struct s_env
 {
 	// number of commands in the current minishell session
 	int		cmds;
-	// how many additional processes have to be launched for the current minishell session
-	int		prcs;
+	// the commands themselves, in form of a data structure containing info
+	t_cmd	*commands;
 	// array of pids of launched processes
 	pid_t	*family;
 	// env vars of the current minishell session
@@ -72,12 +68,18 @@ typedef struct s_env
 	int		status;
 }				t_env;
 
+typedef struct s_tokens
+{
+	t_darr	*tokens;
+	t_darr	*quotes;
+}				t_tokens;
+
 t_env	g_data;
 
-void	ft_inheritenviron(char **environ);
+void	ft_inherit_environment(char **environ);
 void	ft_interpret(char *line);
 char	*ft_getenv(const char *name);
-void	ft_error(char *name, char *desc);
+int		ft_error(char *name, char *desc);
 void	ft_exec(t_cmd *cmd);
 int		ft_execbuiltin(t_cmd *cmd);
 int		ft_convertbuiltin(char *builtin);
@@ -88,7 +90,26 @@ int		ft_export(t_cmd *cmd);
 int		ft_unset(t_cmd *cmd);
 int		ft_env(t_cmd *cmd);
 void	ft_abort(t_cmd *cmd);
-char	**ft_tokenize(const char *line);
+t_tokens	*ft_tokenize(const char *line);
 int		ft_isbuiltin(char *builtin);
+char	*ft_refineline(char *line);
+t_cmd	*ft_parse_commands(t_tokens *tokens);
+void	ft_free_commands(t_cmd *cmds);
+int		ft_isquoted(char *str, char c);
+int		ft_isvalididentifier(const char *variable);
+int		ft_isvaliddeclaration(char *decl);
+char	*ft_separate_identifier(char *decl);
+char	*ft_getenv_full(const char *name);
+void	ft_define_signals(void);
+void	ft_default_signals(void);
+void	ft_heredoc_signals(void);
+void	ft_ignore_signals(void);
+void	ft_reprompt(int sig);
+void	ft_do_nothing(int sig);
+void	ft_suppress_output(void);
+void	ft_get_interrupted(int sig);
+int		ft_launch_heredoc(void);
+void	ft_receive_heredoc(t_cmd *cmd, int j, int *write_ends);
+
 
 #endif

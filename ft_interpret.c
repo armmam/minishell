@@ -1,11 +1,11 @@
 #include "minishell.h"
 
-int	ft_cmds(char **tokens)
+int	ft_count_commands(char **tokens)
 {
 	int	i;
 	int	count;
 
-	if (!tokens)
+	if (!tokens || !(*tokens))
 		return (0);
 	count = 1;
 	i = 0;
@@ -13,212 +13,158 @@ int	ft_cmds(char **tokens)
 	{
 		if (tokens[i][0] == '|' && tokens[i][1] == '\0')
 			count++;
-		if (tokens[i][0] == '&' && tokens[i][1] == '&'
-			&& tokens[i][2] == '\0')
-			count++;
-		if (tokens[i][0] == '|' && tokens[i][1] == '|'
-			&& tokens[i][2] == '\0')
-			count++;
 		i++;
 	}
 	return (count);
 }
 
 /*
- * frees commands and close FDs
+ * frees commands 
  */
-void	ft_freecomands(t_cmd **cmds)
+void	ft_free_commands(t_cmd *cmds)
 {
-	t_cmd	*ptr;
+	int	i;
 
-	ptr = *cmds;
-	while (ptr)
-	{
-		if ((ptr)->in != 0)
-			close((ptr)->in);
-		if ((ptr)->out != 1 && (ptr)->out != 0)
-			close((ptr)->out);
-		if ((ptr)->heredoc)
-			free((ptr)->heredoc);
-		if ((ptr)->args)
-			ft_freematrix((ptr)->args);
-		ptr++;
-	}
-	free((*cmds));
-	*cmds = NULL;
-}
-
-/*
- * returns 0 upon success, 1 upon failure
- */
-int		ft_parseheredoc(char ***tokens, char **heredoc)
-{
-	(*tokens)++;
-	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // << is the last token in the command
-	{
-		ft_error(*(*tokens - sizeof(char *)), "syntax error");
-		return (NULL);
-	}
-	if (*heredoc) // if already encountered any heredocs
-		free(*heredoc); // then free memory allocated for it
-	*heredoc = ft_strdup(**tokens);
-}
-
-/*
- * returns 0 upon success, 1 upon failure
- */
-int		ft_parsefiletoken(char ***tokens, int *cmd_fd, int open_flag)
-{
-	int		fd;
-
-	(*tokens)++;
-	if (*tokens == NULL || ((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // </>>/> is the last token in the command
-	{
-		ft_error(*(*tokens - sizeof(char *)), "syntax error");
-		return (1);
-	}
-	if (*cmd_fd != 0) // if already encoutered </>>/> before for this command
-		close(*cmd_fd);
-	if ((fd = open(**tokens, open_flag)) == -1)
-	{
-		perror("minishell");
-		return (1);
-	}
-	*cmd_fd = fd;
-	return (0);
-}
-
-// puts char **args into given command's args field;
-// opens the files given as <, > or >> with open()
-// and writes them into the in and out fields (don't
-// forget that if multiple outfiles are received,
-// they have to be opened and closed except for the last
-// one. store only the last one)
-// parses 'heredoc' if applicable; else assigns NULL to it -- it's null because of ft_calloc
-//
-// returns a pointer to the next command in `tokens`
-char	**ft_extractarguments(t_cmd *cmd, char **tokens)
-{
-	int		err;
-	t_darr	*args;
-
-	args = ft_darrnew(0);
-	err = 0;
-	while (*tokens != NULL && !((*tokens)[0] == '|' && (*tokens)[1] == '\0')) // haven't run out of tokens and haven't encountered a pipe
-	{
-		if (!ft_strcmp(*tokens, "<<"))  // if encountered <<
-			err = ft_parseheredoc(&tokens, &(cmd->heredoc));
-		else if (!ft_strcmp(*tokens, ">"))  // if encoutered >
-			err = ft_parsefiletoken(&tokens, &(cmd->out), O_WRONLY|O_CREAT);
-		else if (!ft_strcmp(*tokens, ">>"))  // if encoutered >>
-			err = ft_parsefiletoken(&tokens, &(cmd->out), O_APPEND|O_CREAT);
-		else if (!ft_strcmp(*tokens, "<"))  // if encoutered <
-			err = ft_parsefiletoken(&tokens, &(cmd->in), O_RDONLY);
-		else // encountered an arg
-			ft_darrpushback(args, ft_strdup(*tokens));
-		if (err)
-		{
-			ft_darrclear(args);
-			return (NULL);
-		}
-		tokens++;
-	}
-	ft_darrpushback(args, NULL);
-	cmd->args = args->ptr;
-	free(args);
-	return (args);
-}
-
-t_cmd	*ft_parsecommands(char **tokens)
-{
-	int		i;
-	t_cmd	*commands;
-	int		pipefd[2];
-
-	commands = ft_calloc(g_data.cmds + 1, sizeof(t_cmd)); // +1 so that the array of `t_cmd`s is null-terminated
 	i = 0;
-	while (i < g_data.cmds)
+	if (cmds)
 	{
-		commands[i].in = 0;
-		commands[i].out = 1;
-		commands[i].i = i;
-		if (!(tokens = ft_extractarguments(&commands[i], tokens))) // error while parsing tokens
+		while (i < g_data.cmds)
 		{
-			ft_freecomands(&commands); // free commands and close FDs
-			return (NULL);
+			if (cmds[i].in != 0 && cmds[i].in != 1)
+				close(cmds[i].in);
+			if (cmds[i].out != 1 && cmds[i].out != 0)
+				close(cmds[i].out);
+			if (cmds[i].heredoc)
+				ft_darrclear(cmds[i].heredoc);
+			if (cmds[i].refine)
+				ft_darrclear(cmds[i].refine);
+			if (cmds[i].args)
+				ft_freematrix(cmds[i].args);
+			i++;
 		}
-		if (i)
-		{
-			pipe(pipefd);
-			if (commands[i - 1].out != 1)
-				close(pipefd[1]);
-			else
-				commands[i - 1].out = pipefd[1];
-			if (commands[i].in != 0)
-				close(pipefd[0]);
-			else
-				commands[i].in = pipefd[0];
-		}
-		i++;
+		free(cmds);
+		cmds = NULL;
 	}
-	return (commands);
-}
-
-void	ft_interpret(char *line)
-{
-	int		i;
-	int		j;
-	t_cmd	*commands;
-	char	**tokens;
-
-
-	// TAKE CARE OF THIS COMMENT BLOCK AND UNCOMMENT IT
-	// ! treatment of special characters is needed !
-	tokens = ft_tokenize(line);
-	g_data.cmds = ft_cmds(tokens);
-	if (!(commands = ft_parsecommands(tokens)))
-	{
-		ft_freematrix(tokens);
-		return ;
-	}
-
-	g_data.prcs = g_data.cmds - ft_isbuiltin(commands[0].args[0]);
-	g_data.family = ft_calloc(g_data.prcs, sizeof(pid_t));
-	i = 0;
-	j = 0;
-	while (i < g_data.cmds)
-	{
-		if (g_data.cmds == 1 && ft_isbuiltin(commands[0].args[0]))
-			ft_exec(&commands[i]);
-		else
-		{
-			// spinning out child processes
-			g_data.family[j] = fork();
-			if (g_data.family[j] == 0) // child process
-				ft_exec(&commands[i]); // child process will exit here
-			else if (g_data.family[j] < 0)
-			{
-				perror("minishell");
-				while (--j >= 0)
-					kill(g_data.family[j], SIGINT);
-				break ;
-			}
-			j++;
-		}
-		i++;
-	}
-	i = 0;
-	while (i < g_data.prcs)
-		waitpid(g_data.family[i++], &g_data.status, 0);
-	
-	// free stuff
-	ft_freematrix(tokens);
-	ft_freecomands(commands); // also closes FDs
 	if (g_data.family)
 	{
 		free(g_data.family);
 		g_data.family = NULL;
 	}
+}
+
+void	ft_free_tokens(t_tokens *tokens)
+{
+	if (tokens)
+	{
+		if (tokens->tokens)
+			ft_darrclear(tokens->tokens);
+		if (tokens->quotes)
+			ft_darrclear(tokens->quotes);
+	}
+}
+
+t_cmd	*ft_find_command(pid_t pid, t_cmd *commands)
+{
+	int	i;
+
+	i = 0;
+	while (i < g_data.cmds)
+	{
+		if (g_data.family[i] == pid)
+			return (&commands[i]);
+		i++;
+	}
+	return (NULL);
+}
+
+void	ft_block_main_process(t_cmd *commands)
+{
+	int		i;
+	int		returned;
+	t_cmd	*selected;
+	pid_t	terminated;
+
+	i = 0;
+	while (i < g_data.cmds)
+	{
+		terminated = waitpid(-1, &returned, 0);
+		// printf("%d EXITED; WEXITSTATUS:%d, WTERMSIG:%d, G_DATA.STATUS:%d\n", terminated, WEXITSTATUS(returned), WTERMSIG(returned), returned);
+		if (terminated == g_data.family[g_data.cmds - 1])	// save only the LAST one's
+		{
+			if (!WTERMSIG(returned))
+				g_data.status = WEXITSTATUS(returned);
+			else
+				g_data.status = WTERMSIG(returned) + 128;
+		}
+		selected = ft_find_command(terminated, commands);
+		if (selected)
+		{
+			if (selected->out != 1)
+				close(selected->out);
+			if (selected->in != 0)
+				close(selected->in);
+		}
+		i++;
+	}
+	if (g_data.status == 131)
+		ft_putstr_fd("^\\Quit: 3\n", 1);
+}
+
+void	ft_interpret(char *line)
+{
+	int		i;
+	t_tokens	*tokens;
+
+	tokens = ft_tokenize(line);
+	if (!tokens->tokens)
+		return ;
+	g_data.cmds = ft_count_commands(tokens->tokens->ptr);
+	g_data.commands = ft_parse_commands(tokens);
+	if (!g_data.commands || ft_launch_heredoc())
+	{
+		ft_free_commands(g_data.commands);
+		ft_free_tokens(tokens);
+		return ;
+	}
+	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
+	if (g_data.cmds == 1 && g_data.commands[0].args && ft_isbuiltin(g_data.commands[0].args[0]))
+		ft_exec(&g_data.commands[0]);
+	else
+	{
+		i = 0;
+		while (i < g_data.cmds)
+		{
+			if (g_data.commands[i].args)
+			{
+				// spinning out child processes
+				g_data.family[i] = fork();
+				// if (parentid == getpid())
+				// 	printf("CREATED %d\n", g_data.family[i]);
+				// if (parentid != getpid())
+				// {
+				// 	dprintf(2, "self%d; parent%d\n", getpid(), getppid());
+				// 	dprintf(2, "command %d info at %p: in%d, out%d\n", i, &g_data.commands[i], g_data.commands[i].in, g_data.commands[i].out);
+				// 	dprintf(2, "printing cmd's args:\n");
+				// 	int iter = 0;
+				// 	while (g_data.commands[i].args[iter])
+				// 	{
+				// 		printf("%i:%s\n", iter, g_data.commands[i].args[iter]);
+				// 		iter++;
+				// 	}
+				// 	printf("\n");
+				// }
+				if (g_data.family[i] == 0) // child process
+					ft_exec(&g_data.commands[i]); // child process will exit here
+			}
+			i++;
+		}
+	}
+	ft_ignore_signals();	// this is done so that...
+	if (!(g_data.cmds == 1 && g_data.commands[0].args && ft_isbuiltin(g_data.commands[0].args[0])))
+		ft_block_main_process(g_data.commands);
+	ft_define_signals();	// no thing such as "double signal" occurs
+	ft_free_commands(g_data.commands);
+	ft_free_tokens(tokens);
 }
 
 int	ft_isbuiltin(char *builtin)
@@ -247,30 +193,6 @@ int	ft_convertbuiltin(char *builtin)
 	return (0);
 }
 
-int	ft_execbuiltin(t_cmd *cmd)
-{
-	int	ret;
-
-	ret = ft_convertbuiltin(cmd->args[0]);
-	if (ret == __echo)
-		g_data.status = ft_echo(cmd);
-	else if (ret == __cd)
-		g_data.status = ft_cd(cmd);
-	else if (ret == __pwd)
-		g_data.status = ft_pwd(cmd);
-	else if (ret == __export)
-		g_data.status = ft_export(cmd);
-	else if (ret == __unset)
-		g_data.status = ft_unset(cmd);
-	else if (ret == __env)
-		g_data.status = ft_env(cmd);
-	else if (ret == __exit)
-		exit(0);
-	if (ret)
-		return (0);
-	return (-1);
-}
-
 int		ft_isquoted(char *str, char c)
 {
 	if (str[0] == c && str[ft_strlen(str) - 1] == c)
@@ -278,102 +200,12 @@ int		ft_isquoted(char *str, char c)
 	return (0);
 }
 
-void	ft_abort(t_cmd *cmd)
-{
-	int	i;
-
-	i = cmd->i + 1;
-	while (i < g_data.prcs)
-		kill(g_data.family[i++], SIGINT);
-	if (cmd->cond == or)
-		exit(0);
-	else
-		exit(1);
-}
-
-void	ft_exec(t_cmd *cmd)
-{
-	int		i;
-	char	*temp;
-	char	*newpath;
-	char	**paths;
-	int		status;
-
-	// wait for the previous one
-	if (cmd->i)
-	{
-		waitpid(g_data.family[cmd->i - 1], &status, 0);
-		if ((status && cmd->cond == and) || (!status && cmd->cond == or))
-			ft_abort(cmd);
-	}
-	// associating fds
-	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
-		if (dup2(cmd->in, 0) == -1 || dup2(cmd->out, 1) == -1)
-			ft_abort(cmd);
-	// receiving heredoc (<<)
-	if (cmd->heredoc)
-	{
-		int	refined = 0;
-		if (!(ft_isquoted(cmd->heredoc, '\'') || ft_isquoted(cmd->heredoc, '\"')))
-		{
-			cmd->heredoc[ft_strlen(cmd->heredoc) - 1] = '\0';
-			cmd->heredoc++;
-			refined = 1;
-		}
-		while (1)
-		{
-			temp = readline("> ");
-			if (!ft_strcmp(temp, cmd->heredoc))
-			{
-				free(temp);
-				break ;
-			}
-			if (refined)
-				temp = ft_refineline(temp);
-			ft_putstr_fd(temp, cmd->in);
-			ft_putstr_fd("\n", cmd->in);
-			free(temp);
-		}
-	}
-	// exec
-	if (cmd->args[0][0] == '/')
-	{
-		execve(cmd->args[0], cmd->args, g_data.env) == -1;
-		ft_error(cmd->args[0], "No such file or directory");
-	}
-	else
-	{
-		if (ft_execbuiltin(cmd) == -1)
-		{
-			if (ft_getenv("PATH"))
-			{
-				// try to find the command by iterating over paths in PATH
-				paths = ft_split(ft_getenv("PATH"), ':');
-				i = 0;
-				while (paths[i])
-				{
-					temp = ft_strjoin(paths[i], "/");
-					newpath = ft_strjoin(temp, cmd->args[0]);
-					free(temp);
-					execve(newpath, cmd->args, g_data.env);
-					free(newpath);
-					i++;
-				}
-				ft_freematrix(paths);
-				ft_error(cmd->args[0], "No such command found");
-			}
-			else
-				ft_error(cmd->args[0], "No such file or directory");
-		}
-	}
-	exit(1);
-}
-
-void	ft_error(char *name, char *desc)
+int	ft_error(char *name, char *desc)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(name, 2);
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(desc, 2);
 	ft_putstr_fd("\n", 2);
+	return (1);
 }

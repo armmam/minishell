@@ -1,32 +1,29 @@
 #include "minishell.h"
 
-void	ft_reprompt(int arg)
-{
-	(void)arg;
-	ft_putstr_fd("\nminishell$ ", 1);
-}
-
-
 int	main(int argc, char **argv, char **environ)
 {
-	char			*line;
-	struct termios	settings;
+	char	*line;
 
 	(void)argc;
 	(void)argv;
-	ft_inheritenviron(environ);
-	signal(SIGINT, &ft_reprompt);
+	ft_inherit_environment(environ);
+	ft_define_signals();
+	//
+	// parentid = getpid();
+	// printf("SHELL PROCESS PID IS %d\n", getpid());
+	//
 	g_data.status = 0;
 	while (1)
 	{
 		line = readline("minishell$ ");
-		//ft_interpret(line);
-
-		// THIS IS TO EXIT THE SHELL UNTIL PARSING AND TOKENIZATION ARE DONE
-		if (!ft_strcmp(line, "exit"))
-			exit(0);
-		//
-		add_history(line);
+		if (!line)
+		{
+			ft_putstr_fd("\b \bexit\n", 1);
+			return (EXIT_SUCCESS);
+		}
+		ft_interpret(line);
+		if (ft_strcmp(line, ""))
+			add_history(line);
 		free(line);
 	}
 	return (EXIT_SUCCESS);

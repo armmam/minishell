@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void	ft_inheritenviron(char **environ)
+void	ft_inherit_environment(char **environ)
 {
 	int	i;
 
@@ -8,29 +8,45 @@ void	ft_inheritenviron(char **environ)
 	i = 0;
 	while (environ[i])
 	{
-		g_data.env->ptr[i] = ft_strdup(environ[i]);
+		if (ft_strncmp(environ[i], "OLDPWD=", ft_strlen("OLDPWD=")))
+			ft_darrpushback(g_data.env, ft_strdup(environ[i]));
 		i++;
 	}
-	g_data.env->ptr[i] = NULL;
+}
+
+char	*ft_getenv_full(const char *name)
+{
+	int		i;
+	int		name_len;
+	char	*identifier;
+
+	i = 0;
+	identifier = ft_separate_identifier((char *) name);
+	if (!ft_isvalididentifier(identifier))
+	{
+		free(identifier);
+		return (NULL);
+	}
+	while (g_data.env->ptr[i])
+	{
+		name_len = ft_strlen(identifier);
+		if (!ft_strncmp(g_data.env->ptr[i], identifier, name_len) && (g_data.env->ptr[i][name_len] == '=' || g_data.env->ptr[i][name_len] == '\0'))
+		{
+			free(identifier);
+			return (g_data.env->ptr[i]);
+		}
+		i++;
+	}
+	free(identifier);
+	return (NULL);
 }
 
 char	*ft_getenv(const char *name)
 {
-	int		i;
-	char	*var;
+	char	*env;
 
-	i = 0;
-	if (ft_strrchr(name, '='))
-		return (NULL);
-	while (g_data.env->ptr[i])
-	{
-		if (!ft_strncmp(g_data.env->ptr[i], name, ft_strlen((char *) name)))
-		{
-			var = g_data.env->ptr[i];
-			var += ft_strlen((char *) name) + 1;
-			return (var);
-		}
-		i++;
-	}
+	env = ft_getenv_full(name);
+	if (env)
+		return (env + ft_strlen((char *) name) + 1);
 	return (NULL);
 }

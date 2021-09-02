@@ -1,46 +1,44 @@
 NAME		= minishell
 
 SRCS		= $(wildcard *.c)
-OBJS		= ${SRCS:.c=.o}
-CC			= gcc
-CFLAGS		= -Wall -Wextra -Werror
+OBJS		= $(SRCS:.c=.o)
+LIBFT		= libft/libft.a
+CC			= gcc -Wall -Werror -Wextra -g
 RM			= rm -rf
-
 # ATTENTION! These flags are machine-specific. Edit them so that they point
-# to the location of your `readline` library. Right now, it is assumed that
-# your homebrew is installed at /iSCSI.
-ifeq ($$(whoami), aisraely)
+# to the location of your `readline` library.
+USER		= $(shell whoami)
+ifeq ($(USER), aisraely)
 	LDFLAGS		= -L/iSCSI/.brew/opt/readline/lib
 	CPPFLAGS	= -I/iSCSI/.brew/opt/readline/include
-else ifeq ($$(whoami), arman)
-	LDFLAGS		= -L~/.brew/opt/readline/lib
-	CPPFLAGS	= -I~/.brew/opt/readline/include
+else ifeq ($(USER), arman)
+	LDFLAGS		= -L/Users/arman/.brew/opt/readline/lib
+	CPPFLAGS	= -I/Users/arman/.brew/opt/readline/include
+else ifeq ($(USER), amamian)
+	LDFLAGS		= -L/Users/amamian/.brew/opt/readline/lib
+	CPPFLAGS	= -I/Users/amamian/.brew/opt/readline/include
 else
-	LDFLAGS		= 
-	CPPFLAGS	= 
 endif
 
 all: $(NAME)
 
-${NAME}: ${OBJS}
-	@echo [minishell] Compiling Libft...
-	@${MAKE} -C ./libft --silent
-	@echo [minishell] Compiling minishell...
-	@${CC} ${OBJS} ${CFLAGS} ${LDFLAGS} ${CPPFLAGS} -lreadline ./libft/libft.a -o ${NAME}
-	@echo [minishell] minishell successfully compiled.
+$(NAME): $(OBJS) $(LIBFT)
+	@$(CC) $(OBJS) -o $(NAME) $(LIBFT) -lreadline $(LDFLAGS) $(CPPFLAGS)
+
+$(LIBFT):
+	@make all -C ./libft --silent
 
 clean:
-	@${MAKE} -C libft fclean --silent
-	@${RM} ${OBJS}
-
-fclean: clean
-	@${RM} ${NAME}
+	@$(RM) $(OBJS)
+	@make clean -C ./libft --silent
 
 norme:
-	@norminette -R CheckForbiddenSourceHeader *.c *.h libft/*.c libft/*.h
-	
-bonus: all
+	@norminette -R CheckForbiddenSourceHeader *.c *.h
 
-re: fclean all
+fclean: clean
+	@$(RM) $(NAME)
+	@make fclean -C ./libft --silent
 
-.PHONY: clean fclean re all bonus
+re:			fclean all
+
+.PHONY:		all clean fclean re
