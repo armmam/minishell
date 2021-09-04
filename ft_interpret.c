@@ -107,7 +107,7 @@ void	ft_block_main_process(t_cmd *commands)
 		i++;
 	}
 	if (g_data.status == 131)
-		ft_putstr_fd("^\\Quit: 3\n", 1);
+		ft_putstr_fd("Quit: 3\n", 1);
 }
 
 void	ft_interpret(char *line)
@@ -134,8 +134,8 @@ void	ft_interpret(char *line)
 		i = 0;
 		while (i < g_data.cmds)
 		{
-			if (g_data.commands[i].args)
-			{
+			// if (g_data.commands[i].args)
+			// {
 				// spinning out child processes
 				g_data.family[i] = fork();
 				// if (parentid == getpid())
@@ -153,9 +153,13 @@ void	ft_interpret(char *line)
 				// 	}
 				// 	printf("\n");
 				// }
-				if (g_data.family[i] == 0) // child process
+				if (g_data.family[i] == 0)
+				{
+					if (!g_data.commands[i].args)
+						exit(0);
 					ft_exec(&g_data.commands[i]); // child process will exit here
-			}
+				} // child process
+			// }
 			i++;
 		}
 	}

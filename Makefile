@@ -1,13 +1,15 @@
 NAME		= minishell
 
+USER		= $(shell whoami)
+
 SRCS		= $(wildcard *.c)
 OBJS		= $(SRCS:.c=.o)
 LIBFT		= libft/libft.a
 CC			= gcc -Wall -Werror -Wextra -g
 RM			= rm -rf
+
 # ATTENTION! These flags are machine-specific. Edit them so that they point
 # to the location of your `readline` library.
-USER		= $(shell whoami)
 ifeq ($(USER), aisraely)
 	LDFLAGS		= -L/iSCSI/.brew/opt/readline/lib
 	CPPFLAGS	= -I/iSCSI/.brew/opt/readline/include
