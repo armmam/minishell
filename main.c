@@ -18,7 +18,7 @@ int	main(int argc, char **argv, char **environ)
 		line = readline("minishell$ ");
 		if (!line)
 		{
-			ft_putstr_fd("\b \bexit\n", 1);
+			ft_putstr_fd("exit\n", 1);
 			return (EXIT_SUCCESS);
 		}
 		ft_interpret(line);

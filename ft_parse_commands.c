@@ -75,7 +75,7 @@ char	**ft_extract_arguments(t_cmd *cmd, char ***token, char ***quote)
 		if (!ft_strcmp(**token, "<<"))  // if encountered <<
 			err = ft_parseheredoc(token, quote, cmd);
 		else if (!ft_strcmp(**token, ">"))  // if encoutered >
-			err = ft_parsefiletoken(token, quote, &(cmd->out), O_WRONLY | O_CREAT);
+			err = ft_parsefiletoken(token, quote, &(cmd->out), O_TRUNC | O_WRONLY | O_CREAT);
 		else if (!ft_strcmp(**token, ">>"))  // if encoutered >>
 			err = ft_parsefiletoken(token, quote, &(cmd->out), O_APPEND | O_WRONLY | O_CREAT);
 		else if (!ft_strcmp(**token, "<"))  // if encoutered <
