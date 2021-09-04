@@ -46,15 +46,6 @@ minishell$ <file2 grep a >file2
 must empty file2 considering that it has lines containing a character
 our minishell fails to do so
 
-## grep and file redirections
-
-```
-minishell$ <file2 grep a >file2
-```
-
-must empty file2 considering that it has lines containing a character
-our minishell fails to do so
-
 ## heredocs with quotes
 
 ```
@@ -127,6 +118,11 @@ minishell$ hey |
 ```
 
 shouldn't segfault.
+
+```
+minishell$ << <<
+minishell: syntax error near unexpected token `<<'
+```
 
 ```
 bash-3.2$ <<
