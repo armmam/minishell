@@ -24,6 +24,19 @@ minishell$ < text.txt | cat
 
 should quit immediately, cat should receive no input
 
+```
+minishell$ <Makefile
+minishell$ >g
+```
+
+empty commands with no args exit with status 0
+
+```
+minishell$ hi |exit
+minishell: hi: command not found
+```
+shouldn't print "exit" in the child process
+
 ## reading from and to the same file
 
 ```
