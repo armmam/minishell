@@ -30,11 +30,7 @@ int	ft_execbuiltin(t_cmd *cmd)
 	else if (ret == __env)
 		g_data.status = ft_env(cmd);
 	else if (ret == __exit)
-	{
-		if (g_data.cmds == 1)
-			ft_putstr_fd("exit\n", 2);
-		exit(0);
-	}
+		ft_exit(cmd);
 	if (ret)
 		return (0);
 	return (-1);

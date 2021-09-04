@@ -143,9 +143,9 @@ char	*ft_isdefined(char *decl)
 	char	*name;
 
 	name = ft_separate_identifier(decl);
-	printf("NAME INSIDE ft_isdefined() IS %s\n", name);
+	// printf("NAME INSIDE ft_isdefined() IS %s\n", name);
 	ret = ft_getenv(name);
-	printf("GETENV IS AT %p\n", ret);
+	// printf("GETENV IS AT %p\n", ret);
 	free(name);
 	return (ret);
 }
