@@ -89,7 +89,7 @@ int			ft_pwd(t_cmd *cmd);
 int			ft_export(t_cmd *cmd);
 int			ft_unset(t_cmd *cmd);
 int			ft_env(t_cmd *cmd);
-int			ft_exit(t_cmd *cmd);
+void		ft_exit(t_cmd *cmd);
 t_tokens	*ft_tokenize(const char *line);
 int			ft_isbuiltin(char *builtin);
 char		*ft_refineline(char *line);
