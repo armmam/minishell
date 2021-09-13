@@ -9,7 +9,7 @@ int		ft_parseheredoc(char ***token, char ***quote, t_cmd *cmd)
 
 	(*token)++;
 	(*quote)++;
-	if (*token == NULL || **token == NULL || ((*token)[0][0] == '|' && (*token)[0][1] == '\0')) // << is the last token in the command
+	if (*token == NULL || **token == NULL || ((*token)[0][0] == '|' && (*token)[0][1] == '\0') || !ft_strcmp(**token, "<<")) // << is the last token in the command
 	{
 		if (*token == NULL || **token == NULL)
 			error = "newline";
