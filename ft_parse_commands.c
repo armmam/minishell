@@ -38,7 +38,8 @@ int		ft_parsefiletoken(char ***token, char ***quote, int *cmd_fd, int open_flag)
 	dir = ***token;
 	(*token)++;
 	(*quote)++;
-	if (*token == NULL || ((*token)[0][0] == '|' && (*token)[0][1] == '\0')) // </>>/> is the last token in the command
+	if (token == NULL || *token == NULL || **token == NULL || ((*token)[0][0] == '|' && (*token)[0][1] == '\0') ||
+	(quote && *quote && **quote && !***quote && (!ft_strcmp(**token, "<<") || !ft_strcmp(**token, ">>") || !ft_strcmp(**token, "<") || !ft_strcmp(**token, ">")))) // </>>/> is the last token in the command OR encountered an unquoted redireciton operator after another one
 	{
 		ft_error(*(*token - 1), "syntax error");
 		return (1);

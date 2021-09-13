@@ -76,7 +76,7 @@ int	ft_cd(t_cmd *cmd)
 				status = ft_abs(chdir(ft_getenv("OLDPWD")));
 				if (!status)
 				{
-					ft_putstr_fd(oldpwd, cmd->out);
+					ft_putstr_fd(ft_getenv("OLDPWD"), cmd->out);
 					ft_putstr_fd("\n", cmd->out);
 				}
 			}
@@ -89,7 +89,7 @@ int	ft_cd(t_cmd *cmd)
 	if (!status)
 		ft_refresh_pwds(oldpwd);
 	else
-		status = ft_error("cd", "No such file or directory\n");
+		status = ft_error("cd", "No such file or directory");
 	free(oldpwd);
 	return (status);
 }
