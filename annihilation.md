@@ -1,5 +1,20 @@
 # Annihilation list
 
+## Redirection operators
+```
+bash-3.2$ ls ><
+bash: syntax error near unexpected token `<'
+bash-3.2$ ls >'<'
+bash-3.2$
+```
+
+```
+bash-3.2$ <>
+bash: syntax error near unexpected token `newline'
+bash-3.2$ ><
+bash: syntax error near unexpected token `<'
+```
+
 ## basic stuff
 
 ```
