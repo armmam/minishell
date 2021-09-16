@@ -108,6 +108,8 @@ void	ft_block_main_process(t_cmd *commands)
 	}
 	if (g_data.status == 131)
 		ft_putstr_fd("Quit: 3\n", 1);
+	else if (g_data.status == 130)
+		ft_putstr_fd("\n", 1);
 }
 
 void	ft_interpret(char *line)
@@ -157,6 +159,7 @@ void	ft_interpret(char *line)
 				{
 					if (!g_data.commands[i].args)
 						exit(0);
+					ft_default_signals();
 					ft_exec(&g_data.commands[i]); // child process will exit here
 				} // child process
 			// }

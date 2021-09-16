@@ -233,7 +233,16 @@ int	ft_export(t_cmd *cmd)
 				continue ;
 			}
 			if (ft_isdefined(cmd->args[i]))
-				ft_darrerase(g_data.env, ft_getenv_full(cmd->args[i]));
+			{
+				if (ft_strchr(cmd->args[i], '='))
+					ft_darrerase(g_data.env, ft_getenv_full(cmd->args[i]));
+				else
+				{
+					ret = 0;
+					i++;
+					continue ;
+				}
+			}
 			ft_darrpushback(g_data.env, ft_strdup(cmd->args[i]));
 			ret = 0;
 			i++;
