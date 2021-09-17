@@ -80,10 +80,12 @@ t_cmd	*ft_find_command(pid_t pid, t_cmd *commands)
 void	ft_block_main_process(t_cmd *commands)
 {
 	int		i;
+	int		signaled;
 	int		returned;
 	t_cmd	*selected;
 	pid_t	terminated;
 
+	signaled = 0;
 	i = 0;
 	while (i < g_data.cmds)
 	{
@@ -94,7 +96,10 @@ void	ft_block_main_process(t_cmd *commands)
 			if (!WTERMSIG(returned))
 				g_data.status = WEXITSTATUS(returned);
 			else
+			{
+				signaled = 1;
 				g_data.status = WTERMSIG(returned) + 128;
+			}
 		}
 		selected = ft_find_command(terminated, commands);
 		if (selected)
@@ -106,10 +111,13 @@ void	ft_block_main_process(t_cmd *commands)
 		}
 		i++;
 	}
-	if (g_data.status == 131)
-		ft_putstr_fd("Quit: 3\n", 1);
-	else if (g_data.status == 130)
-		ft_putstr_fd("\n", 1);
+	// IF there was a signal
+	if (signaled)
+	{
+		if (g_data.status == 131)
+			ft_putstr_fd("Quit: 3", 1);
+		ft_putstr_fd("\n", 1);		
+	}
 }
 
 void	ft_interpret(char *line)
