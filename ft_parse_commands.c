@@ -16,6 +16,7 @@ int		ft_parseheredoc(char ***token, char ***quote, t_cmd *cmd)
 		else
 			error = *(*token - 1);
 		ft_error(error, "syntax error");
+		g_data.status = 258;
 		return (1);
 	}
 	if (!cmd->heredoc) // if have not encountered any heredocs before
@@ -42,6 +43,7 @@ int		ft_parsefiletoken(char ***token, char ***quote, int *cmd_fd, int open_flag)
 	(quote && *quote && **quote && !***quote && (!ft_strcmp(**token, "<<") || !ft_strcmp(**token, ">>") || !ft_strcmp(**token, "<") || !ft_strcmp(**token, ">")))) // </>>/> is the last token in the command OR encountered an unquoted redireciton operator after another one
 	{
 		ft_error(*(*token - 1), "syntax error");
+		g_data.status = 258;
 		return (1);
 	}
 	if ((dir == '>' && *cmd_fd != 1) || (dir == '<' && *cmd_fd != 0)) // if already encoutered </>>/> before for this command
@@ -49,6 +51,7 @@ int		ft_parsefiletoken(char ***token, char ***quote, int *cmd_fd, int open_flag)
 	if ((fd = open(**token, open_flag, 0644)) == -1)
 	{
 		perror("minishell");
+		g_data.status = 1;
 		return (1);
 	}
 	*cmd_fd = fd;
@@ -101,6 +104,7 @@ char	**ft_extract_arguments(t_cmd *cmd, char ***token, char ***quote)
 	else if (*token && **token && !ft_strcmp(**token, "|") && !ft_strcmp(*(*token + 1), "|")) // if both the current and the next ones are `|`
 	{
 		ft_error(**token, "syntax error");
+		g_data.status = 258;
 		return (NULL);
 	}
 	if (args->len > 0)
@@ -111,8 +115,6 @@ char	**ft_extract_arguments(t_cmd *cmd, char ***token, char ***quote)
 	else
 		free(args->ptr);
 	free(args);
-
-	// printf("RETURNING TOKENS\n");
 	return (*token);
 }
 
@@ -133,6 +135,7 @@ t_cmd	*ft_parse_commands(t_tokens *tokens)
 	if (!ft_strcmp(token[i], "|"))
 	{
 		ft_error(token[i], "syntax error");
+		g_data.status = 258;
 		return (NULL);
 	}
 	while (i < g_data.cmds)
