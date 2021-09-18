@@ -50,7 +50,7 @@ empty commands with no args exit with status 0
 minishell$ hi |exit
 minishell: hi: command not found
 ```
-shouldn't print "exit" in the child process
+shouldn't print "exit" from the child process
 
 ## reading from and to the same file
 
@@ -59,7 +59,6 @@ minishell$ <file2 grep a >file2
 ```
 
 must empty file2 considering that it has lines containing a character
-our minishell fails to do so
 
 ## heredocs with quotes
 
@@ -187,6 +186,10 @@ $OLDPWD shouldn't be inherited! immediately entering minishell and running cd - 
 bash-3.2$ export ll=11
 bash-3.2$ export ll=11
 bash-3.2$ export ll=11
+```
+
+```
+minishell$ export efh>sq
 ```
 
 ## Recursive minishell call
