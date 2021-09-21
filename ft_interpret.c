@@ -60,6 +60,7 @@ void	ft_free_tokens(t_tokens *tokens)
 			ft_darrclear(tokens->tokens);
 		if (tokens->quotes)
 			ft_darrclear(tokens->quotes);
+		free(tokens);
 	}
 }
 
@@ -132,6 +133,7 @@ void	ft_interpret(char *line)
 	g_data.commands = ft_parse_commands(tokens);
 	if (!g_data.commands || ft_launch_heredoc())
 	{
+		// printf("HERE\n");
 		ft_free_commands(g_data.commands);
 		ft_free_tokens(tokens);
 		return ;
