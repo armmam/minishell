@@ -60,6 +60,7 @@ void	ft_free_tokens(t_tokens *tokens)
 			ft_darrclear(tokens->tokens);
 		if (tokens->quotes)
 			ft_darrclear(tokens->quotes);
+		free(tokens);
 	}
 }
 

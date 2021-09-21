@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
+/*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 18:28:48 by amamian           #+#    #+#             */
-/*   Updated: 2021/04/20 16:43:57 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/21 19:45:32 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ char			*ft_itoa(int n)
 	len = ft_itoalen(n);
 	if (!(ret = ft_calloc(len + 1, sizeof(char))))
 		return (NULL);
+	printf("ft_itoa: ret: %p\n", ret);
 	neg = (n < 0);
 	n = neg ? -n : n;
 	ret[len] = '\0';

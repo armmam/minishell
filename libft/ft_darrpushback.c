@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_darrpushback.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aisraely <aisraely@student.42.fr>          +#+  +:+       +#+        */
+/*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:13:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/21 17:47:37 by aisraely         ###   ########.fr       */
+/*   Updated: 2021/09/21 19:51:13 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ void			ft_darrpushback(t_darr *darr, char *item)
 		new_cap = cap_calc(darr->cap);
 		if (!(new_ptr = ft_calloc(new_cap, sizeof(char *))))
 			return ;
+		printf("ft_darrpushback: new_ptr: %p\n", new_ptr);
 		array_copy(new_ptr, darr->ptr, darr->len);
 		free(darr->ptr);
 		darr->ptr = new_ptr;

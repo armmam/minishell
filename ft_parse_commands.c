@@ -131,11 +131,13 @@ t_cmd	*ft_parse_commands(t_tokens *tokens)
 	token = tokens->tokens->ptr;
 	quote = tokens->quotes->ptr;
 	commands = ft_calloc(g_data.cmds, sizeof(t_cmd));
+	printf("ft_parse_commands commands: %p\n", commands);
 	i = 0;
 	if (!ft_strcmp(token[i], "|"))
 	{
 		ft_error(token[i], "syntax error");
 		g_data.status = 258;
+		free(commands);
 		return (NULL);
 	}
 	while (i < g_data.cmds)

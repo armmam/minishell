@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_darrnew.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
+/*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:54:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/19 22:07:43 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/21 19:43:12 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ t_darr	*ft_darrnew(size_t cap)
 		return (NULL);
 	if (!(ptr = ft_calloc(cap, sizeof(char *))))
 		return (NULL);
+	printf("ft_darrnew darr: %p ptr: %p\n", darr, ptr);
 	darr->ptr = ptr;
 	darr->len = 0;
 	darr->cap = cap;
