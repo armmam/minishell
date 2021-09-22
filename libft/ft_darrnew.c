@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:54:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/08/19 22:07:43 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/22 16:57:50 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,11 @@ t_darr	*ft_darrnew(size_t cap)
 	t_darr	*darr;
 	char	**ptr;
 
-	if (!(darr = ft_calloc(1, sizeof(t_darr))))
+	darr = ft_calloc(1, sizeof(t_darr));
+	if (!darr)
 		return (NULL);
-	if (!(ptr = ft_calloc(cap, sizeof(char *))))
+	ptr = ft_calloc(cap, sizeof(char *));
+	if (!ptr)
 		return (NULL);
 	darr->ptr = ptr;
 	darr->len = 0;
