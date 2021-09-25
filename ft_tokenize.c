@@ -121,7 +121,7 @@ int		ft_extract_token(const char *line, char **token, char **quote)
 			if (tmp) // found a closing quote
 			{
 				if (!**quote)
-					ft_appendtoken(quote, ft_strdup("\'"), 1, 0);
+					ft_appendtoken(quote, "\'", 1, 0);
 					// *quote = ft_strjoinsafe(quote, ft_strdup("\'"));
 				ft_appendtoken(token, &line[i], j - i, expand); // first safe everything (that was not already saved) up to the quote (not including) into `token`
 				i = j + 1; // update the beginning of the part of token about to be appended to `token` (set it to the first char after the opening quote)
