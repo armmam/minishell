@@ -96,12 +96,12 @@ char	**ft_extract_arguments(t_cmd *cmd, char ***token, char ***quote)
 		(*quote)++;
 		// printf("TOKEN IS NOW at %p, its address is %p\n", *tokens, tokens);
 	}
-	if (*token && **token && !ft_strcmp(**token, "|") && (*(*token + 1) == NULL || ft_strcmp(*(*token + 1), "|"))) // if the current one is `|` and the next one is not
+	if (*token && **token && !ft_strcmp(**token, "|") && (*(*token + 1) != NULL && ft_strcmp(*(*token + 1), "|"))) // if the current one is `|` and the next one is not
 	{
 		(*token)++;
 		(*quote)++;
 	}
-	else if (*token && **token && !ft_strcmp(**token, "|") && !ft_strcmp(*(*token + 1), "|")) // if both the current and the next ones are `|`
+	else if (*token && **token && !ft_strcmp(**token, "|") && (*(*token + 1) == NULL || !ft_strcmp(*(*token + 1), "|"))) // if both the current and the next ones are `|`
 	{
 		ft_error(**token, "syntax error");
 		ft_darrclear(args);
