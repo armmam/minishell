@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/02 19:36:44 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/20 22:07:22 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/26 17:06:24 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ typedef struct s_list
 typedef struct s_darr
 {
 	char		**ptr;
-	size_t	len;
-	size_t	cap;
+	size_t		len;
+	size_t		cap;
 }				t_darr;
 
 size_t			ft_strlen(const char *s);
@@ -65,7 +65,8 @@ size_t			ft_strlcpy(char *dest, const char *src, size_t dsize);
 size_t			ft_strlcat(char *dst, const char *src, size_t dstsize);
 char			*ft_strchr(const char *s, int c);
 char			*ft_strrchr(const char *str, int c);
-char			*ft_strnstr(const char *haystack, const char *needle, size_t len);
+char			*ft_strnstr(const char *haystack, const char *needle,
+					size_t len);
 int				ft_strcmp(const char *s1, const char *s2);
 int				ft_strncmp(const char *str1, const char *str2, size_t n);
 int				ft_toupper(int c);

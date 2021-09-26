@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/17 17:38:41 by amamian           #+#    #+#             */
-/*   Updated: 2021/04/20 16:34:37 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/21 12:59:45 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,5 +14,7 @@
 
 int	ft_tolower(int c)
 {
-	return (c >= 'A' && c <= 'Z' ? c + ' ' : c);
+	if (c >= 'A' && c <= 'Z')
+		return (c + ' ');
+	return (c);
 }

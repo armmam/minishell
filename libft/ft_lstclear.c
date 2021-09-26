@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/20 10:56:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/04/20 16:52:45 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/21 13:11:00 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	ft_lstclear(t_list **lst, void (*del)(void*))
 {
-	t_list *next;
+	t_list	*next;
 
 	if (lst && del)
 	{

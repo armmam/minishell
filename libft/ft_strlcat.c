@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/14 14:44:22 by amamian           #+#    #+#             */
-/*   Updated: 2021/04/20 16:23:48 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/21 13:03:09 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,12 @@
 
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize)
 {
-	size_t dstinitsize;
-	size_t srcsize;
+	size_t	dstinitsize;
+	size_t	srcsize;
 
 	srcsize = ft_strlen(src);
-	if ((dstinitsize = ft_strlen(dst)) < dstsize)
+	dstinitsize = ft_strlen(dst);
+	if (dstinitsize < dstsize)
 	{
 		if (srcsize < dstsize - dstinitsize)
 			ft_memcpy(dst + dstinitsize, src, srcsize + 1);

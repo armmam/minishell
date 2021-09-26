@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/18 18:09:43 by aisraely          #+#    #+#             */
-/*   Updated: 2021/08/20 22:01:49 by amamian          ###   ########.fr       */
+/*   Created: 2021/09/22 14:27:51 by amamian           #+#    #+#             */
+/*   Updated: 2021/09/22 14:29:04 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int			ft_strcmp(const char *s1, const char *s2)
+int	ft_strcmp(const char *s1, const char *s2)
 {
 	while (true)
 	{

@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 19:59:14 by amamian           #+#    #+#             */
-/*   Updated: 2021/04/20 17:47:08 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/21 13:01:57 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ char	*ft_strmapi(char const *s, char (*f)(unsigned int, char))
 	if (!s || !f)
 		return (NULL);
 	i = ft_strlen(s);
-	if (!(ret = ft_calloc(i + 1, sizeof(char))))
+	ret = ft_calloc(i + 1, sizeof(char));
+	if (!ret)
 		return (NULL);
 	ret[i] = '\0';
 	i = 0;

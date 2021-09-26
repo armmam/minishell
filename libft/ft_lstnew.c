@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 21:24:06 by amamian           #+#    #+#             */
-/*   Updated: 2021/04/20 16:48:35 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/21 13:09:52 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,10 @@
 
 t_list	*ft_lstnew(void *content)
 {
-	t_list *ret;
+	t_list	*ret;
 
-	if (!(ret = malloc(sizeof(t_list))))
+	ret = malloc(sizeof(t_list));
+	if (!ret)
 		return (NULL);
 	ret->content = content;
 	ret->next = NULL;

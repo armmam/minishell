@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/20 11:32:23 by amamian           #+#    #+#             */
-/*   Updated: 2021/04/20 16:53:53 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/21 13:10:48 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,11 @@ t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 	lstp = lst;
 	while (lstp)
 	{
-		if ((fout = f(lstp->content)))
+		fout = f(lstp->content);
+		if (fout)
 		{
-			if (!(new = ft_lstnew(fout)))
+			new = ft_lstnew(fout);
+			if (!new)
 			{
 				ft_lstclear(&ret, del);
 				return (NULL);

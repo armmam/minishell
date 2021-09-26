@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/19 18:28:48 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/26 17:00:59 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/21 13:12:11 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static size_t	ft_itoalen(int n)
 {
-	size_t ret;
+	size_t	ret;
 
 	ret = (n <= 0);
 	while (n)
@@ -25,7 +25,7 @@ static size_t	ft_itoalen(int n)
 	return (ret);
 }
 
-char			*ft_itoa(int n)
+char	*ft_itoa(int n)
 {
 	size_t	len;
 	char	*ret;
@@ -34,10 +34,12 @@ char			*ft_itoa(int n)
 	if (n == INT_MIN)
 		return (ft_strdup("-2147483648"));
 	len = ft_itoalen(n);
-	if (!(ret = ft_calloc(len + 1, sizeof(char))))
+	ret = ft_calloc(len + 1, sizeof(char));
+	if (!ret)
 		return (NULL);
 	neg = (n < 0);
-	n = neg ? -n : n;
+	if (neg)
+		n = -n;
 	ret[len] = '\0';
 	while (len)
 	{
