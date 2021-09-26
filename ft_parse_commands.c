@@ -104,6 +104,7 @@ char	**ft_extract_arguments(t_cmd *cmd, char ***token, char ***quote)
 	else if (*token && **token && !ft_strcmp(**token, "|") && !ft_strcmp(*(*token + 1), "|")) // if both the current and the next ones are `|`
 	{
 		ft_error(**token, "syntax error");
+		ft_darrclear(args);
 		g_data.status = 258;
 		return (NULL);
 	}
