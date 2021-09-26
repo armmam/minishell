@@ -27,7 +27,7 @@ char	*ft_refineline(char *line)
 		if ((env_len = ft_envlen(ptr + 1)))
 		{
 			env = ft_substr(ptr, 1, env_len);
-			val = ft_getenv(env);
+			val = ft_strdup(ft_getenv(env));
 			free(env);
 			prefix = ft_substr(line, 0, ptr - line);
 			postfix = ft_strdup(ptr + env_len + 1);
@@ -49,8 +49,7 @@ char	*ft_refineline(char *line)
 		ptr += ft_strlen(prefix) + ft_strlen(val); // to avoid double expansion
 		free(prefix);
 		free(postfix);
-		if (*(ptr + 1) == '?')
-			free(val);
+		free(val);
 	}
 	return (line);
 }
