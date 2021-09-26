@@ -133,6 +133,7 @@ void	ft_interpret(char *line)
 	g_data.commands = ft_parse_commands(tokens);
 	if (!g_data.commands || ft_launch_heredoc())
 	{
+		// printf("HERE\n");
 		ft_free_commands(g_data.commands);
 		ft_free_tokens(tokens);
 		return ;

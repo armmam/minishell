@@ -49,6 +49,8 @@ char	*ft_refineline(char *line)
 		ptr += ft_strlen(prefix) + ft_strlen(val); // to avoid double expansion
 		free(prefix);
 		free(postfix);
+		if (*(ptr + 1) == '?')
+			free(val);
 	}
 	return (line);
 }
