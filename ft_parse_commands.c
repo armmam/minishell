@@ -91,10 +91,8 @@ char	**ft_extract_arguments(t_cmd *cmd, char ***token, char ***quote)
 			ft_darrclear(args);
 			return (NULL);
 		}
-		// printf("ENDED READING TOKEN AT %p\n", *tokens);
 		(*token)++;
 		(*quote)++;
-		// printf("TOKEN IS NOW at %p, its address is %p\n", *tokens, tokens);
 	}
 	if (*token && **token && !ft_strcmp(**token, "|") && (*(*token + 1) != NULL && ft_strcmp(*(*token + 1), "|"))) // if the current one is `|` and the next one is not
 	{
@@ -104,6 +102,7 @@ char	**ft_extract_arguments(t_cmd *cmd, char ***token, char ***quote)
 	else if (*token && **token && !ft_strcmp(**token, "|") && (*(*token + 1) == NULL || !ft_strcmp(*(*token + 1), "|"))) // if both the current and the next ones are `|`
 	{
 		ft_error(**token, "syntax error");
+		ft_darrclear(args);
 		g_data.status = 258;
 		return (NULL);
 	}
@@ -136,6 +135,7 @@ t_cmd	*ft_parse_commands(t_tokens *tokens)
 	{
 		ft_error(token[i], "syntax error");
 		g_data.status = 258;
+		free(commands);
 		return (NULL);
 	}
 	while (i < g_data.cmds)
@@ -151,7 +151,6 @@ t_cmd	*ft_parse_commands(t_tokens *tokens)
 		if (i)
 		{
 			pipe(pipefd);
-			//printf("CREATED A PIPE WITH FD'S %d AND %d\n", pipefd[0], pipefd[1]);
 			if (commands[i - 1].out != 1)
 				close(pipefd[1]);
 			else

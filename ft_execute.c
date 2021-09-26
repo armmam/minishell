@@ -4,18 +4,6 @@ int	ft_execbuiltin(t_cmd *cmd)
 {
 	int	ret;
 
-	//if (parentid == getpid())
-	//{
-	//	dprintf(2, "command info in MAIN process: in%d, out%d\n", cmd->in, cmd->out);
-	//	dprintf(2, "printing cmd's args:\n");
-	//	int iter = 0;
-	//	while (cmd->args[iter])
-	//	{
-	//		printf("%i:%s\n", iter, cmd->args[iter]);
-	//		iter++;
-	//	}
-	//	printf("\n");
-	//}
 	ret = ft_convertbuiltin(cmd->args[0]);
 	if (ret == __echo)
 		g_data.status = ft_echo(cmd);
@@ -81,8 +69,6 @@ void	ft_traverse_binaries(t_cmd *cmd)
 
 void	ft_exec(t_cmd *cmd)
 {
-	// printf("INSIDE FT_EXEC: self%d; parent%d\n", getpid(), getppid());
-	// dprintf(2, "in:%d out:%d\n", cmd->in, cmd->out);
 	// associating fds
 	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
 	{

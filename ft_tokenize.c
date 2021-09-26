@@ -27,7 +27,7 @@ char	*ft_refineline(char *line)
 		if ((env_len = ft_envlen(ptr + 1)))
 		{
 			env = ft_substr(ptr, 1, env_len);
-			val = ft_getenv(env);
+			val = ft_strdup(ft_getenv(env));
 			free(env);
 			prefix = ft_substr(line, 0, ptr - line);
 			postfix = ft_strdup(ptr + env_len + 1);
@@ -49,8 +49,7 @@ char	*ft_refineline(char *line)
 		ptr += ft_strlen(prefix) + ft_strlen(val); // to avoid double expansion
 		free(prefix);
 		free(postfix);
-		if (*(ptr + 1) == '?')
-			free(val);
+		free(val);
 	}
 	return (line);
 }
@@ -123,7 +122,7 @@ int		ft_extract_token(const char *line, char **token, char **quote)
 			if (tmp) // found a closing quote
 			{
 				if (!**quote)
-					ft_appendtoken(quote, ft_strdup("\'"), 1, 0);
+					ft_appendtoken(quote, "\'", 1, 0);
 					// *quote = ft_strjoinsafe(quote, ft_strdup("\'"));
 				ft_appendtoken(token, &line[i], j - i, expand); // first safe everything (that was not already saved) up to the quote (not including) into `token`
 				i = j + 1; // update the beginning of the part of token about to be appended to `token` (set it to the first char after the opening quote)

@@ -43,11 +43,13 @@ void	ft_refresh_pwds(char *oldpwd)
 
 	pwd = getcwd(NULL, 0);
 	export.args = ft_calloc(3, sizeof(char *));
+	export.args[0] = ft_strdup("");
 	export.args[1] = ft_strjoin("PWD=", pwd);
 	ft_export(&export);
 	ft_freematrix(export.args);
 	free(pwd);
 	export.args = ft_calloc(3, sizeof(char *));
+	export.args[0] = ft_strdup("");
 	export.args[1] = ft_strjoin("OLDPWD=", oldpwd);
 	ft_export(&export);
 	ft_freematrix(export.args);
@@ -143,9 +145,7 @@ char	*ft_isdefined(char *decl)
 	char	*name;
 
 	name = ft_separate_identifier(decl);
-	// printf("NAME INSIDE ft_isdefined() IS %s\n", name);
 	ret = ft_getenv(name);
-	// printf("GETENV IS AT %p\n", ret);
 	free(name);
 	return (ret);
 }
