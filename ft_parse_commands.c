@@ -91,10 +91,8 @@ char	**ft_extract_arguments(t_cmd *cmd, char ***token, char ***quote)
 			ft_darrclear(args);
 			return (NULL);
 		}
-		// printf("ENDED READING TOKEN AT %p\n", *tokens);
 		(*token)++;
 		(*quote)++;
-		// printf("TOKEN IS NOW at %p, its address is %p\n", *tokens, tokens);
 	}
 	if (*token && **token && !ft_strcmp(**token, "|") && (*(*token + 1) != NULL && ft_strcmp(*(*token + 1), "|"))) // if the current one is `|` and the next one is not
 	{
@@ -132,7 +130,6 @@ t_cmd	*ft_parse_commands(t_tokens *tokens)
 	token = tokens->tokens->ptr;
 	quote = tokens->quotes->ptr;
 	commands = ft_calloc(g_data.cmds, sizeof(t_cmd));
-	printf("ft_parse_commands commands: %p\n", commands);
 	i = 0;
 	if (!ft_strcmp(token[i], "|"))
 	{
@@ -154,7 +151,6 @@ t_cmd	*ft_parse_commands(t_tokens *tokens)
 		if (i)
 		{
 			pipe(pipefd);
-			//printf("CREATED A PIPE WITH FD'S %d AND %d\n", pipefd[0], pipefd[1]);
 			if (commands[i - 1].out != 1)
 				close(pipefd[1]);
 			else

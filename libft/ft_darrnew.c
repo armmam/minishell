@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:54:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/26 14:48:37 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/26 17:00:48 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ t_darr	*ft_darrnew(size_t cap)
 	ptr = ft_calloc(cap, sizeof(char *));
 	if (!ptr)
 		return (NULL);
-	printf("ft_darrnew darr: %p ptr: %p\n", darr, ptr);
 	darr->ptr = ptr;
 	darr->len = 0;
 	darr->cap = cap;

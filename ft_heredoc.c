@@ -107,7 +107,6 @@ int	ft_launch_heredoc(void)
 	heredocs = 0;
 	if (heredoc_pid == 0) // heredoc code section
 	{
-		printf("HEREDOC PID: %d\n", getpid());
 		ft_heredoc_signals();
 		i = 0;
 		while (i < g_data.cmds)

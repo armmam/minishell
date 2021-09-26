@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/27 18:13:21 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/26 14:48:43 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/26 17:01:02 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ void	ft_darrpushback(t_darr *darr, char *item)
 		new_ptr = ft_calloc(new_cap, sizeof(char *));
 		if (!new_ptr)
 			return ;
-		printf("ft_darrpushback: new_ptr: %p\n", new_ptr);
 		array_copy(new_ptr, darr->ptr, darr->len);
 		free(darr->ptr);
 		darr->ptr = new_ptr;

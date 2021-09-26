@@ -155,7 +155,6 @@ t_tokens	*ft_tokenize(const char *line)
 	t_tokens	*ret;
 
 	ret = ft_calloc(1, sizeof(t_tokens));
-	printf("ft_tokenize ret: %p\n", ret);
 	i = 0;
 	if (line)
 	{
