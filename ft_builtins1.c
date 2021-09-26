@@ -43,12 +43,14 @@ void	ft_refresh_pwds(char *oldpwd)
 
 	pwd = getcwd(NULL, 0);
 	export.args = ft_calloc(3, sizeof(char *));
+	printf("ft_refresh_pwds export.args %p\n", export.args);
 	export.args[0] = ft_strdup("");
 	export.args[1] = ft_strjoin("PWD=", pwd);
 	ft_export(&export);
 	ft_freematrix(export.args);
 	free(pwd);
 	export.args = ft_calloc(3, sizeof(char *));
+	printf("ft_refresh_pwds export.args %p\n", export.args);
 	export.args[0] = ft_strdup("");
 	export.args[1] = ft_strjoin("OLDPWD=", oldpwd);
 	ft_export(&export);
@@ -204,6 +206,7 @@ char	*ft_separate_identifier(char *decl)
 	while (decl[i] && decl[i] != '=')
 		i++;
 	name = ft_calloc(i + 1, sizeof(char));
+	printf("ft_separate_identifier name %p\n", name);
 	i = 0;
 	while (decl[i] && decl[i] != '=')
 	{

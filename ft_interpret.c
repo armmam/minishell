@@ -139,6 +139,7 @@ void	ft_interpret(char *line)
 		return ;
 	}
 	g_data.family = ft_calloc(g_data.cmds, sizeof(pid_t));
+	printf("ft_interpret g_data.family %p\n", g_data.family);
 	if (g_data.cmds == 1 && g_data.commands[0].args && ft_isbuiltin(g_data.commands[0].args[0]))
 		ft_exec(&g_data.commands[0]);
 	else
