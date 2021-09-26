@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/09/26 17:41:36 by amamian           #+#    #+#             */
+/*   Updated: 2021/09/26 17:41:37 by amamian          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -27,8 +39,6 @@
 # include <curses.h>
 # include <term.h>
 
-int	parentid;
-
 enum	e_builtins
 {
 	__echo = 1,
@@ -42,29 +52,20 @@ enum	e_builtins
 
 typedef struct s_cmd
 {
-	// index (to wait and abort properly)
 	int		i;
-	// args for execve
 	char	**args;
-	// last stdin, stdout for a command (open not the last ones with TRUNC if it's not >>; open with APPEND if >>)
 	int		in;
 	int		out;
-	// array of heredocs (<<). if absent, please make it NULL
 	t_darr	*heredoc;
 	t_darr	*refine;
 }				t_cmd;
 
 typedef struct s_env
 {
-	// number of commands in the current minishell session
 	int		cmds;
-	// the commands themselves, in form of a data structure containing info
 	t_cmd	*commands;
-	// array of pids of launched processes
 	pid_t	*family;
-	// env vars of the current minishell session
 	t_darr	*env;
-	// status of the process that was the latest of terminate
 	int		status;
 }				t_env;
 
@@ -110,6 +111,5 @@ void		ft_suppress_output(void);
 void		ft_get_interrupted(int sig);
 int			ft_launch_heredoc(void);
 void		ft_receive_heredoc(t_cmd *cmd, int j, int *write_ends);
-
 
 #endif
