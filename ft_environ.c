@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_environ.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/09/27 16:53:57 by aisraely          #+#    #+#             */
+/*   Updated: 2021/09/27 16:53:58 by aisraely         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	ft_inherit_environment(char **environ)
@@ -30,7 +42,9 @@ char	*ft_getenv_full(const char *name)
 	while (g_data.env->ptr[i])
 	{
 		name_len = ft_strlen(identifier);
-		if (!ft_strncmp(g_data.env->ptr[i], identifier, name_len) && (g_data.env->ptr[i][name_len] == '=' || g_data.env->ptr[i][name_len] == '\0'))
+		if (!ft_strncmp(g_data.env->ptr[i], identifier, name_len)
+			&& (g_data.env->ptr[i][name_len] == '='
+			|| g_data.env->ptr[i][name_len] == '\0'))
 		{
 			free(identifier);
 			return (g_data.env->ptr[i]);
