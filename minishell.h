@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/26 17:41:36 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/26 17:41:37 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/27 13:41:36 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ void		ft_exit(t_cmd *cmd);
 t_tokens	*ft_tokenize(const char *line);
 int			ft_isbuiltin(char *builtin);
 char		*ft_refineline(char *line);
-t_cmd		*ft_parse_commands(t_tokens *tokens);
 void		ft_free_commands(t_cmd *cmds);
 int			ft_isquoted(char *str, char c);
 int			ft_isvalididentifier(const char *variable);
@@ -111,5 +110,26 @@ void		ft_suppress_output(void);
 void		ft_get_interrupted(int sig);
 int			ft_launch_heredoc(void);
 void		ft_receive_heredoc(t_cmd *cmd, int j, int *write_ends);
+
+/*
+ * everything related to command parsing
+ */
+t_cmd		*ft_parse_commands(t_tokens *tokens);
+int			ft_init_inoutstreams(t_cmd *commands, char ***token, char ***quote,
+				int i);
+void		ft_init_pipe(t_cmd *commands, int i);
+char		**ft_extract_arguments(t_cmd *cmd, char ***token, char ***quote);
+int			ft_process_pipes(char ***token, char ***quote, t_darr **args);
+int			ft_itertokens(t_cmd *cmd, char ***token, char ***quote,
+				t_darr **args);
+int			ft_currpipe_nextpipenull(char ***token);
+int			ft_currpipe_nextnot(char ***token);
+void		ft_next_tokenquote(char ***token, char ***quote);
+int			ft_parsevalidtoken(t_cmd *cmd, char ***token, char ***quote,
+				t_darr	**args);
+int			ft_parsefiletoken(char ***token, char ***quote, int *cmd_fd,
+				int open_flag);
+int			ft_islastredir_tworedirs(char ***token, char ***quote);
+int			ft_parseheredoc(char ***token, char ***quote, t_cmd *cmd);
 
 #endif
