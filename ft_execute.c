@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_execute.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/09/27 16:52:45 by aisraely          #+#    #+#             */
+/*   Updated: 2021/09/27 16:52:46 by aisraely         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	ft_execbuiltin(t_cmd *cmd)
 {
 	int	ret;
 
-	ret = ft_convertbuiltin(cmd->args[0]);
+	ret = ft_convert_builtin(cmd->args[0]);
 	if (ret == __echo)
 		g_data.status = ft_echo(cmd);
 	else if (ret == __cd)
@@ -39,7 +51,7 @@ void	ft_close_descriptors(void)
 	}
 }
 
-void	ft_traverse_binaries(t_cmd *cmd)
+static void	ft_traverse_binaries(t_cmd *cmd)
 {
 	int		i;
 	char	*newpath;
@@ -47,7 +59,7 @@ void	ft_traverse_binaries(t_cmd *cmd)
 
 	if (ft_execbuiltin(cmd) == -1)
 	{
-		execve(cmd->args[0], cmd->args, g_data.env->ptr);	// for binaries not in bin
+		execve(cmd->args[0], cmd->args, g_data.env->ptr);
 		if (ft_getenv("PATH"))
 		{
 			paths = ft_split(ft_getenv("PATH"), ':');
@@ -69,7 +81,6 @@ void	ft_traverse_binaries(t_cmd *cmd)
 
 void	ft_exec(t_cmd *cmd)
 {
-	// associating fds
 	if (!ft_isbuiltin(cmd->args[0]) || g_data.cmds != 1)
 	{
 		if (dup2(cmd->in, 0) == -1 || dup2(cmd->out, 1) == -1)
@@ -80,7 +91,6 @@ void	ft_exec(t_cmd *cmd)
 		ft_close_descriptors();
 		cmd->out = 1;
 	}
-	// exec
 	if (cmd->args[0][0] == '/')
 	{
 		execve(cmd->args[0], cmd->args, g_data.env->ptr);

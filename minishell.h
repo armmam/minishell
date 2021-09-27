@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/26 17:41:36 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/27 17:14:19 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/27 17:37:53 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ char		*ft_getenv(const char *name);
 int			ft_error(char *name, char *desc);
 void		ft_exec(t_cmd *cmd);
 int			ft_execbuiltin(t_cmd *cmd);
-int			ft_convertbuiltin(char *builtin);
+int			ft_convert_builtin(char *builtin);
 int			ft_echo(t_cmd *cmd);
 int			ft_cd(t_cmd *cmd);
 int			ft_pwd(t_cmd *cmd);
@@ -124,7 +124,9 @@ int			ft_env(t_cmd *cmd);
 void		ft_exit(t_cmd *cmd);
 int			ft_isbuiltin(char *builtin);
 char		*ft_refineline(char *line);
+t_cmd		*ft_find_command(pid_t pid);
 void		ft_free_commands(t_cmd *cmds);
+void		ft_free_tokens(t_tokens *tokens);
 int			ft_isquoted(char *str, char c);
 int			ft_isvalididentifier(const char *variable);
 int			ft_isvaliddeclaration(char *decl);
@@ -140,6 +142,9 @@ void		ft_suppress_output(void);
 void		ft_get_interrupted(int sig);
 int			ft_launch_heredoc(void);
 void		ft_receive_heredoc(t_cmd *cmd, int j, int *write_ends);
+int			ft_count_commands(char **tokens);
+void		ft_print_environment(int fd);
+char		*ft_isdefined(char *decl);
 
 /*
  * everything related to command parsing
