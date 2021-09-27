@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
+/*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/02/02 19:36:44 by aisraely          #+#    #+#             */
-/*   Updated: 2021/09/26 17:06:24 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/27 17:08:44 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,10 @@ typedef struct s_darr
 	size_t		cap;
 }				t_darr;
 
+int				ft_abs(int nb);
 size_t			ft_strlen(const char *s);
 int				ft_isdigitstr(char *str);
-int				ft_isspace(char c);
+int				ft_isspace(int c);
 int				ft_isdigit(int c);
 int				ft_isalpha(int c);
 int				ft_isalnum(int c);

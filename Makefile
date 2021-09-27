@@ -35,7 +35,7 @@ clean:
 	@make clean -C ./libft --silent
 
 norme:
-	@norminette -R CheckForbiddenSourceHeader *.c *.h
+	@norminette -R CheckForbiddenSourceHeader *.c *.h libft/*.c libft/*.h
 
 fclean: clean
 	@$(RM) $(NAME)
