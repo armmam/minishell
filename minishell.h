@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/26 17:41:36 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/27 13:41:36 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/27 16:21:11 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,21 @@ typedef struct s_tokens
 	t_darr	*quotes;
 }				t_tokens;
 
+typedef struct s_refine
+{
+	char		*ptr;
+	char		*prefix;
+	char		*postfix;
+	char		*val;
+}				t_refine;
+
+typedef struct s_expandt
+{
+	size_t		i;
+	size_t		j;
+	size_t		expand;
+}				t_expandt;
+
 t_env	g_data;
 
 void		ft_inherit_environment(char **environ);
@@ -91,7 +106,6 @@ int			ft_export(t_cmd *cmd);
 int			ft_unset(t_cmd *cmd);
 int			ft_env(t_cmd *cmd);
 void		ft_exit(t_cmd *cmd);
-t_tokens	*ft_tokenize(const char *line);
 int			ft_isbuiltin(char *builtin);
 char		*ft_refineline(char *line);
 void		ft_free_commands(t_cmd *cmds);
@@ -131,5 +145,24 @@ int			ft_parsefiletoken(char ***token, char ***quote, int *cmd_fd,
 				int open_flag);
 int			ft_islastredir_tworedirs(char ***token, char ***quote);
 int			ft_parseheredoc(char ***token, char ***quote, t_cmd *cmd);
+
+/*
+ * everything related to tokenization
+ */
+t_tokens	*ft_tokenize(const char *line);
+void		ft_darrpushback_tokens(t_tokens *ret, char *token, char *quote);
+int			ft_extract_token(const char *line, char **token, char **quote);
+void		ft_extract_token_init(const char *line, char **token, char **quote,
+				t_expandt *e);
+int			ft_process_tokenchar(const char *line, char **token, char **quote,
+				t_expandt *e);
+int			ft_process_tokenquote(const char *line, char **token, char **quote,
+				t_expandt *e);
+int			ft_extract_redirpipe(const char *line, char **token, t_expandt *e);
+void		ft_appendtoken(char **token, const char *new, size_t len,
+				int expand);
+char		*ft_refineline(char *line);
+int			ft_process_dollarsign(t_refine *r, char *line);
+int			ft_envlen(char *line);
 
 #endif
