@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/26 17:41:36 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/27 16:21:11 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/27 17:14:19 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,22 @@ typedef struct s_expandt
 	size_t		expand;
 }				t_expandt;
 
+typedef struct s_heredocl
+{
+	int			i;
+	int			heredocs;
+	int			*write_ends;
+	int			heredoc_pid;
+	int			heredoc_status;
+}				t_heredocl;
+
+typedef struct s_heredocr
+{
+	int			refined;
+	char		*heredoc;
+	size_t		j;
+}				t_heredocr;
+
 t_env	g_data;
 
 void		ft_inherit_environment(char **environ);
@@ -164,5 +180,16 @@ void		ft_appendtoken(char **token, const char *new, size_t len,
 char		*ft_refineline(char *line);
 int			ft_process_dollarsign(t_refine *r, char *line);
 int			ft_envlen(char *line);
+
+/*
+ * everything related to heredocs
+ */
+int			ft_launch_heredoc(void);
+int			ft_init_launch_heredoc(t_heredocl *h);
+void		ft_process_heredocs_childp(t_heredocl *h);
+int			ft_save_write_ends(int **write_ends);
+void		ft_save_write_end(int **write_ends, int i, int *j);
+void		ft_receive_heredoc(t_cmd *cmd, int k, int *write_ends);
+int			ft_read_heredoc_input(t_cmd *cmd, t_heredocr *h, int write_ends_k);
 
 #endif
