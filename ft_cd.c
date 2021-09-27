@@ -6,7 +6,7 @@
 /*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/27 17:22:13 by aisraely          #+#    #+#             */
-/*   Updated: 2021/09/27 17:22:13 by aisraely         ###   ########.fr       */
+/*   Updated: 2021/09/27 18:38:12 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void	ft_refresh_paths(char *oldpwd)
 	ft_freematrix(export.args);
 }
 
-static int	ft_change_path(t_cmd *cmd, int *status)
+static int	ft_change_path(t_cmd *cmd, int *status, char *oldpwd)
 {
 	if (cmd->args[1][0] == '-' && cmd->args[1][1] == '\0')
 	{
@@ -45,7 +45,10 @@ static int	ft_change_path(t_cmd *cmd, int *status)
 			}
 		}
 		else
+		{
+			free(oldpwd);
 			return (ft_error("cd", "OLDPWD not set"));
+		}
 	}
 	else
 		*status = ft_abs(chdir(cmd->args[1]));
@@ -64,10 +67,13 @@ int	ft_cd(t_cmd *cmd)
 		if (ft_getenv("HOME"))
 			status = ft_abs(chdir(ft_getenv("HOME")));
 		else
+		{
+			free(oldpwd);
 			return (ft_error("cd", "HOME not set"));
+		}
 	}
 	else
-		if (ft_change_path(cmd, &status))
+		if (ft_change_path(cmd, &status, oldpwd))
 			return (1);
 	if (!status)
 		ft_refresh_paths(oldpwd);
