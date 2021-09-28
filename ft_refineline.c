@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/27 16:20:50 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/27 16:20:51 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/28 15:40:12 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ char	*ft_refineline(char *line)
 		return (NULL);
 	r.ptr = line;
 	r.ptr = ft_strchr(r.ptr, '$');
-	while (r.ptr)
+	while (r.ptr && *(r.ptr))
 	{
 		cont = ft_process_dollarsign(&r, line);
 		if (cont)
