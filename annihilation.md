@@ -1,5 +1,21 @@
 # Annihilation list
 
+## exit
+```
+bash-3.2$ exit ll 11
+exit
+bash: exit: ll: numeric argument required
+➜  gh-repo git:(main) ✗ echo $?
+255
+```
+```
+bash-3.2$ exit fre
+exit
+bash: exit: fre: numeric argument required
+➜  gh-repo git:(main) ✗ $?
+zsh: command not found: 255
+```
+
 # undefined behavior in bash
 ```
 bash-3.2$ echo $_$"HOME"
