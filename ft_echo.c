@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/27 17:48:12 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/28 11:10:03 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/28 11:17:29 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,15 @@ int	ft_isoptionn(char **arg)
 	return (0);
 }
 
+void	ft_processoptionn(char ***arg, int *nl)
+{
+	while (ft_isoptionn(*arg))
+	{
+		*nl = 0;
+		(*arg)++;
+	}
+}
+
 int	ft_echo(t_cmd *cmd)
 {
 	char	**arg;
@@ -40,14 +49,11 @@ int	ft_echo(t_cmd *cmd)
 
 	arg = (cmd->args) + 1;
 	nl = 1;
-	while (ft_isoptionn(arg))
-	{
-		nl = 0;
-		arg++;
-	}
+	ft_processoptionn(&arg, &nl);
 	if (!*arg)
 	{
-		ft_putstr_fd("\n", cmd->out);
+		if (nl)
+			ft_putstr_fd("\n", cmd->out);
 		return (0);
 	}
 	while (*arg)
