@@ -195,6 +195,8 @@ bash-3.2$ echo $?
 ```
 bash-3.2$ echo "1" | wc -c
        2
+bash-3.2$ echo -n
+bash-3.2$
 ```	   
 
 ## OLDPWD
