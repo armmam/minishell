@@ -1,36 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   ft_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/04/16 20:22:12 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/27 17:45:45 by amamian          ###   ########.fr       */
+/*   Created: 2021/09/27 17:48:12 by amamian           #+#    #+#             */
+/*   Updated: 2021/09/27 17:48:13 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-int	ft_atoi(const char *str)
+int	ft_echo(t_cmd *cmd)
 {
-	unsigned long long	ret;
-	bool				neg;
+	char	**arg;
+	int		nl;
 
-	ret = 0;
-	while (ft_isspace(*str))
-		str++;
-	neg = (*str == '-');
-	if (neg || *str == '+')
-		str++;
-	ret = 0;
-	while (ft_isdigit(*str))
-		ret = ret * 10 + (*str++ - '0');
-	if (ret > LONG_MAX && !neg)
-		return (-1);
-	if (ret > LONG_MAX - 1 && neg)
+	arg = (cmd->args) + 1;
+	nl = 1;
+	if (*arg && !ft_strcmp(*arg, "-n"))
+	{
+		nl = 0;
+		arg++;
+	}
+	if (!*arg)
+	{
+		ft_putstr_fd("\n", cmd->out);
 		return (0);
-	if (neg)
-		return (-ret);
-	return (ret);
+	}
+	while (*arg)
+	{
+		ft_putstr_fd(*arg, cmd->out);
+		arg++;
+		if (*arg)
+			ft_putstr_fd(" ", cmd->out);
+	}
+	if (nl)
+		ft_putstr_fd("\n", cmd->out);
+	return (0);
 }

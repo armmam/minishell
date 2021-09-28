@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: aisraely <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2021/09/27 18:03:38 by aisraely          #+#    #+#              #
+#    Updated: 2021/09/27 18:03:39 by aisraely         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 NAME		= minishell
 
 USER		= $(shell whoami)
@@ -5,7 +17,7 @@ USER		= $(shell whoami)
 SRCS		= $(wildcard *.c)
 OBJS		= $(SRCS:.c=.o)
 LIBFT		= libft/libft.a
-CC			= gcc -Wall -Werror -Wextra -g
+CC			= gcc -Wall -Werror -Wextra
 RM			= rm -rf
 
 # ATTENTION! These flags are machine-specific. Edit them so that they point
@@ -35,7 +47,7 @@ clean:
 	@make clean -C ./libft --silent
 
 norme:
-	@norminette -R CheckForbiddenSourceHeader *.c *.h
+	@norminette -R CheckForbiddenSourceHeader *.c *.h libft/*.c libft/*.h
 
 fclean: clean
 	@$(RM) $(NAME)

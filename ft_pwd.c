@@ -1,38 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_pwd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/27 16:14:39 by aisraely          #+#    #+#             */
-/*   Updated: 2021/09/27 16:14:41 by aisraely         ###   ########.fr       */
+/*   Created: 2021/09/27 17:23:53 by aisraely          #+#    #+#             */
+/*   Updated: 2021/09/27 17:23:54 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	main(int argc, char **argv, char **environ)
+int	ft_pwd(t_cmd *cmd)
 {
-	char	*line;
+	char	*pwd;
 
-	(void)argc;
-	(void)argv;
-	ft_inherit_environment(environ);
-	ft_define_signals();
-	g_data.status = 0;
-	while (1)
-	{
-		line = readline("minishell$ ");
-		if (!line)
-		{
-			ft_putstr_fd("exit\n", 1);
-			return (EXIT_SUCCESS);
-		}
-		ft_interpret(line);
-		if (ft_strcmp(line, ""))
-			add_history(line);
-		free(line);
-	}
-	return (EXIT_SUCCESS);
+	pwd = getcwd(NULL, 0);
+	ft_putstr_fd(pwd, cmd->out);
+	ft_putstr_fd("\n", cmd->out);
+	free(pwd);
+	return (0);
 }
