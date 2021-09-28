@@ -6,7 +6,7 @@
 /*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/27 17:23:20 by aisraely          #+#    #+#             */
-/*   Updated: 2021/09/27 17:23:22 by aisraely         ###   ########.fr       */
+/*   Updated: 2021/09/28 18:19:50 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,19 @@ void	ft_exit(t_cmd *cmd)
 	exit_code = 0;
 	if (g_data.cmds == 1)
 		ft_putstr_fd("exit\n", 2);
-	if (ft_matrixlen(cmd->args) == 2)
+	if (ft_matrixlen(cmd->args) == 1)
+		exit(0);
+	if (!ft_isdigitstr(cmd->args[1]))
 	{
-		if (!ft_isdigitstr(cmd->args[1]))
-			g_data.status = ft_error("exit", "numeric argument required");
-		else
-			exit_code = ft_atoi(cmd->args[1]);
+		exit_code = 255;
+		ft_error("exit", "numeric argument required");
 	}
-	else if (ft_matrixlen(cmd->args) > 2)
-		g_data.status = ft_error("exit", "too many arguments");
+	else
+	{
+		if (ft_matrixlen(cmd->args) == 2)
+			exit_code = ft_atoi(cmd->args[1]);
+		else
+			g_data.status = ft_error("exit", "too many arguments");
+	}
 	ft_terminate_process(exit_code);
 }

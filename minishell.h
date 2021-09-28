@@ -6,7 +6,7 @@
 /*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/26 17:41:36 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/28 17:12:41 by aisraely         ###   ########.fr       */
+/*   Updated: 2021/09/28 18:49:33 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,13 +108,20 @@ typedef struct s_heredocr
 
 t_env	g_data;
 
-void		ft_inherit_environment(char **environ);
 void		ft_interpret(char *line);
-char		*ft_getenv(const char *name);
-int			ft_error(char *name, char *desc);
 void		ft_exec(t_cmd *cmd);
 int			ft_execbuiltin(t_cmd *cmd);
-int			ft_convert_builtin(char *builtin);
+
+/*
+ * functions interacting with environment
+ */
+void		ft_inherit_environment(char **environ);
+char		*ft_getenv_full(const char *name);
+char		*ft_getenv(const char *name);
+
+/*
+ * built-in commands
+ */
 int			ft_echo(t_cmd *cmd);
 int			ft_cd(t_cmd *cmd);
 int			ft_pwd(t_cmd *cmd);
@@ -122,16 +129,10 @@ int			ft_export(t_cmd *cmd);
 int			ft_unset(t_cmd *cmd);
 int			ft_env(t_cmd *cmd);
 void		ft_exit(t_cmd *cmd);
-int			ft_isbuiltin(char *builtin);
-char		*ft_refineline(char *line);
-t_cmd		*ft_find_command(pid_t pid);
-void		ft_free_commands(t_cmd *cmds);
-void		ft_free_tokens(t_tokens *tokens);
-int			ft_isquoted(char *str, char c);
-int			ft_isvalididentifier(const char *variable);
-int			ft_isvaliddeclaration(char *decl);
-char		*ft_separate_identifier(char *decl);
-char		*ft_getenv_full(const char *name);
+
+/*
+ * signal handling
+ */
 void		ft_define_signals(void);
 void		ft_default_signals(void);
 void		ft_heredoc_signals(void);
@@ -140,15 +141,11 @@ void		ft_reprompt(int sig);
 void		ft_do_nothing(int sig);
 void		ft_suppress_output(void);
 void		ft_get_interrupted(int sig);
-int			ft_launch_heredoc(void);
-void		ft_receive_heredoc(t_cmd *cmd, int j, int *write_ends);
-int			ft_count_commands(char **tokens);
-void		ft_print_environment(int fd);
-char		*ft_isdefined(char *decl);
 
 /*
  * everything related to command parsing
  */
+int			ft_count_commands(char **tokens);
 t_cmd		*ft_parse_commands(t_tokens *tokens);
 int			ft_init_inoutstreams(t_cmd *commands, char ***token, char ***quote,
 				int i);
@@ -184,7 +181,6 @@ void		ft_appendtoken(char **token, const char *new, size_t len,
 				int expand);
 char		*ft_refineline(char *line);
 int			ft_process_dollarsign(t_refine *r, char *line);
-int			ft_envlen(char *line);
 
 /*
  * everything related to heredocs
@@ -196,5 +192,22 @@ int			ft_save_write_ends(int **write_ends);
 void		ft_save_write_end(int **write_ends, int i, int *j);
 void		ft_receive_heredoc(t_cmd *cmd, int k, int *write_ends);
 int			ft_read_heredoc_input(t_cmd *cmd, t_heredocr *h, int write_ends_k);
+
+/*
+ * utils, helpers and misc 
+ */
+int			ft_isquoted(char *str, char c);
+char		*ft_isdefined(char *decl);
+int			ft_isbuiltin(char *builtin);
+int			ft_isvalididentifier(const char *variable);
+int			ft_isvaliddeclaration(char *decl);
+int			ft_error(char *name, char *desc);
+t_cmd		*ft_find_command(pid_t pid);
+void		ft_free_commands(t_cmd *cmds);
+void		ft_free_tokens(t_tokens *tokens);
+int			ft_envlen(char *line);
+char		*ft_separate_identifier(char *decl);
+void		ft_print_environment(int fd);
+int			ft_convert_builtin(char *builtin);
 
 #endif

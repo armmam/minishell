@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_echo.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
+/*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/27 17:48:12 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/28 11:17:29 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/28 18:21:21 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
  * returns 1 if `arg` is "-n" or "-nn" or a '-' and any number of 'n's
  * otherwise returns 0
  */
-int	ft_isoptionn(char **arg)
+static int	ft_isoption_n(char **arg)
 {
 	int	i;
 
@@ -33,9 +33,9 @@ int	ft_isoptionn(char **arg)
 	return (0);
 }
 
-void	ft_processoptionn(char ***arg, int *nl)
+static void	ft_process_option_n(char ***arg, int *nl)
 {
-	while (ft_isoptionn(*arg))
+	while (ft_isoption_n(*arg))
 	{
 		*nl = 0;
 		(*arg)++;
@@ -49,7 +49,7 @@ int	ft_echo(t_cmd *cmd)
 
 	arg = (cmd->args) + 1;
 	nl = 1;
-	ft_processoptionn(&arg, &nl);
+	ft_process_option_n(&arg, &nl);
 	if (!*arg)
 	{
 		if (nl)
