@@ -6,11 +6,32 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/27 17:48:12 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/27 17:48:13 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/28 11:10:03 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/*
+ * returns 1 if `arg` is "-n" or "-nn" or a '-' and any number of 'n's
+ * otherwise returns 0
+ */
+int	ft_isoptionn(char **arg)
+{
+	int	i;
+
+	if (*arg && !ft_strncmp(*arg, "-n", 2))
+	{
+		i = 2;
+		while ((*arg)[i])
+		{
+			if ((*arg)[i++] != 'n')
+				return (0);
+		}
+		return (1);
+	}
+	return (0);
+}
 
 int	ft_echo(t_cmd *cmd)
 {
@@ -19,7 +40,7 @@ int	ft_echo(t_cmd *cmd)
 
 	arg = (cmd->args) + 1;
 	nl = 1;
-	if (*arg && !ft_strcmp(*arg, "-n"))
+	while (ft_isoptionn(arg))
 	{
 		nl = 0;
 		arg++;
