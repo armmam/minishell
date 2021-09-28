@@ -2,11 +2,12 @@
 
 ## deleted directories
 ```
-mkdir a
-mkdir a/b
-cd a/b
-rm -r ../../a
-cd ..
+bash-3.2$ mkdir a
+bash-3.2$ mkdir a/b
+bash-3.2$ cd a/b
+bash-3.2$ rm -r ../../a
+bash-3.2$ cd ..
+cd: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory
 ```
 
 ## expansion
