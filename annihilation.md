@@ -1,5 +1,26 @@
 # Annihilation list
 
+## expansion
+
+```
+bash-3.2$ echo $"HOME"
+HOME
+bash-3.2$ echo $'HOME'
+HOME
+bash-3.2$ echo "\$hello hello \$hi"
+$hello hello $hi
+bash-3.2$ echo '\$hello hello \$hi'
+\$hello hello \$hi
+```
+
+(while `$MYVAR` is unset)
+```
+bash-3.2$ echo $MYVAR
+
+bash-3.2$ echo $'MYVAR'
+MYVAR
+```
+
 ## Redirection operators
 ```
 bash-3.2$ ls ><
