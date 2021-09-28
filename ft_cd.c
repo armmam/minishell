@@ -6,17 +6,22 @@
 /*   By: aisraely <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/27 17:22:13 by aisraely          #+#    #+#             */
-/*   Updated: 2021/09/27 18:38:12 by aisraely         ###   ########.fr       */
+/*   Updated: 2021/09/28 17:28:08 by aisraely         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	ft_refresh_paths(char *oldpwd)
+static int	ft_refresh_paths(char *oldpwd, int status)
 {
 	t_cmd	export;
 	char	*pwd;
 
+	if (status)
+	{
+		free(oldpwd);
+		return (ft_error("cd", "No such file or directory"));
+	}
 	pwd = getcwd(NULL, 0);
 	export.args = ft_calloc(3, sizeof(char *));
 	export.args[0] = ft_strdup("");
@@ -29,6 +34,8 @@ static void	ft_refresh_paths(char *oldpwd)
 	export.args[1] = ft_strjoin("OLDPWD=", oldpwd);
 	ft_export(&export);
 	ft_freematrix(export.args);
+	free(oldpwd);
+	return (status);
 }
 
 static int	ft_change_path(t_cmd *cmd, int *status, char *oldpwd)
@@ -62,6 +69,12 @@ int	ft_cd(t_cmd *cmd)
 
 	status = 1;
 	oldpwd = getcwd(NULL, 0);
+	if (!oldpwd)
+	{
+		perror("cd: error retrieving current directory: getcwd:"
+			" cannot access parent directories");
+		return (0);
+	}
 	if (ft_matrixlen(cmd->args) == 1)
 	{
 		if (ft_getenv("HOME"))
@@ -75,10 +88,5 @@ int	ft_cd(t_cmd *cmd)
 	else
 		if (ft_change_path(cmd, &status, oldpwd))
 			return (1);
-	if (!status)
-		ft_refresh_paths(oldpwd);
-	else
-		status = ft_error("cd", "No such file or directory");
-	free(oldpwd);
-	return (status);
+	return (ft_refresh_paths(oldpwd, status));
 }
