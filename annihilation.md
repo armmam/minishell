@@ -1,5 +1,34 @@
 # Annihilation list
 
+# undefined behavior in bash
+```
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOME
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOME
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOMEHOME
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOMEHOMEHOME
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOMEHOMEHOMEHOME
+bash-3.2$ 
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOMEHOMEHOMEHOMEHOME
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOME
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOME
+bash-3.2$ 
+bash-3.2$ 
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOME
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOME
+bash-3.2$ echo $_$"HOME"
+/Users/armanHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOMEHOME
+```
+
 ## deleted directories
 ```
 bash-3.2$ mkdir a
