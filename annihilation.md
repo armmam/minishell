@@ -7,10 +7,6 @@ bash-3.2$ echo $"HOME"
 HOME
 bash-3.2$ echo $'HOME'
 HOME
-bash-3.2$ echo "\$hello hello \$hi"
-$hello hello $hi
-bash-3.2$ echo '\$hello hello \$hi'
-\$hello hello \$hi
 ```
 
 (while `$MYVAR` is unset)
