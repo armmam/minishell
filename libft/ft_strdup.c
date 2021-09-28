@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/04/18 18:18:47 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/21 13:03:36 by amamian          ###   ########.fr       */
+/*   Updated: 2021/09/28 10:25:37 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ char	*ft_strdup(const char *s1)
 	size_t	len;
 
 	len = ft_strlen(s1);
-	s2 = (char *)malloc((len + 1) * sizeof(char));
+	s2 = (char *)ft_calloc(len + 1, sizeof(char));
 	if (!s2)
 		return (NULL);
 	ft_strlcpy(s2, s1, len + 1);
