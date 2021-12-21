@@ -52,7 +52,6 @@ enum	e_builtins
 
 typedef struct s_cmd
 {
-	int		i;
 	char	**args;
 	int		in;
 	int		out;
