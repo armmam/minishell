@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/27 13:40:07 by amamian           #+#    #+#             */
-/*   Updated: 2021/09/27 13:40:08 by amamian          ###   ########.fr       */
+/*   Updated: 2021/12/30 07:20:17 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ int	ft_init_inoutstreams(t_cmd *commands, char ***token, char ***quote, int i)
 	{
 		commands[i].in = 0;
 		commands[i].out = 1;
-		commands[i].i = i;
 		if (!(ft_extract_arguments(&commands[i], token, quote)))
 		{
 			ft_free_commands(commands);
