@@ -6,7 +6,7 @@
 /*   By: amamian <amamian@student.42yerevan.am>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/26 17:41:36 by amamian           #+#    #+#             */
-/*   Updated: 2021/12/30 09:28:57 by amamian          ###   ########.fr       */
+/*   Updated: 2021/12/30 11:35:24 by amamian          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ typedef struct s_heredocr
 	size_t		j;
 }				t_heredocr;
 
-t_env	g_data;
+extern t_env	g_data;
 
 void		ft_interpret(char *line);
 void		ft_exec(t_cmd *cmd);
