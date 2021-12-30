@@ -1,5 +1,5 @@
 # minishell
-School 42's project "minishell" implementation (no bonus, only mandatory part).
+School 42 project "minishell" implementation (no bonus, only mandatory part).
 ## Notes
 * Before compiling, please specify the correct path to your homebrew location in the Makefile's LDFLAGS and CPPFLAGS variables.
 * If you want to see more in-line comments that may make it clearer for you what each function does, check out the `with-comments` branch of this repository.
