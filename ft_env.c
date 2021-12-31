@@ -17,6 +17,8 @@ int	ft_env(t_cmd *cmd)
 	int	i;
 	int	j;
 
+	if (ft_matrixlen(cmd->args) != 1)
+		return (0);
 	i = 0;
 	while (g_data.env->ptr[i])
 	{
